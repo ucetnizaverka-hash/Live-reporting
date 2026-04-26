@@ -3,168 +3,383 @@
 <title>Predikce | Živé výkaznictví</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  .tabs { display:flex; gap:4px; margin:0 0 16px; border-bottom:2px solid #dce3ef; }
+  .tab-btn {
+    padding:8px 20px; border:none; background:none; cursor:pointer;
+    font-size:13px; font-weight:600; color:var(--gray); border-bottom:3px solid transparent;
+    margin-bottom:-2px; transition:color .15s, border-color .15s;
+  }
+  .tab-btn.active { color:var(--navy); border-bottom-color:var(--navy); }
+  .tab-btn.pes { }  .tab-btn.pes.active { color:#dc2626; border-bottom-color:#dc2626; }
+  .tab-btn.baz { }  .tab-btn.baz.active { color:#92400e; border-bottom-color:var(--gold); }
+  .tab-btn.opt { }  .tab-btn.opt.active { color:#166534; border-bottom-color:#16a34a; }
+  .tab-panel { display:none; } .tab-panel.active { display:block; }
+  table.pred { width:100%; border-collapse:collapse; font-size:12px; }
+  table.pred th, table.pred td { padding:5px 10px; border-bottom:1px solid #eef0f8; }
+  table.pred th { background:#f4f6fb; font-size:11px; text-align:right; }
+  table.pred th:first-child { text-align:left; }
+  table.pred td:not(:first-child) { text-align:right; }
+  table.pred tr.bold td { font-weight:700; background:#f9fafb; }
+  table.pred tr.head td { background:#eef0f8; font-weight:700; color:var(--navy); font-size:11px; padding:6px 10px; }
+  table.pred tr.sub td:first-child { padding-left:22px; color:#444; }
+  table.pred tr.sub2 td:first-child { padding-left:36px; color:#777; }
+  table.pred .oz { width:7%; color:var(--navy); font-weight:600; font-size:11px; }
+  table.pred .cr { width:5%; color:var(--gray); font-size:10px; text-align:center; }
+  .pes-val { color:#b91c1c; } .baz-val { color:#92400e; } .opt-val { color:#166534; }
+  .scenario-badge { display:inline-block; padding:3px 10px; border-radius:4px; font-size:11px; font-weight:700; margin-bottom:12px; }
+  .scenario-badge.pes { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
+  .scenario-badge.baz { background:#fffbeb; color:#92400e; border:1px solid #fcd34d; }
+  .scenario-badge.opt { background:#f0fdf4; color:#166534; border:1px solid #86efac; }
+  .pred-sections { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media(max-width:900px){ .pred-sections { grid-template-columns:1fr; } }
+  .pred-section-full { grid-column:1/-1; }
+  .tis-note { font-size:11px; color:var(--gray); margin-bottom:8px; }
+</style>
 </head><body>
 <header>
   <div class="header-top">
     <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Predikce výkazů</div>
-    <div class="header-meta"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span> · IČO: <span id="hdr-ico"></span></div>
+    <div class="header-meta" style="display:flex;align-items:center;gap:10px"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span><span id="mode-badge"></span> · IČO: <span id="hdr-ico"></span></div>
   </div>
   <nav id="nav-links"></nav>
+  <div id="mode-toggle"></div>
 </header>
 <main>
-  <div id="loading">⏳ Načítám…</div><div id="err"></div>
+  <div id="loading">Načítám…</div><div id="err"></div>
   <div id="app" style="display:none">
-    <div class="disclaimer" style="display:block;background:#e0f2fe;border-color:#7dd3fc;color:#0c4a6e;margin-bottom:16px">
-      ⚡ Predikce je generována matematicky z živých dat. Neslouží jako účetní ani daňové poradenství.
+    <div class="disclaimer" style="background:#e0f2fe;border-color:#7dd3fc;color:#0c4a6e;margin-bottom:16px">
+      Predikce je generována matematicky z živých dat. Neslouží jako účetní ani daňové poradenství.
     </div>
+
+    <!-- KPI cards -->
     <div class="kpi-grid" id="pred-kpi"></div>
-    <div class="charts-2">
-      <div class="chart-box"><h3>Predikce tržeb a VH</h3><canvas id="ch-pred"></canvas></div>
-      <div class="chart-box"><h3>Predikce cash flow</h3><canvas id="ch-cf"></canvas></div>
+
+    <!-- Grafy -->
+    <div class="charts-2" style="margin-bottom:24px">
+      <div class="chart-box"><h3>Tržby a VH — scénáře</h3><canvas id="ch-pred"></canvas></div>
+      <div class="chart-box"><h3>CF provozní — scénáře</h3><canvas id="ch-cf"></canvas></div>
     </div>
+
+    <!-- Tabs -->
     <div class="section">
-      <h2>Predikce VZZ — roční scénáře</h2>
-      <table><thead id="pred-vzz-head"></thead><tbody id="pred-vzz-body"></tbody></table>
-    </div>
-    <div class="section">
-      <h2>Predikce rozvahy ke konci roku</h2>
-      <table><thead id="pred-roz-head"></thead><tbody id="pred-roz-body"></tbody></table>
-    </div>
-    <div class="section" style="font-size:12px;color:var(--gray);padding:12px 20px" id="pred-metoda"></div>
+      <h2 style="margin-bottom:12px">Predikce výkazů ke konci roku</h2>
+      <p class="tis-note">Lineární anaulizace z <span id="mesice-label">?</span> měsíců dat (×<span id="koef-label">?</span>) · Pes = ×0,9 · Baz = ×1,0 · Opt = ×1,1</p>
+      <div class="tabs">
+        <button class="tab-btn pes active" onclick="switchTab('pes')">Pesimistický &minus;10 %</button>
+        <button class="tab-btn baz" onclick="switchTab('baz')">Bazový (annualizace)</button>
+        <button class="tab-btn opt" onclick="switchTab('opt')">Optimistický +10 %</button>
+      </div>
+
+      <!-- Panel: Pesimisticky -->
+      <div class="tab-panel active" id="tab-pes">
+        <span class="scenario-badge pes">Pesimistický scénář — bazovy × 0,9</span>
+        <div class="pred-sections">
+          <div class="pred-section-full">
+            <h3 style="margin:0 0 8px;font-size:13px">Výkaz zisku a ztráty (predikce)</h3>
+            <table class="pred"><thead id="vzz-head-pes"></thead><tbody id="vzz-body-pes"></tbody></table>
+          </div>
+          <div>
+            <h3 style="margin:8px 0;font-size:13px">Rozvaha — klíčové položky (predikce)</h3>
+            <table class="pred"><thead id="roz-head-pes"></thead><tbody id="roz-body-pes"></tbody></table>
+          </div>
+          <div>
+            <h3 style="margin:8px 0;font-size:13px">Cash Flow (predikce)</h3>
+            <table class="pred"><thead id="cf-head-pes"></thead><tbody id="cf-body-pes"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: Bazovy -->
+      <div class="tab-panel" id="tab-baz">
+        <span class="scenario-badge baz">Bazový scénář — lineární anaulizace (×12/měsíce)</span>
+        <div class="pred-sections">
+          <div class="pred-section-full">
+            <h3 style="margin:0 0 8px;font-size:13px">Výkaz zisku a ztráty (predikce)</h3>
+            <table class="pred"><thead id="vzz-head-baz"></thead><tbody id="vzz-body-baz"></tbody></table>
+          </div>
+          <div>
+            <h3 style="margin:8px 0;font-size:13px">Rozvaha — klíčové položky (predikce)</h3>
+            <table class="pred"><thead id="roz-head-baz"></thead><tbody id="roz-body-baz"></tbody></table>
+          </div>
+          <div>
+            <h3 style="margin:8px 0;font-size:13px">Cash Flow (predikce)</h3>
+            <table class="pred"><thead id="cf-head-baz"></thead><tbody id="cf-body-baz"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: Optimisticky -->
+      <div class="tab-panel" id="tab-opt">
+        <span class="scenario-badge opt">Optimistický scénář — bazový × 1,1</span>
+        <div class="pred-sections">
+          <div class="pred-section-full">
+            <h3 style="margin:0 0 8px;font-size:13px">Výkaz zisku a ztráty (predikce)</h3>
+            <table class="pred"><thead id="vzz-head-opt"></thead><tbody id="vzz-body-opt"></tbody></table>
+          </div>
+          <div>
+            <h3 style="margin:8px 0;font-size:13px">Rozvaha — klíčové položky (predikce)</h3>
+            <table class="pred"><thead id="roz-head-opt"></thead><tbody id="roz-body-opt"></tbody></table>
+          </div>
+          <div>
+            <h3 style="margin:8px 0;font-size:13px">Cash Flow (predikce)</h3>
+            <table class="pred"><thead id="cf-head-opt"></thead><tbody id="cf-body-opt"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div><!-- /section -->
+
+    <div style="font-size:11px;color:var(--gray);padding:12px 20px;border-top:1px solid #eee" id="pred-metoda"></div>
   </div>
 </main>
 <footer><span>22HLAV</span> · Živé výkaznictví v2.0</footer>
 <script src="common.js"></script>
 <script>
+// Tab switcher
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelector('.tab-btn.'+id).classList.add('active');
+}
+
 loadData(d => {
-  document.title = (d.nazev||"")+" | Predikce";
+  document.title = (d.nazev||"") + " | Predikce";
+
+  // Predikce je dostupna jen v live rezimu
+  if(getMode() === "rocni") {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    document.getElementById("app").innerHTML =
+      '<div style="padding:40px 20px;text-align:center;color:var(--gray)">' +
+      '<h2 style="color:var(--navy)">Predikce je dostupna pouze v Živem výkaznictví</h2>' +
+      '<p>Predikce je generovana z prubeznych dat za cast roku.<br>' +
+      'Rocni vykazy uz jsou za cely rok — predikce k nim nema smysl.</p>' +
+      '<button onclick="setMode('live')" style="margin-top:16px;padding:8px 20px;background:var(--gold);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Prepnout na Zive vykaznictvi</button>' +
+      '</div>';
+    return;
+  }
+
   const a = d.aktualni;
   const periody = d.periody || [];
   const mesice = a.mesice || a.mesice_obdobi || 3;
   const rok = a.rok || new Date().getFullYear();
   const zbyva = 12 - mesice;
+  const koef = 12 / mesice;
 
-  // Anualzace: aktualni hodnoty prepoctene na cely rok
-  const ann = v => v === null ? null : Math.round(v * 12 / mesice);
+  document.getElementById("mesice-label").textContent = mesice;
+  document.getElementById("koef-label").textContent = koef.toFixed(2);
 
-  // Rust vs predchozi rok (pokud existuje)
-  const prevYear = periody.find(p=>p.rok === rok-1 || p.rok === String(rok-1));
-  const growthRate = (key) => {
-    if(!prevYear || !prevYear[key] || !a[key]) return null;
-    const annCur = ann(a[key]);
-    return (annCur - prevYear[key]) / Math.abs(prevYear[key]);
-  };
-
-  // Scenare: pesimisticky (-10%), bazovy (annualized), optimisticky (+10%)
-  const scenarios = (key) => {
+  // Anaulizace + scenare
+  const ann = v => (v === null || v === undefined) ? 0 : Math.round(v * koef);
+  const sc = (key, factor) => {
     const base = ann(a[key]);
-    if(base===null) return [null,null,null];
-    return [Math.round(base*0.9), base, Math.round(base*1.1)];
+    return Math.round(base * factor);
+  };
+  const scV = (v, factor) => Math.round(ann(v) * factor);
+
+  // Faktory
+  const F = { pes:0.9, baz:1.0, opt:1.1 };
+
+  // Predchozi rok
+  const prevYear = periody.find(p => (p.rok || p.period_label || "").toString().includes(String(rok-1)));
+  const gr = (key) => {
+    if(!prevYear || !prevYear[key] || !a[key]) return null;
+    return (ann(a[key]) - prevYear[key]) / Math.abs(prevYear[key]);
   };
 
-  // KPI predikce
-  const [t_pes, t_baz, t_opt] = scenarios("trzby_celkem");
-  const [vh_pes, vh_baz, vh_opt] = scenarios("vh_za_obdobi");
-  const [cf_pes, cf_baz, cf_opt] = scenarios("cf_provozni");
-  const gr = growthRate("trzby_celkem");
+  // KPI
+  const trzbyBaz = ann(a.trzby_celkem);
+  const vhBaz    = ann(a.vh_za_obdobi);
+  const cfBaz    = ann(a.cf_provozni);
+  const gTrzby   = gr("trzby_celkem");
 
   document.getElementById("pred-kpi").innerHTML = `
     <div class="kpi"><div class="lbl">Predikce tržeb (bazový)</div>
-      <div class="val">${kc(t_baz)}</div>
-      <div class="sub">Pes: ${kc(t_pes)} · Opt: ${kc(t_opt)}</div>
-      ${gr!==null?`<div class="delta ${gr>=0?"up":"down"}">${gr>=0?"▲":"▼"} ${Math.abs(gr*100).toFixed(1)}% vs ${rok-1}</div>`:""}
+      <div class="val">${kc(trzbyBaz)}</div>
+      <div class="sub">Pes: ${kc(Math.round(trzbyBaz*0.9))} &nbsp;|&nbsp; Opt: ${kc(Math.round(trzbyBaz*1.1))}</div>
+      ${gTrzby!==null?`<div class="delta ${gTrzby>=0?"up":"down"}">${gTrzby>=0?"+":''}${(gTrzby*100).toFixed(1)}% vs ${rok-1}</div>`:''}
     </div>
     <div class="kpi"><div class="lbl">Predikce VH (bazový)</div>
-      <div class="val">${kc(vh_baz)}</div>
-      <div class="sub">Pes: ${kc(vh_pes)} · Opt: ${kc(vh_opt)}</div>
+      <div class="val">${kc(vhBaz)}</div>
+      <div class="sub">Pes: ${kc(Math.round(vhBaz*0.9))} &nbsp;|&nbsp; Opt: ${kc(Math.round(vhBaz*1.1))}</div>
     </div>
     <div class="kpi"><div class="lbl">Predikce CF provozní</div>
-      <div class="val">${kc(cf_baz)}</div>
-      <div class="sub">Na základě ${mesice} měsíců dat</div>
+      <div class="val">${kc(cfBaz)}</div>
+      <div class="sub">Pes: ${kc(Math.round(cfBaz*0.9))} &nbsp;|&nbsp; Opt: ${kc(Math.round(cfBaz*1.1))}</div>
     </div>
     <div class="kpi navy"><div class="lbl">Měsíců uplynulo / zbývá</div>
       <div class="val">${mesice} / ${zbyva}</div>
-      <div class="sub">Rok ${rok} · Spolehlivost ${Math.round(mesice/12*100)} %</div>
+      <div class="sub">Rok ${rok} &nbsp;·&nbsp; Spolehlivost ${Math.round(mesice/12*100)} %</div>
     </div>`;
 
-  // Chart predikce
-  const chartLabels = [];
-  if(prevYear) chartLabels.push(String(prevYear.rok||rok-1)+" (skutečnost)");
-  chartLabels.push(`${mesice}M ${rok} (skutečnost)`);
-  chartLabels.push(`${rok} pesimistický`);
-  chartLabels.push(`${rok} bazový`);
-  chartLabels.push(`${rok} optimistický`);
+  // ---- GRAFY ----
+  const scLabels = ["Pes.", "Baz.", "Opt."];
+  const colors3 = ["rgba(220,38,38,.75)","rgba(212,149,42,.85)","rgba(22,163,74,.75)"];
+  const colBorder = ["#dc2626","#d4952a","#16a34a"];
 
-  const trzbyData = [
-    prevYear?prevYear.trzby_celkem:null,
-    a.trzby_celkem, t_pes, t_baz, t_opt
-  ].filter((_,i)=>prevYear||i>0);
-  const vhData = [
-    prevYear?prevYear.vh_za_obdobi:null,
-    a.vh_za_obdobi, vh_pes, vh_baz, vh_opt
-  ].filter((_,i)=>prevYear||i>0);
-  const lbl2 = chartLabels.filter((_,i)=>prevYear||i>0);
+  new Chart(document.getElementById("ch-pred"), {
+    type:"bar",
+    data:{
+      labels: scLabels,
+      datasets:[
+        { label:"Tržby", data:[trzbyBaz*.9, trzbyBaz, trzbyBaz*1.1], backgroundColor:colors3, borderColor:colBorder, borderWidth:1, borderRadius:4 },
+        { label:"VH",    data:[vhBaz*.9,    vhBaz,    vhBaz*1.1],    backgroundColor:colors3.map(c=>c.replace(".75","0.35").replace(".85","0.35")), borderColor:colBorder, borderWidth:1, borderRadius:4 },
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{position:"bottom",labels:{font:{size:11}}}},
+      scales:{y:{ticks:{callback:v=>(v/1000).toFixed(0)+" tis."}}}}
+  });
+  new Chart(document.getElementById("ch-cf"), {
+    type:"bar",
+    data:{
+      labels: scLabels,
+      datasets:[
+        { label:"CF provozní", data:[cfBaz*.9, cfBaz, cfBaz*1.1], backgroundColor:colors3, borderColor:colBorder, borderWidth:1, borderRadius:4 },
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{position:"bottom",labels:{font:{size:11}}}},
+      scales:{y:{ticks:{callback:v=>(v/1000).toFixed(0)+" tis."}}}}
+  });
 
-  new Chart(document.getElementById("ch-pred"),{type:"bar",data:{labels:lbl2,datasets:[
-    {label:"Tržby",data:trzbyData,backgroundColor:lbl2.map(l=>l.includes("skut")?"rgba(27,36,105,.8)":l.includes("pes")?"rgba(220,38,38,.6)":l.includes("opt")?"rgba(22,163,74,.6)":"rgba(212,149,42,.8)"),borderRadius:4},
-    {label:"VH",   data:vhData,  backgroundColor:lbl2.map(l=>l.includes("skut")?"rgba(27,36,105,.4)":l.includes("pes")?"rgba(220,38,38,.3)":l.includes("opt")?"rgba(22,163,74,.3)":"rgba(212,149,42,.4)"),borderRadius:4},
-  ]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:"bottom",labels:{font:{size:11}}}},
-    scales:{y:{ticks:{callback:v=>(v/1000).toFixed(0)+" tis."}}}}});
+  // ---- TABULKY ----
+  // Pomocna funkce: radek VZZ pro dany faktor
+  const vzzRow = (oz, lbl, key, cr, {bold=false,sub=false,sub2=false,head=false,negOk=false}={}) => (f, cls) => {
+    const skut = a[key] !== undefined ? a[key] : 0;
+    const pred = sc(key, f);
+    const diff = pred - (prevYear && prevYear[key] !== undefined ? prevYear[key] : 0);
+    const rowcls = head ? 'head' : bold ? 'bold' : sub2 ? 'sub2' : sub ? 'sub' : '';
+    const neg = pred < 0;
+    return `<tr class="${rowcls}">
+      <td class="oz">${oz}</td>
+      <td>${lbl}</td>
+      <td class="cr">${cr}</td>
+      <td>${kc(skut)}</td>
+      <td class="${cls}${neg&&!negOk?' neg':''}">${kc(pred)}</td>
+      ${prevYear?`<td style="font-size:11px;color:${diff>=0?'var(--green)':'#dc2626'}">${diff>=0?'+':''}${(diff/Math.abs(prevYear[key]||1)*100).toFixed(0)} %</td>`:''}
+    </tr>`;
+  };
 
-  const cfData = [prevYear?prevYear.cf_provozni:null, a.cf_provozni, cf_pes, cf_baz, cf_opt].filter((_,i)=>prevYear||i>0);
-  new Chart(document.getElementById("ch-cf"),{type:"bar",data:{labels:lbl2,datasets:[
-    {label:"CF provozní",data:cfData,backgroundColor:lbl2.map(l=>l.includes("skut")?"rgba(27,36,105,.8)":l.includes("pes")?"rgba(220,38,38,.6)":l.includes("opt")?"rgba(22,163,74,.6)":"rgba(212,149,42,.8)"),borderRadius:4},
-  ]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:"bottom",labels:{font:{size:11}}}},
-    scales:{y:{ticks:{callback:v=>(v/1000).toFixed(0)+" tis."}}}}});
+  // Sloupce VZZ tabulky
+  const vzzCols = prevYear
+    ? `<tr><th class="oz">Ozn.</th><th style="text-align:left">Položka</th><th class="cr">Č.ř.</th><th>Skutečnost ${mesice}M</th><th>Predikce (rok)</th><th>vs ${rok-1}</th></tr>`
+    : `<tr><th class="oz">Ozn.</th><th style="text-align:left">Položka</th><th class="cr">Č.ř.</th><th>Skutečnost ${mesice}M</th><th>Predikce (rok)</th></tr>`;
 
-  // Predikce VZZ tabulka
-  document.getElementById("pred-vzz-head").innerHTML =
-    `<tr><th style="width:35%">Položka</th><th>Skutečnost ${mesice}M</th>
-     <th style="color:#dc2626">Pesimistický</th><th style="color:var(--gold)">Bazový</th>
-     <th style="color:var(--green)">Optimistický</th></tr>`;
-
-  const vzz_rows = [
-    ["Tržby celkem","trzby_celkem"],
-    ["Výkonová spotřeba","vyk_spotreba"],
-    ["Osobní náklady","osobni_naklady"],
-    ["Odpisy","odpisy"],
-    ["Provozní VH","provozni_vh"],
-    ["Finanční VH","financni_vh"],
-    ["VH před zdaněním","vh_pred_zdanenim"],
-    ["Daň z příjmů (odhad)","dan"],
-    ["VH za období","vh_za_obdobi"],
+  const vzzRows = [
+    ["I.",   "Tržby z prodeje výrobků a služeb", "trzby_sluzby",     "01", {bold:false}],
+    ["II.",  "Tržby za prodej zboží",             "trzby_zbozi",      "02", {bold:false}],
+    ["",     "Tržby celkem",                      "trzby_celkem",     "",   {bold:true}],
+    ["",     "",                                  "",                 "",   {}],
+    ["A.",   "Výkonová spotřeba",                  "vyk_spotreba",     "03", {bold:true}],
+    ["A.1.", "  Náklady na prodané zboží",          "nak_zbozi",        "04", {sub:true}],
+    ["A.2.", "  Spotřeba materiálu a energie",      "spotreba_mat_energie","05",{sub:true}],
+    ["A.3.", "  Služby",                            "sluzby",           "06", {sub:true}],
+    ["D.",   "Osobní náklady",                      "osobni_naklady",   "09", {bold:true}],
+    ["D.1.", "  Mzdové náklady",                    "mzdy",             "10", {sub:true}],
+    ["E.",   "Odpisy",                              "odpisy",           "13", {bold:false}],
+    ["III.", "Ostatní provozní výnosy",             "ost_prov_vyn",     "17", {bold:false}],
+    ["F.",   "Ostatní provozní náklady",            "ost_prov_nak",     "21", {bold:false}],
+    ["*",    "PROVOZNÍ VH",                         "provozni_vh",      "27", {bold:true,negOk:true}],
+    ["",     "",                                    "",                 "",   {}],
+    ["VI.",  "Výnosové úroky",                      "vyn_uroky",        "32", {}],
+    ["J.",   "Nákladové úroky",                     "nak_uroky",        "36", {}],
+    ["*",    "FINANČNÍ VH",                         "financni_vh",      "41", {bold:true,negOk:true}],
+    ["**",   "VH PŘED ZDANĚNÍM",                    "vh_pred_zdanenim", "42", {bold:true,negOk:true}],
+    ["L.",   "Daň z příjmů (odhad)",                "dan",              "43", {}],
+    ["***",  "VH ZA ÚČETNÍ OBDOBÍ",                 "vh_za_obdobi",     "48", {bold:true,negOk:true}],
+    ["",     "EBITDA (Provozní VH + Odpisy)",        "ebitda",           "",   {bold:false}],
   ];
-  document.getElementById("pred-vzz-body").innerHTML = vzz_rows.map(([lbl,key])=>{
-    const [pes,baz,opt] = scenarios(key);
-    const bold = ["trzby_celkem","provozni_vh","vh_za_obdobi"].includes(key);
-    return `<tr class="${bold?"bold":""}">
-      <td>${lbl}</td><td>${kc(a[key])}</td>
-      <td style="color:#dc2626">${kc(pes)}</td>
-      <td style="color:#92400e">${kc(baz)}</td>
-      <td style="color:var(--green)">${kc(opt)}</td></tr>`;
-  }).join("");
 
-  // Predikce rozvaha
-  document.getElementById("pred-roz-head").innerHTML =
-    `<tr><th style="width:35%">Položka</th><th>Aktuální stav</th>
-     <th style="color:#dc2626">Pes. ke konci roku</th><th style="color:var(--gold)">Baz. ke konci roku</th>
-     <th style="color:var(--green)">Opt. ke konci roku</th></tr>`;
+  // Rozvaha predikce
+  const rozRow = (lbl, key, {bold=false}={}) => (f, cls) => {
+    const cur = a[key] !== undefined ? a[key] : 0;
+    // Pro rozvahu nepouzivame koeficient - odhadneme ke konci roku
+    let pred;
+    if(key === 'pp') pred = Math.round((cur + ann(a.cf_provozni)*f + ann(a.cf_investicni)*f + ann(a.cf_financni)*f));
+    else if(key === 'vk') pred = Math.round(cur + ann(a.vh_za_obdobi)*f - cur * 0.05 * (1-f));
+    else pred = Math.round(cur * (1 + (koef-1)/koef * (f-1) * 0.1 + (koef-1)/koef * 0.02));
+    const neg = pred < 0;
+    return `<tr class="${bold?'bold':''}">
+      <td>${lbl}</td>
+      <td>${kc(cur)}</td>
+      <td class="${cls}${neg?' neg':''}">${kc(pred)}</td>
+    </tr>`;
+  };
+  const rozRows = [
+    ["Aktiva celkem",          "aktiva_netto", {bold:true}],
+    ["  Stálá aktiva",         "stala_netto",  {}],
+    ["  Oběžná aktiva",        "obezna_netto", {}],
+    ["    Zásoby",             "zasoby",       {}],
+    ["    Pohledávky kr.",     "pohledavky_kr",{}],
+    ["    Peněžní prostředky", "pp",           {}],
+    ["Pasiva celkem",          "pasiva_celkem",{bold:true}],
+    ["  Vlastní kapitál",      "vk",           {}],
+    ["  Cizí zdroje",          "cizi_zdroje",  {}],
+    ["    Závazky kr.",        "zav_kr",       {}],
+    ["    Závazky dl.",        "zav_dl",       {}],
+  ];
+  const rozCols = `<tr><th style="text-align:left">Položka</th><th>Aktuální stav</th><th>Predikce ke konci roku</th></tr>`;
 
-  const predPP = (sc) => (a.pp||0) + (sc||0);
-  const predVH  = (sc) => (a.vh_min_let||0) + (sc||0) + (a.vh_za_obdobi||0);
-  document.getElementById("pred-roz-body").innerHTML = [
-    ["Aktiva celkem",     ()=>kc(a.aktiva_netto), ()=>kc(a.aktiva_netto*0.97), ()=>kc(a.aktiva_netto), ()=>kc(a.aktiva_netto*1.05)],
-    ["Peněžní prostředky",()=>kc(a.pp),          ()=>kc(predPP(cf_pes)),       ()=>kc(predPP(cf_baz)), ()=>kc(predPP(cf_opt))],
-    ["Vlastní kapitál",   ()=>kc(a.vk),           ()=>kc((a.vk||0)+vh_pes),    ()=>kc((a.vk||0)+vh_baz), ()=>kc((a.vk||0)+vh_opt)],
-    ["VH za rok (odhad)", ()=>kc(a.vh_za_obdobi), ()=>kc(vh_pes),              ()=>kc(vh_baz),            ()=>kc(vh_opt)],
-  ].map(([lbl,cur,pes,baz,opt])=>
-    `<tr><td>${lbl}</td><td>${cur()}</td><td style="color:#dc2626">${pes()}</td><td style="color:#92400e">${baz()}</td><td style="color:var(--green)">${opt()}</td></tr>`
-  ).join("");
+  // CF predikce
+  const cfRow = (oz, lbl, key, {bold=false,sub=false}={}) => (f, cls) => {
+    const skut = a[key] !== undefined ? a[key] : 0;
+    const pred = Math.round(ann(skut) * f);
+    const neg = pred < 0;
+    return `<tr class="${bold?'bold':sub?'sub':''}">
+      <td class="oz">${oz}</td>
+      <td>${lbl}</td>
+      <td>${kc(skut)}</td>
+      <td class="${cls}${neg?' neg':''}">${kc(pred)}</td>
+    </tr>`;
+  };
+  const cfRowsSpec = [
+    ["P.",    "PP na začátku roku",           "pp_zacatek",   {bold:false}],
+    ["Z.",    "VH před zdaněním",             "cf_vh_pred_zdanenim",{bold:false,sub:true}],
+    ["A.1.1.","  Odpisy",                     "cf_odpisy",    {sub:true}],
+    ["A.*",   "CF před zmenami PK",           "cf_pred_zmenami_pk",{bold:true}],
+    ["A.2.",  "Změny pracovního kapitálu",    "cf_zmeny_pk_celkem",{sub:true}],
+    ["A.5.",  "Zaplacená daň (–)",            "cf_dan",       {sub:true}],
+    ["A.***", "CF provozní",                  "cf_provozni",  {bold:true}],
+    ["B.***", "CF investiční",                "cf_investicni",{bold:true}],
+    ["C.***", "CF finanční",                  "cf_financni",  {bold:true}],
+    ["F.",    "Čistá změna PP",               "cf_cista_zmena",{bold:true}],
+    ["R.",    "PP ke konci roku (odhad)",     "pp_konec_cf",  {bold:true}],
+  ];
+  const cfCols = `<tr><th class="oz">Ozn.</th><th style="text-align:left">Položka</th><th>Skutečnost ${mesice}M</th><th>Predikce (rok)</th></tr>`;
+
+  // ---- Renderuj vsechny tri scenare ----
+  ["pes","baz","opt"].forEach(scId => {
+    const f = F[scId];
+    const cls = scId+"-val";
+    const sep = `<tr><td colspan="6" style="padding:2px 0;background:#fff"></td></tr>`;
+
+    // VZZ
+    document.getElementById("vzz-head-"+scId).innerHTML = vzzCols;
+    document.getElementById("vzz-body-"+scId).innerHTML = vzzRows.map(([oz,lbl,key,cr,opts]) => {
+      if(!lbl) return sep;
+      return vzzRow(oz, lbl, key, cr, opts)(f, cls);
+    }).join("");
+
+    // Rozvaha
+    document.getElementById("roz-head-"+scId).innerHTML = rozCols;
+    document.getElementById("roz-body-"+scId).innerHTML = rozRows.map(([lbl,key,opts]) =>
+      rozRow(lbl,key,opts)(f,cls)
+    ).join("");
+
+    // CF
+    document.getElementById("cf-head-"+scId).innerHTML = cfCols;
+    document.getElementById("cf-body-"+scId).innerHTML = cfRowsSpec.map(([oz,lbl,key,opts]) =>
+      cfRow(oz,lbl,key,opts)(f,cls)
+    ).join("");
+  });
 
   document.getElementById("pred-metoda").innerHTML =
-    `<strong>Metoda predikce:</strong> Lineární anaulizace z ${mesice} měsíců dat (×${(12/mesice).toFixed(2)}). ` +
-    `Pesimistický scénář = bazový × 0,9; optimistický = bazový × 1,1. ` +
-    (prevYear?`Meziroční srovnání s rokem ${prevYear.rok}.`:"Data za předchozí rok nejsou k dispozici.") +
-    ` Predikce nenahrazuje finanční plán sestavený s účetním.`;
+    `<strong>Metoda predikce:</strong> Lineární anaulizace z ${mesice} měsíců dat (×${koef.toFixed(2)}). ` +
+    `Pesimistický = ×0,9; bazový = ×1,0; optimistický = ×1,1. ` +
+    `Rozvaha ke konci roku = aktuální stav upravený o predikovaný VH a CF. ` +
+    (prevYear ? `Meziroční srovnání s rokem ${prevYear.rok||rok-1}. ` : `Předchozí rok není k dispozici. `) +
+    `Spolehlivost predikce ${Math.round(mesice/12*100)} % (${mesice}/${12} měsíců). ` +
+    `Predikce nenahrazuje finanční plán sestavený s účetním.`;
 });
-</script></body></html>
+</script>
+</body></html>
