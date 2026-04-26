@@ -2,97 +2,193 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Rozvaha | Živé výkaznictví</title>
 <link rel="stylesheet" href="style.css">
+<style>
+  table { font-size: 12px; }
+  th, td { padding: 4px 8px; }
+  td.oz { width:5%; text-align:center; font-weight:600; color:var(--navy); }
+  td.cr { width:4%; text-align:center; color:var(--gray); font-size:11px; }
+  td.tx { }
+  td.num { text-align:right; }
+  tr.section-head td { background:#eef0f8 !important; font-weight:700; color:var(--navy); }
+  tr.zero td.num { color:#bbb; }
+  .tis-note { font-size:11px; color:var(--gray); margin-bottom:8px; }
+</style>
 </head><body>
 <header>
   <div class="header-top">
     <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Rozvaha</div>
-    <div class="header-meta"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span> · IČO: <span id="hdr-ico"></span></div>
+    <div class="header-meta" style="display:flex;align-items:center;gap:10px"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span><span id="mode-badge"></span> · IČO: <span id="hdr-ico"></span></div>
   </div>
   <nav id="nav-links"></nav>
+  <div id="mode-toggle"></div>
 </header>
 <main>
-  <div id="loading">⏳ Načítám…</div><div id="err"></div>
+  <div id="loading">Načítám…</div><div id="err"></div>
   <div id="app" style="display:none">
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
-      <div class="section">
-        <h2>Aktiva</h2>
-        <table><thead id="akt-head"></thead><tbody id="akt-body"></tbody></table>
-      </div>
-      <div class="section">
-        <h2>Pasiva</h2>
-        <table><thead id="pas-head"></thead><tbody id="pas-body"></tbody></table>
-      </div>
+    <div class="section">
+      <h2>Rozvaha — plný rozsah, AKTIVA</h2>
+      <p class="tis-note">Hodnoty v Kč · Netto = Brutto − Korekce</p>
+      <div style="overflow-x:auto"><table><thead id="akt-head"></thead><tbody id="akt-body"></tbody></table></div>
+    </div>
+    <div class="section" style="margin-top:20px">
+      <h2>Rozvaha — plný rozsah, PASIVA</h2>
+      <p class="tis-note">Hodnoty v Kč</p>
+      <div style="overflow-x:auto"><table><thead id="pas-head"></thead><tbody id="pas-body"></tbody></table></div>
     </div>
     <div class="section" id="bilance-row" style="padding:12px 20px;font-size:13px"></div>
   </div>
 </main>
-<footer><span>22HLAV</span> · Živé výkaznictví v2.0</footer>
+<footer><span>22HLAV</span> · Živé výkaznictví v2.0 · Plný rozsah dle vyhlášky č. 500/2002 Sb.</footer>
 <script src="common.js"></script>
 <script>
 loadData(d => {
-  const allP = [...(d.periody||[]), d.aktualni];
-  document.title = (d.nazev||"")+" | Rozvaha";
-  const labels = allP.map(p=>p.label||p.period_label);
-  const showDelta = allP.length >= 2;
-  const last = allP[allP.length-1], prev = allP[allP.length-2];
+  const allP = getModeAllP(d);
+  document.title = (d.nazev||"") + " | Rozvaha";
+  const labels = allP.map(p => p.label || p.period_label);
+  const n = allP.length;
+  const showDelta = n >= 2;
+  const a = getModeData(d);
 
-  const head = `<tr><th>Položka</th>${labels.map(l=>`<th>${l}</th>`).join("")}${showDelta?"<th>Δ %</th>":""}</tr>`;
-  document.getElementById("akt-head").innerHTML = head;
-  document.getElementById("pas-head").innerHTML = head;
+  const v0 = (p, key) => (p[key] !== undefined && p[key] !== null) ? p[key] : 0;
 
-  const R = (label,key,{bold=false,sub=false,sub2=false,sep=false}={}) => {
-    if(sep) return `<tr class="sep"><td colspan="${allP.length+2}"></td></tr>`;
-    const vals = allP.map(p=>kc(p[key]));
-    const cls = bold?"bold":sub2?"sub2":sub?"sub":"";
-    let row = `<tr class="${cls}"><td>${label}</td>${vals.map(v=>`<td>${v}</td>`).join("")}`;
-    if(showDelta){
-      const d2 = delta(last[key],prev[key]);
-      row += d2===null?`<td></td>`:`<td class="${d2>=0?"pos":"neg"}">${d2>=0?"▲":"▼"} ${Math.abs(d2).toFixed(1)}%</td>`;
-    }
+  // Aktiva: sloupce Netto per period + Delta
+  const aktHead = `<tr>
+    <th class="oz" rowspan="2">Ozn.</th>
+    <th style="text-align:left" rowspan="2">AKTIVA</th>
+    <th class="cr" rowspan="2">Č.ř.</th>
+    <th colspan="${n}" style="text-align:center">Netto</th>
+    ${showDelta?'<th rowspan="2">Δ %</th>':''}
+  </tr>
+  <tr>${labels.map(l=>`<th style="font-size:11px">${l}</th>`).join('')}</tr>
+  <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td class="cr">c</td>${labels.map((_,i)=>`<th>${i+1}</th>`).join('')}${showDelta?'<th></th>':''}</tr>`;
+  document.getElementById("akt-head").innerHTML = aktHead;
+
+  const RA = (oz, txt, cr, key, {bold=false,sec=false,sub=false,sub2=false,note=false}={}) => {
+    const vals = allP.map(p => v0(p, key));
+    const last = vals[vals.length-1], prev = vals.length>=2?vals[vals.length-2]:null;
+    const allZero = vals.every(v=>!v||v==0);
+    const cls = sec?'section-head':bold?'bold':sub2?'sub2':sub?'sub':'';
+    let row = `<tr class="${cls}${(!sec&&!bold&&allZero)?' zero':''}">
+      <td class="oz">${oz}</td><td class="tx">${note?`<em style="color:var(--gray)">${txt}</em>`:txt}</td>
+      <td class="cr">${cr}</td>`;
+    vals.forEach(v => row += `<td class="num">${kc(v,'0 Kč')}</td>`);
+    if(showDelta){const d2=delta(last,prev); row+=d2===null?`<td></td>`:`<td class="${d2>=0?'pos':'neg'}">${d2>=0?'▲':'▼'} ${Math.abs(d2).toFixed(1)}%</td>`;}
     return row+`</tr>`;
   };
+  const ASEP = () => `<tr class="sep"><td colspan="${3+n+(showDelta?1:0)}"></td></tr>`;
+  const AHEAD = txt => `<tr class="section-head"><td class="oz"></td><td colspan="${2+n+(showDelta?1:0)}" style="padding:6px 8px">${txt}</td></tr>`;
 
   document.getElementById("akt-body").innerHTML = [
-    R("AKTIVA CELKEM",              "aktiva_netto",  {bold:true}),
-    R("",null,{sep:true}),
-    R("A. Pohledávky za upsaný ZK", "pohledavky_upsany_zk",{sub:true}),
-    R("B. Stálá aktiva",            "stala_netto",   {sub:true,bold:false}),
-    R("  B.I. DNM",                 "dnm_netto",     {sub2:true}),
-    R("  B.II. DHM",                "dhm_netto",     {sub2:true}),
-    R("  B.III. Dlouhodobý FM",     "dfm",           {sub2:true}),
-    R("",null,{sep:true}),
-    R("C. Oběžná aktiva",           "obezna_netto",  {sub:true}),
-    R("  C.I. Zásoby",              "zasoby",        {sub2:true}),
-    R("  C.II. Pohledávky",         "pohledavky_kr", {sub2:true}),
-    R("  C.III. Krátk. FM",         "kfm",           {sub2:true}),
-    R("  C.IV. Pen. prostředky",    "pp",            {sub2:true}),
-    R("",null,{sep:true}),
-    R("D. Časové rozlišení aktiv",  "cr_aktiv",      {sub:true}),
+    RA("",      "AKTIVA CELKEM",                            "01","aktiva_netto",  {bold:true}),
+    RA("A.",    "Pohledávky za upsaný základní kapitál",   "02","pohl_upsany_zk",{note:true}),
+    ASEP(),
+    AHEAD("B. STÁLÁ AKTIVA"),
+    RA("B.",    "Stálá aktiva celkem",                     "03","stala_netto",   {bold:true}),
+    AHEAD("B.I. Dlouhodobý nehmotný majetek"),
+    RA("B.I.",  "DNM celkem",                              "04","dnm_netto"),
+    RA("B.I.1.","  Nehmotné výsl. výzkumu a vývoje",       "05","dnm_vvv",       {sub:true,note:true}),
+    RA("B.I.2.","  Ocenitelná práva",                      "06","dnm_prava",     {sub:true,note:true}),
+    RA("B.I.3.","  Goodwill",                              "07","dnm_goodwill",  {sub:true,note:true}),
+    RA("B.I.4.","  Ostatní DNM",                           "08","dnm_ostatni",   {sub:true,note:true}),
+    RA("B.I.5.","  Poskytnuté zálohy na DNM",              "09","dnm_zalohy",    {sub:true,note:true}),
+    AHEAD("B.II. Dlouhodobý hmotný majetek"),
+    RA("B.II.", "DHM celkem",                              "10","dhm_netto"),
+    RA("B.II.1.","  Pozemky a stavby",                     "11","dhm_pozemky_stavby",{sub:true,note:true}),
+    RA("B.II.2.","  Hmotné movité věci a soubory",         "12","dhm_movite",    {sub:true,note:true}),
+    RA("B.II.3.","  Ocenitelná práva",                     "13","dhm_prava",     {sub:true,note:true}),
+    RA("B.II.4.","  Ostatní DHM",                          "14","dhm_ostatni",   {sub:true,note:true}),
+    RA("B.II.5.","  Poskytnuté zálohy na DHM a nedok. DHM","15","dhm_zalohy",    {sub:true,note:true}),
+    AHEAD("B.III. Dlouhodobý finanční majetek"),
+    RA("B.III.","DFM celkem",                              "17","dfm"),
+    RA("B.III.1.","  Podíly v ovl. nebo říz. osobách",    "18","dfm_podily",    {sub:true,note:true}),
+    RA("B.III.2.","  Zápůjčky a úvěry skupině",           "22","dfm_zapujcky",  {sub:true,note:true}),
+    RA("B.III.3.","  Ostatní DFM",                        "23","dfm_ostatni",   {sub:true,note:true}),
+    ASEP(),
+    AHEAD("C. OBĚŽNÁ AKTIVA"),
+    RA("C.",    "Oběžná aktiva celkem",                    "37","obezna_netto",  {bold:true}),
+    AHEAD("C.I. Zásoby"),
+    RA("C.I.",  "Zásoby celkem",                           "38","zasoby"),
+    RA("C.I.1.","  Materiál",                              "39","zasoby_mat",    {sub:true,note:true}),
+    RA("C.I.2.","  NV a polotovary vlastní výroby",        "40","zasoby_nv",     {sub:true,note:true}),
+    RA("C.I.3.","  Výrobky a zboží",                       "41","zasoby_zbozi",  {sub:true,note:true}),
+    RA("C.I.5.","  Poskytnuté zálohy na zásoby",           "43","zasoby_zalohy", {sub:true,note:true}),
+    AHEAD("C.II. Pohledávky"),
+    RA("C.II.", "Pohledávky celkem",                       "44","pohledavky_kr"),
+    RA("C.II.2.","  Krátkodobé pohledávky",                "46","pohledavky_kr", {sub:true}),
+    AHEAD("C.III. Krátkodobý finanční majetek"),
+    RA("C.III.","KFM celkem",                              "47","kfm",           {note:true}),
+    AHEAD("C.IV. Peněžní prostředky"),
+    RA("C.IV.", "Peněžní prostředky celkem",               "49","pp"),
+    RA("C.IV.1.","  Peněžní prostředky v pokladně",        "50","pp_pokladna",   {sub:true,note:true}),
+    RA("C.IV.2.","  Peněžní prostředky na účtech",         "51","pp_ucty",       {sub:true,note:true}),
+    ASEP(),
+    RA("D.",    "Časové rozlišení aktiv",                  "52","cr_aktiv"),
   ].join("");
+
+  // PASIVA
+  const pasHead = `<tr>
+    <th class="oz" rowspan="2">Ozn.</th>
+    <th style="text-align:left" rowspan="2">PASIVA</th>
+    <th class="cr" rowspan="2">Č.ř.</th>
+    <th colspan="${n}" style="text-align:center">Skutečnost</th>
+    ${showDelta?'<th rowspan="2">Δ %</th>':''}
+  </tr>
+  <tr>${labels.map(l=>`<th style="font-size:11px">${l}</th>`).join('')}</tr>
+  <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td class="cr">c</td>${labels.map((_,i)=>`<th>${i+1}</th>`).join('')}${showDelta?'<th></th>':''}</tr>`;
+  document.getElementById("pas-head").innerHTML = pasHead;
 
   document.getElementById("pas-body").innerHTML = [
-    R("PASIVA CELKEM",              "pasiva_celkem", {bold:true}),
-    R("",null,{sep:true}),
-    R("A. Vlastní kapitál",         "vk",            {sub:true}),
-    R("  A.I. Základní kapitál",    "zk",            {sub2:true}),
-    R("  A.III. Fondy ze zisku",    "fondy_ze_zisku",{sub2:true}),
-    R("  A.IV. VH minulých let",    "vh_min_let",    {sub2:true}),
-    R("  A.V. VH běžného období",   "vh_za_obdobi",  {sub2:true}),
-    R("",null,{sep:true}),
-    R("B.+C. Cizí zdroje",          "cizi_zdroje",   {sub:true}),
-    R("  B. Rezervy",               "rezervy",       {sub2:true}),
-    R("  C.I. Závazky dlouhodobé",  "zav_dl",        {sub2:true}),
-    R("  C.II. Závazky krátkodobé", "zav_kr",        {sub2:true}),
-    R("",null,{sep:true}),
-    R("D. Časové rozlišení pasiv",  "cr_pasiv",      {sub:true}),
+    RA("",      "PASIVA CELKEM",                           "01","pasiva_celkem", {bold:true}),
+    ASEP(),
+    AHEAD("A. VLASTNÍ KAPITÁL"),
+    RA("A.",    "Vlastní kapitál celkem",                  "02","vk",            {bold:true}),
+    RA("A.I.",  "Základní kapitál",                        "03","zk",            {sub:true}),
+    RA("A.I.1.","  Základní kapitál",                      "04","zk",            {sub:true}),
+    RA("A.II.", "Ážio a kapitálové fondy",                 "05","kapitalove_fondy",{sub:true,note:true}),
+    RA("A.III.","Fondy ze zisku",                          "09","fondy_ze_zisku",{sub:true,note:true}),
+    RA("A.III.1.","  Ostatní rezervní fondy",              "10","rezervni_fond", {sub:true,note:true}),
+    RA("A.IV.", "VH minulých let",                         "11","vh_min_let",    {sub:true}),
+    RA("A.IV.1.","  NZ minulých let",                      "12","vh_min_let",    {sub:true}),
+    RA("A.IV.2.","  Jiný VH minulých let",                 "13","jiný_vh_min",   {sub:true,note:true}),
+    RA("A.V.",  "VH běžného účetního období",              "15","vh_za_obdobi",  {sub:true}),
+    RA("A.VI.", "Rozhodnutí o zálohách – podíl na VH",    "16","zalohy_podil",  {sub:true,note:true}),
+    ASEP(),
+    AHEAD("B. REZERVY"),
+    RA("B.",    "Rezervy celkem",                          "17","rezervy"),
+    RA("B.1.",  "  Rezerva na opravy DHM",                 "18","rez_opravy",    {sub:true,note:true}),
+    RA("B.2.",  "  Daňové rezervy",                        "19","rez_danove",    {sub:true,note:true}),
+    RA("B.4.",  "  Ostatní rezervy",                       "20","rez_ostatni",   {sub:true,note:true}),
+    ASEP(),
+    AHEAD("C. ZÁVAZKY"),
+    RA("C.",    "Závazky celkem",                          "21","cizi_zdroje",   {bold:true}),
+    AHEAD("C.I. Dlouhodobé závazky"),
+    RA("C.I.",  "Dlouhodobé závazky celkem",               "22","zav_dl"),
+    RA("C.I.1.","  Závazky z obchodních vztahů",           "23","zav_dl_obch",   {sub:true,note:true}),
+    RA("C.I.4.","  Závazky k úvěrovým institucím",         "26","zav_uvery_dl",  {sub:true,note:true}),
+    RA("C.I.6.","  Závazky – podstatný vliv",              "28","zav_poduv_dl",  {sub:true,note:true}),
+    AHEAD("C.II. Krátkodobé závazky"),
+    RA("C.II.", "Krátkodobé závazky celkem",               "33","zav_kr",        {bold:true}),
+    RA("C.II.1.","  Závazky z obchodních vztahů",          "34","zav_dodavatele",{sub:true}),
+    RA("C.II.4.","  Závazky k úvěrovým institucím",        "37","zav_uvery_kr",  {sub:true,note:true}),
+    RA("C.II.7.","  Závazky – ostatní",                    "40","zav_ostatni",   {sub:true,note:true}),
+    RA("C.II.8.","    Závazky ke společníkům",             "41","zav_spolecnici",{sub:true,note:true}),
+    RA("C.II.9.","    Závazky k zaměstnancům",             "42","zav_mzdy",      {sub:true}),
+    RA("C.II.10.","   Závazky ze SZ a ZP",                "43","zav_sp_zp",     {sub:true,note:true}),
+    RA("C.II.11.","   Stát – daňové závazky a dotace",    "44","zav_stat_dan",  {sub:true}),
+    RA("C.II.12.","   Dohadné účty pasivní",               "45","zav_dohad_pas", {sub:true,note:true}),
+    RA("C.II.13.","   Jiné závazky",                       "46","zav_jine",      {sub:true,note:true}),
+    ASEP(),
+    RA("D.",    "Časové rozlišení pasiv",                  "66","cr_pasiv"),
   ].join("");
 
-  const bil = last.aktiva_netto === last.pasiva_celkem;
+  // Bilanční rovnost
+  const bil = Math.abs((a.aktiva_netto||0) - (a.pasiva_celkem||0)) < 100;
   document.getElementById("bilance-row").innerHTML =
-    `Bilanční rovnost: <strong style="color:${bil?"var(--green)":"var(--red)"}">
-    ${bil?"✓ OK":"✗ NEROVNOST "+kc(last.aktiva_netto - last.pasiva_celkem)}</strong>
-    &nbsp;·&nbsp; Aktiva: <strong>${kc(last.aktiva_netto)}</strong>
-    &nbsp;=&nbsp; Pasiva: <strong>${kc(last.pasiva_celkem)}</strong>`;
+    `Bilanční rovnost: <strong style="color:${bil?'var(--green)':'var(--red)'}">
+    ${bil ? '✓ OK' : '✗ NEROVNOST ' + kc((a.aktiva_netto||0)-(a.pasiva_celkem||0))}</strong>
+    &nbsp;·&nbsp; Aktiva: <strong>${kc(a.aktiva_netto)}</strong>
+    &nbsp;=&nbsp; Pasiva: <strong>${kc(a.pasiva_celkem)}</strong>`;
 });
-</script></body></html>
+</script>
+</body></html>
