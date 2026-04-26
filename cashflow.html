@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="cs"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cash Flow | Živé výkaznictví</title>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<header>
+  <div class="header-top">
+    <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Přehled o peněžních tocích</div>
+    <div class="header-meta"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span> · IČO: <span id="hdr-ico"></span></div>
+  </div>
+  <nav id="nav-links"></nav>
+</header>
+<main>
+  <div id="loading">⏳ Načítám…</div><div id="err"></div>
+  <div id="app" style="display:none">
+    <div class="disclaimer" id="disclaimer" style="display:none"></div>
+    <div class="section">
+      <h2>Cash Flow — nepřímá metoda (plný rozsah)</h2>
+      <table><thead id="cf-head"></thead><tbody id="cf-body"></tbody></table>
+    </div>
+    <div class="section" id="cf-nota" style="font-size:12px;color:var(--gray);padding:12px 20px"></div>
+  </div>
+</main>
+<footer><span>22HLAV</span> · Živé výkaznictví v2.0</footer>
+<script src="common.js"></script>
+<script>
+loadData(d => {
+  const allP = [...(d.periody||[]), d.aktualni];
+  document.title = (d.nazev||"")+" | Cash Flow";
+  const labels = allP.map(p=>p.label||p.period_label);
+  document.getElementById("cf-head").innerHTML =
+    `<tr><th style="width:55%">Položka</th>${labels.map(l=>`<th>${l}</th>`).join("")}</tr>`;
+
+  // CF data pochazi z aktualni periody (plna nepřímá metoda)
+  // Pro historicke periody zobrazime co mame
+  const R = (label, keyOrVals, {bold=false,sub=false,sub2=false,sep=false,negRed=false,note=false}={}) => {
+    if(sep) return `<tr class="sep"><td colspan="${allP.length+1}"></td></tr>`;
+    const cls = bold?"bold":sub2?"sub2":sub?"sub":"";
+    let vals;
+    if(Array.isArray(keyOrVals)) {
+      vals = keyOrVals;
+    } else {
+      vals = allP.map(p => {
+        // Zkus v cashflow, pak v p primo
+        const cf = p.cf || {};
+        const v = p[keyOrVals] ?? cf[keyOrVals];
+        return kc(v);
+      });
+    }
+    let row = `<tr class="${cls}"><td>${note?`<em style="color:var(--gray)">${label}</em>`:label}</td>`;
+    vals.forEach(v => {
+      const n = parseFloat(String(v).replace(/\s/g,"").replace("Kč",""));
+      const neg = negRed && !isNaN(n) && n < 0;
+      row += `<td class="${neg?"neg":""}">${v}</td>`;
+    });
+    return row + `</tr>`;
+  };
+
+  // Pro aktualni periodu mame plna CF data
+  const a = d.aktualni;
+  const hasMin = a.cf_minule_dostupne;
+
+  document.getElementById("cf-body").innerHTML = [
+    // ---- PROVOZNI ----
+    `<tr class="bold"><td colspan="${allP.length+1}" style="background:#eef0f8;color:var(--navy);padding:8px 10px">A. CF Z PROVOZNÍ ČINNOSTI</td></tr>`,
+    R("P. Stav PP na začátku období",           "pp_zacatek",         {bold:false}),
+    R("",null,{sep:true}),
+    R("1. VH před zdaněním a mimořádnými pol.","cf_vh_pred_zdanenim",  {sub:true}),
+    R("  Úpravy o nepeněžní operace:",          null, {sep:true}),
+    R("  a) Odpisy stálých aktiv (+)",          "cf_odpisy",           {sub2:true}),
+    R("  b) Opravné položky a rezervy",         allP.map(()=>"0 Kč"),  {sub2:true,note:true}),
+    R("  c) Zisk/ztráta z prodeje SA",          allP.map(()=>"0 Kč"),  {sub2:true,note:true}),
+    R("  d) Výnosy z dividend (–)",             allP.map(()=>"0 Kč"),  {sub2:true,note:true}),
+    R("  e) Nákladové úroky (+)",               "cf_nak_uroky",        {sub2:true}),
+    R("  f) Výnosové úroky (–)",                "cf_vyn_uroky",        {sub2:true}),
+    R("2. CF z prov. činn. před změnami PK",    "cf_pred_zmenami_pk",  {bold:true}),
+    R("",null,{sep:true}),
+    R("  Změny stavu pracovního kapitálu:"+(hasMin?"":" ⚠ (chybí min. období)"), null, {sep:true}),
+    R("  A. Změna stavu pohledávek",            "cf_zmena_pohledavky", {sub2:true,negRed:true}),
+    R("  B. Změna stavu závazků",               "cf_zmena_zavazky",    {sub2:true}),
+    R("  C. Změna stavu zásob",                 "cf_zmena_zasoby",     {sub2:true,negRed:true}),
+    R("  D. Změna stavu čas. rozlišení",        allP.map(()=>"0 Kč"),  {sub2:true,note:true}),
+    R("3. CF z prov. činn. před zdaněním",      "cf_pred_zdanenim",    {bold:true}),
+    R("",null,{sep:true}),
+    R("4. Zaplacená daň (–)",                   "cf_dan",              {sub:true,negRed:true}),
+    R("5. Přijaté úroky (+)",                   "cf_vyn_uroky_prijate",{sub:true}),
+    R("6. Zaplacené úroky (–)",                 "cf_nak_uroky_zaplacene",{sub:true,negRed:true}),
+    R("7. Přijaté dividendy",                   allP.map(()=>"0 Kč"),  {sub:true,note:true}),
+    R("A. CF Z PROVOZNÍ ČINNOSTI CELKEM",       "cf_provozni",         {bold:true,negRed:true}),
+    R("",null,{sep:true}),
+    // ---- INVESTICNI ----
+    `<tr class="bold"><td colspan="${allP.length+1}" style="background:#eef0f8;color:var(--navy);padding:8px 10px">B. CF Z INVESTIČNÍ ČINNOSTI</td></tr>`,
+    R("1. Nabytí DHM a DNM (–)",                "cf_nabyte_dhm_dnm",   {sub:true,note:true}),
+    R("2. Příjmy z prodeje SA (+)",             "cf_prodej_dm",        {sub:true,note:true}),
+    R("3. Nabytí finančních investic (–)",      "cf_nabyte_fin_inv",   {sub:true,note:true}),
+    R("4. Příjmy z prodeje fin. inv. (+)",      allP.map(()=>"0 Kč"),  {sub:true,note:true}),
+    R("B. CF Z INVESTIČNÍ ČINNOSTI CELKEM",     "cf_investicni",       {bold:true,negRed:true}),
+    R("",null,{sep:true}),
+    // ---- FINANCNI ----
+    `<tr class="bold"><td colspan="${allP.length+1}" style="background:#eef0f8;color:var(--navy);padding:8px 10px">C. CF Z FINANČNÍ ČINNOSTI</td></tr>`,
+    R("1. Přijaté úvěry a emise dluhopisů",     "cf_prijate_uvery",    {sub:true,note:true}),
+    R("2. Splátky úvěrů a dluhopisů (–)",       "cf_splatky_uveru",    {sub:true,note:true}),
+    R("3. Vyplacené dividendy (–)",             "cf_dividendy",        {sub:true,note:true}),
+    R("C. CF Z FINANČNÍ ČINNOSTI CELKEM",       "cf_financni",         {bold:true,negRed:true}),
+    R("",null,{sep:true}),
+    // ---- CELKEM ----
+    R("D. ČISTÁ ZMĚNA PP (A+B+C)",              "cf_cista_zmena",      {bold:true,negRed:true}),
+    R("E. PP NA ZAČÁTKU OBDOBÍ",                "pp_zacatek",          {bold:true}),
+    R("F. PP NA KONCI OBDOBÍ (CF)",             "pp_konec_cf",         {bold:true}),
+    R("  Kontrola: PP z rozvahy",               "pp",                  {sub:true}),
+  ].join("");
+
+  document.getElementById("cf-nota").innerHTML =
+    `<strong>Poznámky:</strong> Položky označené kurzívou = 0 (nelze zjistit z předvahy samostatně). ` +
+    `Investiční a finanční CF doplňte ručně dle pohybů na majetkových účtech. ` +
+    (hasMin ? "Změny PK vypočteny z rozdílu aktuálního a minulého období." :
+              "⚠ Změny pracovního kapitálu nejsou k dispozici — chybí data minulého období.");
+});
+</script></body></html>
