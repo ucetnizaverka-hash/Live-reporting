@@ -7,12 +7,13 @@
 <header>
   <div class="header-top">
     <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Živé výkaznictví</div>
-    <div class="header-meta"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span> · IČO: <span id="hdr-ico"></span></div>
+    <div class="header-meta" style="display:flex;align-items:center;gap:10px"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span><span id="mode-badge"></span> · IČO: <span id="hdr-ico"></span></div>
   </div>
   <nav id="nav-links"></nav>
+  <div id="mode-toggle"></div>
 </header>
 <main>
-  <div id="loading">⏳ Načítám…</div>
+  <div id="loading">Načítám…</div>
   <div id="err"></div>
   <div id="app" style="display:none">
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
@@ -34,7 +35,7 @@
 document.getElementById("pdf-btn").href = PDF_URL;
 
 loadData(d => {
-  const a = d.aktualni, s = d.sektor;
+  const a = getModeData(d), s = d.sektor;
   const periody = d.periody || [];
   document.title = (d.nazev||"")+" | Dashboard";
   document.getElementById("updated").textContent = "Aktualizováno: "+(a.period_label||"")+" · "+(d.updated||"").slice(0,10);
@@ -60,7 +61,7 @@ loadData(d => {
     </div>`).join("");
 
   // Charts – vsechny dostupne periody + aktualni
-  const allP = [...periody, a];
+  const allP = getModeAllP(d);
   const labels = allP.map(p=>p.label||p.period_label);
   const trzby  = allP.map(p=>p.trzby_celkem||0);
   const vh     = allP.map(p=>p.vh_za_obdobi||0);
