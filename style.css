@@ -105,3 +105,18 @@ footer span { color: var(--gold); font-weight: 700; }
   nav a { font-size: 12px; padding: 7px 10px; }
   .header-top { flex-direction: column; gap: 6px; }
 }
+
+/* ---- Mode toggle ---- */
+#mode-toggle {
+  display:none; align-items:center; gap:4px;
+  padding:6px 20px; background:#f4f6fb; border-top:1px solid #dce3ef;
+}
+#mode-toggle button {
+  padding:4px 14px; border:1px solid #c8d0e0; background:#fff;
+  border-radius:4px; font-size:12px; font-weight:600; cursor:pointer; color:var(--gray);
+  transition:background .15s, color .15s;
+}
+#mode-toggle button.mt-active {
+  background:var(--navy); color:#fff; border-color:var(--navy);
+}
+#mode-badge { display:inline-block; margin-left:auto; }
