@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="cs"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ukazatele | Živé výkaznictví</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head><body>
+<header>
+  <div class="header-top">
+    <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Finanční ukazatele</div>
+    <div class="header-meta"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span> · IČO: <span id="hdr-ico"></span></div>
+  </div>
+  <nav id="nav-links"></nav>
+</header>
+<main>
+  <div id="loading">⏳ Načítám…</div><div id="err"></div>
+  <div id="app" style="display:none">
+    <div class="disclaimer" id="disclaimer" style="display:none"></div>
+
+    <div class="section">
+      <h2>Rentabilita</h2>
+      <table><thead id="rent-head"></thead><tbody id="rent-body"></tbody></table>
+    </div>
+    <div class="section">
+      <h2>Likvidita &amp; Pracovní kapitál</h2>
+      <table><thead id="lik-head"></thead><tbody id="lik-body"></tbody></table>
+    </div>
+    <div class="section">
+      <h2>Zadluženost &amp; Kapitálová struktura</h2>
+      <table><thead id="zad-head"></thead><tbody id="zad-body"></tbody></table>
+    </div>
+    <div class="section">
+      <h2>Aktivita (obraty a doby obratu)</h2>
+      <table><thead id="akt-head"></thead><tbody id="akt-body"></tbody></table>
+    </div>
+    <div class="section">
+      <h2>Produktivita</h2>
+      <table><thead id="prod-head"></thead><tbody id="prod-body"></tbody></table>
+    </div>
+    <div class="section">
+      <h2>Altman Z-skóre</h2>
+      <table><thead id="altman-head"></thead><tbody id="altman-body"></tbody></table>
+    </div>
+    <div class="charts-2" style="margin-top:20px">
+      <div class="chart-box"><h3>Rentabilita (%) — vývoj vs sektor</h3><canvas id="ch-rent"></canvas></div>
+      <div class="chart-box"><h3>Likvidita — vývoj vs sektor</h3><canvas id="ch-lik"></canvas></div>
+    </div>
+  </div>
+</main>
+<footer><span>22HLAV</span> · Živé výkaznictví v2.0 · Benchmark: MPO ČR, CZ-NACE 62, 2023</footer>
+<script src="common.js"></script>
+<script>
+loadData(d => {
+  const allP = [...(d.periody||[]), d.aktualni];
+  const s = d.sektor;
+  document.title = (d.nazev||"")+" | Ukazatele";
+  const labels = allP.map(p=>p.label||p.period_label);
+  const a = d.aktualni;
+
+  const headHtml = (withBench=true) =>
+    `<tr><th style="width:35%">Ukazatel</th>${labels.map(l=>`<th>${l}</th>`).join("")}
+    ${withBench?`<th style="color:var(--gold)">Sektor ${s.rok}</th><th>Hodnocení</th>`:""}</tr>`;
+
+  const badge = (val, bench, higherBetter=true) => {
+    if(val===null||val===undefined||bench===null) return "";
+    const v=parseFloat(val), b=parseFloat(bench);
+    if(isNaN(v)||isNaN(b)) return "";
+    const ratio = higherBetter ? v/b : b/v;
+    if(ratio>=0.85) return `<span class="badge green">✓ OK</span>`;
+    if(ratio>=0.65) return `<span class="badge yellow">△ Pozor</span>`;
+    return `<span class="badge red">✗ Pod bench.</span>`;
+  };
+
+  const R = (label, key, bench, fmtFn, higherBetter=true, note="") => {
+    const vals = allP.map(p=>fmtFn(p[key]));
+    const cur  = a[key];
+    let row = `<tr><td>${label}${note?`<br><small style="color:var(--gray)">${note}</small>`:""}</td>`;
+    vals.forEach((v,i)=>{
+      const bcls = i===allP.length-1 ? benchColor(a[key],bench,higherBetter) : "";
+      row += `<td class="${bcls}">${v}</td>`;
+    });
+    if(bench!==null) {
+      row += `<td class="gray">${fmtFn(bench)}</td>`;
+      row += `<td>${badge(cur,bench,higherBetter)}</td>`;
+    } else { row += `<td></td><td></td>`; }
+    return row + `</tr>`;
+  };
+
+  // --- RENTABILITA ---
+  document.getElementById("rent-head").innerHTML = headHtml();
+  document.getElementById("rent-body").innerHTML = [
+    R("ROA — Rentabilita aktiv","roa",s.roa,pct,true,"VH po zdanění / Aktiva celkem × 100"),
+    R("ROE — Rentabilita VK","roe",s.roe,pct,true,"VH po zdanění / Vlastní kapitál × 100"),
+    R("ROS — Rentabilita tržeb","ros",s.ros,pct,true,"VH po zdanění / Tržby × 100"),
+    R("EBITDA marže","ebitda_marze",s.ebitda_marze,pct,true,"(Provozní VH + Odpisy) / Tržby × 100"),
+    R("EBITDA (Kč)","ebitda",null,kc,true),
+  ].join("");
+
+  // --- LIKVIDITA ---
+  document.getElementById("lik-head").innerHTML = headHtml();
+  document.getElementById("lik-body").innerHTML = [
+    R("L3 — Běžná likvidita","bezna_likvidita",s.bezna_likvidita,num,true,"Oběžná aktiva / Krátk. závazky (opt. 1,5–2,5)"),
+    R("L1 — Okamžitá likvidita","okamzita_likvidita",s.okamzita_likvidita,num,true,"Pen. prostředky / Krátk. závazky (opt. 0,2–0,5)"),
+    R("ČPK — Čistý pracovní kapitál (Kč)","cpk",null,kc,true,"Oběžná aktiva − Krátk. závazky"),
+  ].join("");
+
+  // --- ZADLUZENOST ---
+  document.getElementById("zad-head").innerHTML = headHtml();
+  document.getElementById("zad-body").innerHTML = [
+    R("Celková zadluženost","celkova_zadluzenost",s.celkova_zadluzenost,pct,false,"Cizí zdroje / Aktiva × 100 (nižší = lepší)"),
+    R("Koeficient samofinancování","koef_samofinancovani",s.koef_samofinancovani,pct,true,"Vlastní kapitál / Aktiva × 100"),
+    R("Finanční páka","fin_paka",s.fin_paka,(v)=>num(v)+"×",false,"Aktiva / Vlastní kapitál"),
+    R("Úrokové krytí","urokove_kryti",null,(v)=>num(v)+"×",true,"EBIT / Nákladové úroky"),
+  ].join("");
+
+  // --- AKTIVITA ---
+  document.getElementById("akt-head").innerHTML = headHtml();
+  document.getElementById("akt-body").innerHTML = [
+    R("Obratovost aktiv","obratovost_aktiv",s.obratovost_aktiv,(v)=>num(v)+"×",true,"Tržby / Aktiva"),
+    R("Doba obratu pohledávek","doba_obratu_pohl",s.doba_obratu_pohl,days,false,"Pohledávky / (Tržby/360) — nižší = lepší"),
+    R("Doba obratu závazků","doba_obratu_zav",s.doba_obratu_zav,days,true,"Závazky / (Tržby/360)"),
+  ].join("");
+
+  // --- PRODUKTIVITA ---
+  document.getElementById("prod-head").innerHTML = headHtml(false);
+  document.getElementById("prod-body").innerHTML = [
+    `<tr><td>Tržby na zaměstnance</td>${allP.map(p=>`<td>${kc(p.produktivita_trzby)}</td>`).join("")}</tr>`,
+    `<tr><td>Počet zaměstnanců</td>${allP.map(p=>`<td>${p.pocet_zamestnancu??"-"}</td>`).join("")}</tr>`,
+    `<tr><td>Tržby celkem</td>${allP.map(p=>`<td>${kc(p.trzby_celkem)}</td>`).join("")}</tr>`,
+  ].join("");
+
+  // --- ALTMAN ---
+  document.getElementById("altman-head").innerHTML =
+    `<tr><th>Složka</th><th>Váha</th>${labels.map(l=>`<th>${l}</th>`).join("")}<th>Interpretace</th></tr>`;
+  const xDef = [
+    ["X1","1.2","ČPK / Aktiva","Podíl čistého prac. kapitálu"],
+    ["X2","1.4","NZ min. let / Aktiva","Kumulovaný nerozdělený zisk"],
+    ["X3","3.3","EBIT / Aktiva","Výnosnost aktiv před úroky a daní"],
+    ["X4","0.6","Tržní hodnota VK / CZ","Poměr tržní hodnoty k cizím zdrojům"],
+    ["X5","1.0","Tržby / Aktiva","Produktivita aktiv"],
+  ];
+  const altman_rows = xDef.map(([xk,w,form,desc])=>{
+    const vals = allP.map(p=>{
+      const ax = p.altman_x||{};
+      return num(ax[xk]);
+    });
+    return `<tr><td><strong>${xk}</strong> (×${w})<br><small style="color:var(--gray)">${form}</small></td><td>${w}</td>${vals.map(v=>`<td>${v}</td>`).join("")}<td class="gray">${desc}</td></tr>`;
+  });
+  const zVals = allP.map(p=>{
+    const pasmo = {zelene:"green",sede:"yellow",cervene:"red"}[p.altman_pasmo]||"yellow";
+    return `<td><strong>${p.altman_z??"-"}</strong> ${altmanBadge(p.altman_pasmo)}</td>`;
+  });
+  document.getElementById("altman-body").innerHTML = [
+    ...altman_rows,
+    `<tr class="bold"><td>Z-skóre celkem</td><td></td>${zVals.join("")}<td class="gray">>2,9 = zdravá | 1,2–2,9 = šedá | &lt;1,2 = riziko</td></tr>`,
+  ].join("");
+
+  // --- CHARTS ---
+  const rentLabels = [...labels, `Sektor ${s.rok}`];
+  new Chart(document.getElementById("ch-rent"),{type:"bar",data:{labels:rentLabels,datasets:[
+    {label:"ROA %", data:[...allP.map(p=>p.roa||0), s.roa], backgroundColor:["rgba(27,36,105,.7)","rgba(27,36,105,.7)","rgba(212,149,42,.9)","rgba(200,200,200,.7)"].slice(0,allP.length+1), borderRadius:4},
+    {label:"ROE %", data:[...allP.map(p=>p.roe||0), s.roe], backgroundColor:["rgba(22,163,74,.6)","rgba(22,163,74,.6)","rgba(22,163,74,.8)","rgba(200,200,200,.5)"].slice(0,allP.length+1), borderRadius:4},
+    {label:"ROS %", data:[...allP.map(p=>p.ros||0), s.ros], backgroundColor:["rgba(212,149,42,.5)","rgba(212,149,42,.5)","rgba(212,149,42,.7)","rgba(200,200,200,.4)"].slice(0,allP.length+1), borderRadius:4},
+  ]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:"bottom",labels:{font:{size:11}}}},scales:{y:{ticks:{callback:v=>v+" %"}}}}});
+
+  new Chart(document.getElementById("ch-lik"),{type:"bar",data:{labels:rentLabels,datasets:[
+    {label:"Běžná likv. (L3)", data:[...allP.map(p=>p.bezna_likvidita||0), s.bezna_likvidita], backgroundColor:["rgba(27,36,105,.7)","rgba(27,36,105,.7)","rgba(27,36,105,.9)","rgba(200,200,200,.7)"].slice(0,allP.length+1), borderRadius:4},
+    {label:"Okamžitá (L1)",    data:[...allP.map(p=>p.okamzita_likvidita||0), s.okamzita_likvidita], backgroundColor:["rgba(212,149,42,.6)","rgba(212,149,42,.6)","rgba(212,149,42,.8)","rgba(200,200,200,.5)"].slice(0,allP.length+1), borderRadius:4},
+  ]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:"bottom",labels:{font:{size:11}}}}}});
+});
+</script></body></html>
