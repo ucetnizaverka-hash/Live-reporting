@@ -27,41 +27,116 @@ const deltaHtml = (a,b,invert=false) => {
   return `<span class="${cls}">${sign} ${Math.abs(d).toFixed(1)}%</span>`;
 };
 
+// ============================================================
+// REZIM: "live" (živé výkaznictví) nebo "rocni" (roční výkazy)
+// ============================================================
+const getMode = () => location.hash.includes("rocni") ? "rocni" : "live";
+const setMode = (m) => {
+  location.hash = (m === "rocni") ? "rocni" : "live";
+  // Znovu vykresli bez noveho fetche (re-render)
+  if(window._renderFn && window._lastData) {
+    window._renderFn(window._lastData);
+    _updateModeToggle(window._lastData);
+  }
+};
+
+// Vrati data aktualni periody podle rezimu
+const getModeData = (d) => {
+  const mode = getMode();
+  if(mode === "rocni" && d.rocni && Object.keys(d.rocni).length > 0) return d.rocni;
+  return d.aktualni;
+};
+
+// Vrati vsechny periody pro zobrazeni (historicke + aktualni v danem rezimu)
+const getModeAllP = (d) => {
+  const cur = getModeData(d);
+  return [...(d.periody||[]), cur].filter(p => p && Object.keys(p).length > 0);
+};
+
+// Zjisti jestli existuji rocni data
+const hasRocni = (d) => d && d.rocni && Object.keys(d.rocni).length > 0;
+
 // --- Nav html ---
 const pages = [
-  {href:"index.html",    label:"📊 Dashboard"},
-  {href:"vzz.html",      label:"📋 VZZ"},
-  {href:"rozvaha.html",  label:"🏦 Rozvaha"},
-  {href:"cashflow.html", label:"💧 Cash Flow"},
-  {href:"ukazatele.html",label:"📐 Ukazatele"},
-  {href:"predikce.html", label:"🔮 Predikce"},
+  {href:"index.html",    label:"Dashboard"},
+  {href:"vzz.html",      label:"VZZ"},
+  {href:"rozvaha.html",  label:"Rozvaha"},
+  {href:"cashflow.html", label:"Cash Flow"},
+  {href:"ukazatele.html",label:"Ukazatele"},
+  {href:"predikce.html", label:"Predikce"},
 ];
+
+function _updateModeToggle(d) {
+  const el = document.getElementById("mode-toggle");
+  if(!el) return;
+  if(!hasRocni(d)) { el.style.display="none"; return; }
+  const mode = getMode();
+  el.style.display = "flex";
+  el.innerHTML = `
+    <span style="font-size:11px;color:var(--gray);margin-right:6px">Zobrazení:</span>
+    <button class="${mode==='live'?'mt-active':''}"   onclick="setMode('live')">Živé výkaznictví</button>
+    <button class="${mode==='rocni'?'mt-active':''}"  onclick="setMode('rocni')">Roční výkazy</button>`;
+}
 
 function renderNav(d) {
   const cur = location.pathname.split("/").pop() || "index.html";
-  const meta = d ? d.aktualni : null;
+  const meta = d ? getModeData(d) : null;
   document.getElementById("hdr-nazev").textContent = d ? (d.nazev || d.klient_id) : "…";
-  document.getElementById("hdr-period").textContent = meta ? meta.period_label : "";
+  document.getElementById("hdr-period").textContent = meta ? (" · " + (meta.period_label||"")) : "";
   document.getElementById("hdr-ico").textContent = d ? (d.ico||"") : "";
   document.getElementById("nav-links").innerHTML = pages
-    .map(p=>`<a href="${p.href}" class="${p.href===cur?'active':''}">${p.label}</a>`)
+    .map(p=>`<a href="${p.href}${location.hash}" class="${p.href===cur?'active':''}">${p.label}</a>`)
     .join("");
+  _updateModeToggle(d);
 }
 
 // --- Nacti data + vykresli ---
 async function loadData(renderFn) {
+  window._renderFn = renderFn;
   try {
     const r = await fetch(BASE_DATA + "?t=" + Date.now());
     if(!r.ok) throw new Error("HTTP "+r.status);
     const d = await r.json();
+    window._lastData = d;
     renderNav(d);
     document.getElementById("loading").style.display="none";
     document.getElementById("app").style.display="block";
-    if(d.aktualni && d.aktualni.upozorneni) {
+
+    // Disclaimer ze živých dat
+    const cur = getModeData(d);
+    if(cur && cur.upozorneni) {
       const disc = document.getElementById("disclaimer");
-      if(disc) { disc.textContent = d.aktualni.upozorneni; disc.style.display="block"; }
+      if(disc) { disc.textContent = cur.upozorneni; disc.style.display="block"; }
     }
+
+    // Badge rezimu
+    const modeBadge = document.getElementById("mode-badge");
+    if(modeBadge) {
+      const mode = getMode();
+      const rocniOk = hasRocni(d);
+      modeBadge.innerHTML = mode==="rocni" && rocniOk
+        ? `<span class="badge yellow">Roční výkazy · ${d.rocni.period_label||""}</span>`
+        : `<span class="badge green">Živé výkaznictví · ${(d.aktualni||{}).period_label||""}</span>`;
+    }
+
     renderFn(d);
+
+    // Hashchange – prepnuti rezimu bez noveho fetche
+    window.onhashchange = () => {
+      renderNav(d);
+      const disc = document.getElementById("disclaimer");
+      const cur2 = getModeData(d);
+      if(disc && cur2) { disc.textContent = cur2.upozorneni||""; disc.style.display = cur2.upozorneni?"block":"none"; }
+      const mb = document.getElementById("mode-badge");
+      const mode2 = getMode();
+      if(mb) {
+        mb.innerHTML = mode2==="rocni" && hasRocni(d)
+          ? `<span class="badge yellow">Roční výkazy · ${d.rocni.period_label||""}</span>`
+          : `<span class="badge green">Živé výkaznictví · ${(d.aktualni||{}).period_label||""}</span>`;
+      }
+      renderFn(d);
+    };
+
   } catch(e) {
     document.getElementById("loading").style.display="none";
     const eb = document.getElementById("err");
@@ -69,38 +144,6 @@ async function loadData(renderFn) {
     eb.innerHTML=`<strong>Nepodařilo se načíst data.</strong> ${e.message}<br><small>${BASE_DATA}</small>`;
     renderNav(null);
   }
-}
-
-// --- Stavba radku tabulky ---
-function tr(label, vals, {bold=false, sub=false, sub2=false, sep=false, note=false,
-                           negRed=false, posGreen=false, showDelta=false, invertDelta=false}={}) {
-  if(sep) return `<tr class="sep"><td colspan="${1+vals.length}"></td></tr>`;
-  const cls = bold?"bold":sub2?"sub2":sub?"sub":"";
-  let html = `<tr class="${cls}"><td>${note?`<em>${label}</em>`:label}</td>`;
-  vals.forEach((v,i)=>{
-    let txt, tdcls="";
-    if(typeof v==="object"&&v!==null&&"val" in v) {
-      txt = v.fmt; tdcls = v.cls||"";
-    } else {
-      txt = v===null||v===undefined?"—":v;
-    }
-    const n = parseFloat(String(txt).replace(/\s/g,"").replace("Kč","").replace("%",""));
-    if(!isNaN(n)) {
-      if(negRed&&n<0) tdcls="neg";
-      if(posGreen&&n>0) tdcls="pos";
-    }
-    html += `<td class="${tdcls}">${txt}</td>`;
-  });
-  if(showDelta && vals.length>=2) {
-    const a = parseFloat(String(vals[0]).replace(/\s/g,"").replace("Kč","").replace("%",""));
-    const b = parseFloat(String(vals[1]).replace(/\s/g,"").replace("Kč","").replace("%",""));
-    const d2 = delta(a,b);
-    if(d2!==null) {
-      const good = invertDelta ? d2<0 : d2>0;
-      html += `<td class="${good?"pos":"neg"}">${d2>0?"▲":"▼"} ${Math.abs(d2).toFixed(1)}%</td>`;
-    } else { html += `<td></td>`; }
-  }
-  return html + `</tr>`;
 }
 
 // --- Altman pasmo badge ---
