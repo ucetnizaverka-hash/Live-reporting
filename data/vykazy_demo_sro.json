@@ -6,11 +6,11 @@
     "obdobi": 2024,
     "mesice_obdobi": 3,
     "period_label": "Q1 2024",
-    "updated": "2026-04-26T10:07:15",
+    "updated": "2026-04-26T10:34:37",
     "kategorie_uj": "mikro",
     "pocet_zamestnancu": 5,
     "zdroj": "demo_Q1_2024.xlsx",
-    "upozorneni": "⚠️ Výkaz živého výkaznictví – sestaven automaticky. Zahrnuje odpisy a rezervy z předvahy. Daň z příjmů je vypočtena vzorcem (21 % ze základu ⌊VH/1000⌋×1000) bez daňových úprav. Pro účely daňového přiznání zpracujte s účetním."
+    "upozorneni": "Vykaz ziveho vykaznictvi - sestaven automaticky. Zahrnuje odpisy a rezervy z predvahy. Dan z prijmu je vypoctena vzorcem (21 % ze zakladu VH/1000*1000) bez danovych uprav. Pro ucely danoveho priznani zpracujte s ucetnim."
   },
   "rozvaha": {
     "aktiva_celkem": 1940000.0,
@@ -63,13 +63,35 @@
     "cisty_obrat": 985000.0
   },
   "cashflow": {
-    "pp_zacatek": 0.0,
+    "cf_vh_pred_zdanenim": 438100.0,
+    "cf_odpisy": 30000.0,
+    "cf_nak_uroky": 0,
+    "cf_vyn_uroky": 0,
+    "cf_upravy_nepen": 30000.0,
+    "cf_pred_zmenami_pk": 468100.0,
+    "cf_zmena_pohledavky": -0.0,
+    "cf_zmena_zasoby": 0,
+    "cf_zmena_zavazky": 0.0,
+    "cf_zmeny_pk_celkem": 0.0,
+    "cf_pred_zdanenim": 468100.0,
+    "cf_dan": -91980.0,
+    "cf_vyn_uroky_prijate": 0,
+    "cf_nak_uroky_zaplacene": 0,
     "cf_provozni": 376120.0,
+    "cf_nabyte_dhm_dnm": 0,
+    "cf_prodej_dm": 0,
+    "cf_nabyte_fin_inv": 0,
     "cf_investicni": 0.0,
+    "cf_prijate_uvery": 0,
+    "cf_splatky_uveru": 0,
+    "cf_dividendy": 0,
     "cf_financni": 0.0,
+    "pp_zacatek": 0.0,
+    "cf_cista_zmena": 376120.0,
     "pp_konec_cf": 376120.0,
     "pp_konec_rozvaha": 900000.0,
-    "cf_poznamka": "CF provozní = VH před zdaněním + odpisy − daň. Investiční a finanční CF vyžadují data o pohybech DM a úvěrů."
+    "cf_minule_dostupne": true,
+    "cf_poznamka": "Provozni CF – nepřímá metoda. Zmeny PK vypočteny z rozdilu vs minule obdobi. Investicni a financni CF = 0 (nelze zjistit z predvahy – doplnte rucne)."
   },
   "analyza": {
     "roa": 17.84,
@@ -87,6 +109,19 @@
       "X4": 0.9134,
       "X5": 0.5077
     }
+  },
+  "analyza_ext": {
+    "ebitda": 468100.0,
+    "ebitda_marze": 47.77,
+    "cpk": 876020.0,
+    "obratovost_aktiv": 0.51,
+    "obratovost_pohl": 3.06,
+    "doba_obratu_pohl": 117.6,
+    "doba_obratu_zav": 126.4,
+    "fin_paka": 2.09,
+    "urokove_kryti": null,
+    "koef_samofinancovani": 47.74,
+    "produktivita_trzby": 196000.0
   },
   "minule": {
     "rok": 2024,
@@ -114,6 +149,6 @@
     "dan_z_prijmu": 91980.0,
     "vh_za_obdobi": 346120.0,
     "cisty_obrat": 985000.0,
-    "archivovano": "2026-04-26T10:07:15"
+    "archivovano": "2026-04-26T10:34:37"
   }
 }
