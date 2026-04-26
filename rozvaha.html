@@ -42,14 +42,16 @@
 <footer><span>22HLAV</span> · Živé výkaznictví v2.0 · Plný rozsah dle vyhlášky č. 500/2002 Sb.</footer>
 <script src="common.js"></script>
 <script>
-if(typeof getModeAllP==="undefined"){
-  function getMode(){return location.hash.includes("rocni")?"rocni":"live";}
-  function getModeData(d){if(getMode()==="rocni"&&d.rocni&&Object.keys(d.rocni).length>0)return d.rocni;return d.aktualni;}
-  function getModeAllP(d){var cur=getModeData(d);return(d.periody||[]).concat([cur]).filter(function(p){return p&&Object.keys(p).length>0;});}
-  function hasRocni(d){return!!(d&&d.rocni&&Object.keys(d.rocni).length>0);}
-  function kc(v,z){if(v===null||v===undefined)return z||"";return Math.round(v).toLocaleString("cs-CZ")+" Kč";}
-  function delta(a,b){if(!b||b===0)return null;return Math.round((a-b)/Math.abs(b)*1000)/10;}
-}
+(function(){
+  if(typeof window.getModeData!=="function"){
+    window.getMode=function(){return location.hash.includes("rocni")?"rocni":"live";};
+    window.getModeData=function(d){if(window.getMode()==="rocni"&&d.rocni&&Object.keys(d.rocni).length>0)return d.rocni;return d.aktualni;};
+    window.getModeAllP=function(d){var cur=window.getModeData(d);return(d.periody||[]).concat([cur]).filter(function(p){return p&&Object.keys(p).length>0;});};
+    window.hasRocni=function(d){return!!(d&&d.rocni&&Object.keys(d.rocni).length>0);};
+    window.kc=function(v,z){if(v===null||v===undefined)return z||"";return Math.round(v).toLocaleString("cs-CZ")+" Kč";};
+    window.delta=function(a,b){if(!b||b===0)return null;return Math.round((a-b)/Math.abs(b)*1000)/10;};
+  }
+})();
 </script>
 <script>
 loadData(d => {
