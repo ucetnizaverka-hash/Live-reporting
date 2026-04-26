@@ -7,14 +7,19 @@
 <header>
   <div class="header-top">
     <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Finanční ukazatele</div>
-    <div class="header-meta"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span> · IČO: <span id="hdr-ico"></span></div>
+    <div class="header-meta" style="display:flex;align-items:center;gap:10px"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span><span id="mode-badge"></span> · IČO: <span id="hdr-ico"></span></div>
   </div>
   <nav id="nav-links"></nav>
+  <div id="mode-toggle"></div>
 </header>
 <main>
-  <div id="loading">⏳ Načítám…</div><div id="err"></div>
+  <div id="loading">Načítám…</div><div id="err"></div>
   <div id="app" style="display:none">
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
+    <div id="bench-note" style="display:none;background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:10px 16px;margin:12px 20px;font-size:12px;color:#92400e">
+      Srovnání s odvětvím (CZ-NACE 62, MPO ČR 2023) je dostupné pouze v režimu <strong>Roční výkazy</strong>.
+      Přepněte režim v horní liště, nebo zpracujte roční předvahu přes <code>python pipeline.py --rocni</code>.
+    </div>
 
     <div class="section">
       <h2>Rentabilita</h2>
@@ -50,24 +55,27 @@
 <script src="common.js"></script>
 <script>
 loadData(d => {
-  const allP = [...(d.periody||[]), d.aktualni];
+  const allP = getModeAllP(d);
   const s = d.sektor;
   document.title = (d.nazev||"")+" | Ukazatele";
   const labels = allP.map(p=>p.label||p.period_label);
-  const a = d.aktualni;
+  const a = getModeData(d);
+
+  // Srovnani s odvetvim pouze v rocnim rezimu
+  const showBench = (getMode() === "rocni");
 
   const headHtml = (withBench=true) =>
     `<tr><th style="width:35%">Ukazatel</th>${labels.map(l=>`<th>${l}</th>`).join("")}
-    ${withBench?`<th style="color:var(--gold)">Sektor ${s.rok}</th><th>Hodnocení</th>`:""}</tr>`;
+    ${(withBench&&showBench)?`<th style="color:var(--gold)">Sektor ${s.rok}</th><th>Hodnocení</th>`:""}</tr>`;
 
   const badge = (val, bench, higherBetter=true) => {
-    if(val===null||val===undefined||bench===null) return "";
+    if(!showBench||val===null||val===undefined||bench===null) return "";
     const v=parseFloat(val), b=parseFloat(bench);
     if(isNaN(v)||isNaN(b)) return "";
     const ratio = higherBetter ? v/b : b/v;
-    if(ratio>=0.85) return `<span class="badge green">✓ OK</span>`;
-    if(ratio>=0.65) return `<span class="badge yellow">△ Pozor</span>`;
-    return `<span class="badge red">✗ Pod bench.</span>`;
+    if(ratio>=0.85) return `<span class="badge green">OK</span>`;
+    if(ratio>=0.65) return `<span class="badge yellow">Pozor</span>`;
+    return `<span class="badge red">Pod bench.</span>`;
   };
 
   const R = (label, key, bench, fmtFn, higherBetter=true, note="") => {
@@ -75,17 +83,21 @@ loadData(d => {
     const cur  = a[key];
     let row = `<tr><td>${label}${note?`<br><small style="color:var(--gray)">${note}</small>`:""}</td>`;
     vals.forEach((v,i)=>{
-      const bcls = i===allP.length-1 ? benchColor(a[key],bench,higherBetter) : "";
+      const bcls = (showBench&&i===allP.length-1) ? benchColor(a[key],bench,higherBetter) : "";
       row += `<td class="${bcls}">${v}</td>`;
     });
-    if(bench!==null) {
+    if(showBench&&bench!==null) {
       row += `<td class="gray">${fmtFn(bench)}</td>`;
       row += `<td>${badge(cur,bench,higherBetter)}</td>`;
-    } else { row += `<td></td><td></td>`; }
+    }
     return row + `</tr>`;
   };
 
   // --- RENTABILITA ---
+  // Note o srovnání s odvětvím
+  const benchNote = document.getElementById("bench-note");
+  if(benchNote) benchNote.style.display = showBench ? "none" : "block";
+
   document.getElementById("rent-head").innerHTML = headHtml();
   document.getElementById("rent-body").innerHTML = [
     R("ROA — Rentabilita aktiv","roa",s.roa,pct,true,"VH po zdanění / Aktiva celkem × 100"),
