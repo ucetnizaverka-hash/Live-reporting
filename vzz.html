@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="cs"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VZZ | Živé výkaznictví</title>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<header>
+  <div class="header-top">
+    <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Výkaz zisku a ztráty</div>
+    <div class="header-meta"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span> · IČO: <span id="hdr-ico"></span></div>
+  </div>
+  <nav id="nav-links"></nav>
+</header>
+<main>
+  <div id="loading">⏳ Načítám…</div><div id="err"></div>
+  <div id="app" style="display:none">
+    <div class="disclaimer" id="disclaimer" style="display:none"></div>
+    <div class="section">
+      <h2>Výkaz zisku a ztráty — plný rozsah</h2>
+      <table><thead id="vzz-head"></thead><tbody id="vzz-body"></tbody></table>
+    </div>
+    <div class="section" style="font-size:12px;color:var(--gray);padding:12px 20px">
+      * Daň z příjmů = odhad (21 % ze základu ⌊VH/1000⌋×1000). Pro daňové účely zpracujte s účetním.
+    </div>
+  </div>
+</main>
+<footer><span>22HLAV</span> · Živé výkaznictví v2.0</footer>
+<script src="common.js"></script>
+<script>
+loadData(d => {
+  const allP = [...(d.periody||[]), d.aktualni];
+  document.title = (d.nazev||"")+" | VZZ";
+  const labels = allP.map(p=>p.label||p.period_label);
+  document.getElementById("vzz-head").innerHTML =
+    `<tr><th style="width:45%">Položka</th>${labels.map(l=>`<th>${l}</th>`).join("")}
+    ${allP.length>=2?`<th>Δ % (posl.)</th>`:""}</tr>`;
+
+  const showDelta = allP.length >= 2;
+  const last = allP[allP.length-1];
+  const prev = allP[allP.length-2];
+
+  const R = (label,key,{bold=false,sub=false,sub2=false,sep=false,negRed=false}={}) => {
+    if(sep) return `<tr class="sep"><td colspan="${allP.length+2}"></td></tr>`;
+    const vals = allP.map(p=>kc(p[key]));
+    const cls = bold?"bold":sub2?"sub2":sub?"sub":"";
+    let row = `<tr class="${cls}"><td>${label}</td>${vals.map(v=>`<td class="${(negRed&&v!=="—"&&parseFloat(v.replace(/\s/g,""))<0)?"neg":""}">${v}</td>`).join("")}`;
+    if(showDelta){
+      const d2 = delta(last[key], prev[key]);
+      row += d2===null?`<td></td>`:`<td class="${d2>=0?"pos":"neg"}">${d2>=0?"▲":"▼"} ${Math.abs(d2).toFixed(1)}%</td>`;
+    }
+    return row+`</tr>`;
+  };
+
+  document.getElementById("vzz-body").innerHTML = [
+    R("I. Tržby z prodeje výrobků a služeb",   "trzby_sluzby"),
+    R("II. Tržby za prodej zboží",              "trzby_zbozi"),
+    R("TRŽBY CELKEM",                           "trzby_celkem",{bold:true}),
+    R("",null,{sep:true}),
+    R("A. Výkonová spotřeba",                   "vyk_spotreba",{sub:true}),
+    R("B. Změna stavu zásob (+/-)",             "zmena_zasoby_vzz",{sub:true}),
+    R("C. Aktivace",                            "aktivace",{sub:true}),
+    R("D. Osobní náklady",                      "osobni_naklady",{sub:true}),
+    R("  z toho: Mzdové náklady",               "mzdy",{sub2:true}),
+    R("E. Úpravy hodnot v provozní oblasti",    "odpisy",{sub:true}),
+    R("  z toho: Odpisy DNM a DHM",             "odpisy",{sub2:true}),
+    R("III. Ostatní provozní výnosy",           "ost_prov_vyn",{sub:true}),
+    R("F. Ostatní provozní náklady",            "ost_prov_nak",{sub:true}),
+    R("",null,{sep:true}),
+    R("* PROVOZNÍ VÝSLEDEK HOSPODAŘENÍ",        "provozni_vh",{bold:true,negRed:true}),
+    R("",null,{sep:true}),
+    R("IV. Výnosy z DFM – podíly",              "vyn_uroky",{sub:true}),
+    R("G. Náklady vynaložené na prodané podíly","nak_uroky",{sub:true}),
+    R("VI. Výnosové úroky a podobné výnosy",    "vyn_uroky",{sub:true}),
+    R("J. Nákladové úroky a podobné náklady",   "nak_uroky",{sub:true}),
+    R("VII. Ostatní finanční výnosy",           "ost_fin_vyn",{sub:true}),
+    R("K. Ostatní finanční náklady",            "ost_fin_nak",{sub:true}),
+    R("* FINANČNÍ VÝSLEDEK HOSPODAŘENÍ",        "financni_vh",{bold:true,negRed:true}),
+    R("",null,{sep:true}),
+    R("** VH PŘED ZDANĚNÍM",                    "vh_pred_zdanenim",{bold:true,negRed:true}),
+    R("L. Daň z příjmů (odhad 21 %)*",         "dan",{sub:true}),
+    R("** VH ZA ÚČETNÍ OBDOBÍ",                 "vh_za_obdobi",{bold:true,negRed:true}),
+    R("*** VH ZA ÚČETNÍ OBDOBÍ (po menš.)",     "vh_za_obdobi",{bold:true}),
+  ].join("");
+});
+</script></body></html>
