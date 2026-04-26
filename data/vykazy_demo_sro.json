@@ -6,7 +6,7 @@
     "obdobi": 2024,
     "mesice_obdobi": 3,
     "period_label": "Q1 2024",
-    "updated": "2026-04-26T17:22:21",
+    "updated": "2026-04-26T17:25:19",
     "kategorie_uj": "mikro",
     "pocet_zamestnancu": 0,
     "zdroj": "podklady.xlsx (do 4.4.2024)",
@@ -150,6 +150,6 @@
     "dan_z_prijmu": 20580.0,
     "vh_za_obdobi": 77556.8,
     "cisty_obrat": 704099.46,
-    "archivovano": "2026-04-26T17:22:21"
+    "archivovano": "2026-04-26T17:25:18"
   }
 }
