@@ -2,83 +2,153 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>VZZ | Živé výkaznictví</title>
 <link rel="stylesheet" href="style.css">
+<style>
+  table { font-size: 12px; }
+  th, td { padding: 4px 8px; }
+  td.oz { width:5%; text-align:center; font-weight:600; color:var(--navy); }
+  td.cr { width:4%; text-align:center; color:var(--gray); font-size:11px; }
+  td.tx { width:40%; }
+  td.vz { width:12%; font-size:10px; color:var(--gray); }
+  td.num { text-align:right; }
+  tr.section-head td { background:#eef0f8 !important; font-weight:700; color:var(--navy); font-size:12px; }
+  tr.zero td.num { color:#bbb; }
+  .tis-note { font-size:11px; color:var(--gray); margin-bottom:8px; }
+</style>
 </head><body>
 <header>
   <div class="header-top">
     <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Výkaz zisku a ztráty</div>
-    <div class="header-meta"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span> · IČO: <span id="hdr-ico"></span></div>
+    <div class="header-meta" style="display:flex;align-items:center;gap:10px"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span><span id="mode-badge"></span> · IČO: <span id="hdr-ico"></span></div>
   </div>
   <nav id="nav-links"></nav>
+  <div id="mode-toggle"></div>
 </header>
 <main>
-  <div id="loading">⏳ Načítám…</div><div id="err"></div>
+  <div id="loading">Načítám…</div><div id="err"></div>
   <div id="app" style="display:none">
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
     <div class="section">
-      <h2>Výkaz zisku a ztráty — plný rozsah</h2>
-      <table><thead id="vzz-head"></thead><tbody id="vzz-body"></tbody></table>
-    </div>
-    <div class="section" style="font-size:12px;color:var(--gray);padding:12px 20px">
-      * Daň z příjmů = odhad (21 % ze základu ⌊VH/1000⌋×1000). Pro daňové účely zpracujte s účetním.
+      <h2>Výkaz zisku a ztráty — druhové členění, plný rozsah</h2>
+      <p class="tis-note">Hodnoty v Kč &nbsp;·&nbsp; * Daň z příjmů = odhad (21 % ze základu ⌊VH/1000⌋×1000), bez daňových úprav</p>
+      <div style="overflow-x:auto">
+        <table id="vzz-table"><thead id="vzz-head"></thead><tbody id="vzz-body"></tbody></table>
+      </div>
     </div>
   </div>
 </main>
-<footer><span>22HLAV</span> · Živé výkaznictví v2.0</footer>
+<footer><span>22HLAV</span> · Živé výkaznictví v2.0 · Plný rozsah dle vyhlášky č. 500/2002 Sb.</footer>
 <script src="common.js"></script>
 <script>
 loadData(d => {
-  const allP = [...(d.periody||[]), d.aktualni];
-  document.title = (d.nazev||"")+" | VZZ";
-  const labels = allP.map(p=>p.label||p.period_label);
-  document.getElementById("vzz-head").innerHTML =
-    `<tr><th style="width:45%">Položka</th>${labels.map(l=>`<th>${l}</th>`).join("")}
-    ${allP.length>=2?`<th>Δ % (posl.)</th>`:""}</tr>`;
+  const allP = getModeAllP(d);
+  document.title = (d.nazev||"") + " | VZZ";
+  const labels = allP.map(p => p.label || p.period_label);
+  const n = allP.length;
+  const showDelta = n >= 2;
 
-  const showDelta = allP.length >= 2;
-  const last = allP[allP.length-1];
-  const prev = allP[allP.length-2];
+  // Záhlaví tabulky
+  document.getElementById("vzz-head").innerHTML = `
+    <tr>
+      <th class="oz" rowspan="2">Ozn.</th>
+      <th style="text-align:left" rowspan="2">TEXT</th>
+      <th class="vz" rowspan="2" style="text-align:center">Vzorec</th>
+      <th class="cr" rowspan="2">Č.ř.</th>
+      <th colspan="${n}" style="text-align:center">Skutečnost v účetním období</th>
+      ${showDelta ? '<th rowspan="2">Δ %</th>' : ''}
+    </tr>
+    <tr>${labels.map((l,i) => `<th style="font-size:11px">${l}</th>`).join('')}</tr>
+    <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td></td><td class="cr">c</td>${labels.map((_,i)=>`<th>${i+1}</th>`).join('')}${showDelta?'<th></th>':''}</tr>`;
 
-  const R = (label,key,{bold=false,sub=false,sub2=false,sep=false,negRed=false}={}) => {
-    if(sep) return `<tr class="sep"><td colspan="${allP.length+2}"></td></tr>`;
-    const vals = allP.map(p=>kc(p[key]));
-    const cls = bold?"bold":sub2?"sub2":sub?"sub":"";
-    let row = `<tr class="${cls}"><td>${label}</td>${vals.map(v=>`<td class="${(negRed&&v!=="—"&&parseFloat(v.replace(/\s/g,""))<0)?"neg":""}">${v}</td>`).join("")}`;
-    if(showDelta){
-      const d2 = delta(last[key], prev[key]);
-      row += d2===null?`<td></td>`:`<td class="${d2>=0?"pos":"neg"}">${d2>=0?"▲":"▼"} ${Math.abs(d2).toFixed(1)}%</td>`;
-    }
-    return row+`</tr>`;
+  const v0 = (p, key) => {
+    if(p[key] !== undefined && p[key] !== null) return p[key];
+    return 0;
   };
 
+  // Řádek tabulky
+  const R = (oz, txt, vz, cr, key, {bold=false, sec=false, note=false, sub=false, sub2=false, negOk=false}={}) => {
+    const vals = allP.map(p => v0(p, key));
+    const last = vals[vals.length-1];
+    const prev = vals.length>=2 ? vals[vals.length-2] : null;
+    const allZero = vals.every(v => !v || v==0);
+    const cls = sec ? 'section-head' : bold ? 'bold' : sub2 ? 'sub2' : sub ? 'sub' : '';
+    const zeroCls = (!sec && !bold && allZero) ? ' zero' : '';
+    let row = `<tr class="${cls}${zeroCls}">
+      <td class="oz">${oz}</td>
+      <td class="tx">${note ? `<em style="color:var(--gray)">${txt}</em>` : txt}</td>
+      <td class="vz">${vz}</td>
+      <td class="cr">${cr}</td>`;
+    vals.forEach(v => {
+      const neg = v < 0;
+      row += `<td class="num${neg && !negOk ? ' neg' : (neg && negOk ? ' neg' : '')}">${kc(v, '0 Kč')}</td>`;
+    });
+    if(showDelta) {
+      const d2 = delta(last, prev);
+      row += d2===null ? `<td></td>` : `<td class="${d2>=0?'pos':'neg'}">${d2>=0?'▲':'▼'} ${Math.abs(d2).toFixed(1)}%</td>`;
+    }
+    return row + `</tr>`;
+  };
+  const SEP = () => `<tr class="sep"><td colspan="${4+n+(showDelta?1:0)}"></td></tr>`;
+  const HEAD = (txt) => `<tr class="section-head"><td class="oz"></td><td colspan="${3+n+(showDelta?1:0)}" style="padding:6px 8px">${txt}</td></tr>`;
+
   document.getElementById("vzz-body").innerHTML = [
-    R("I. Tržby z prodeje výrobků a služeb",   "trzby_sluzby"),
-    R("II. Tržby za prodej zboží",              "trzby_zbozi"),
-    R("TRŽBY CELKEM",                           "trzby_celkem",{bold:true}),
-    R("",null,{sep:true}),
-    R("A. Výkonová spotřeba",                   "vyk_spotreba",{sub:true}),
-    R("B. Změna stavu zásob (+/-)",             "zmena_zasoby_vzz",{sub:true}),
-    R("C. Aktivace",                            "aktivace",{sub:true}),
-    R("D. Osobní náklady",                      "osobni_naklady",{sub:true}),
-    R("  z toho: Mzdové náklady",               "mzdy",{sub2:true}),
-    R("E. Úpravy hodnot v provozní oblasti",    "odpisy",{sub:true}),
-    R("  z toho: Odpisy DNM a DHM",             "odpisy",{sub2:true}),
-    R("III. Ostatní provozní výnosy",           "ost_prov_vyn",{sub:true}),
-    R("F. Ostatní provozní náklady",            "ost_prov_nak",{sub:true}),
-    R("",null,{sep:true}),
-    R("* PROVOZNÍ VÝSLEDEK HOSPODAŘENÍ",        "provozni_vh",{bold:true,negRed:true}),
-    R("",null,{sep:true}),
-    R("IV. Výnosy z DFM – podíly",              "vyn_uroky",{sub:true}),
-    R("G. Náklady vynaložené na prodané podíly","nak_uroky",{sub:true}),
-    R("VI. Výnosové úroky a podobné výnosy",    "vyn_uroky",{sub:true}),
-    R("J. Nákladové úroky a podobné náklady",   "nak_uroky",{sub:true}),
-    R("VII. Ostatní finanční výnosy",           "ost_fin_vyn",{sub:true}),
-    R("K. Ostatní finanční náklady",            "ost_fin_nak",{sub:true}),
-    R("* FINANČNÍ VÝSLEDEK HOSPODAŘENÍ",        "financni_vh",{bold:true,negRed:true}),
-    R("",null,{sep:true}),
-    R("** VH PŘED ZDANĚNÍM",                    "vh_pred_zdanenim",{bold:true,negRed:true}),
-    R("L. Daň z příjmů (odhad 21 %)*",         "dan",{sub:true}),
-    R("** VH ZA ÚČETNÍ OBDOBÍ",                 "vh_za_obdobi",{bold:true,negRed:true}),
-    R("*** VH ZA ÚČETNÍ OBDOBÍ (po menš.)",     "vh_za_obdobi",{bold:true}),
+    HEAD("VÝNOSY Z PROVOZNÍ ČINNOSTI"),
+    R("I.",    "Tržby z prodeje výrobků a služeb",               "",               "01", "trzby_sluzby"),
+    R("II.",   "Tržby za prodej zboží",                          "",               "02", "trzby_zbozi"),
+    R("III.",  "Ostatní provozní výnosy",                        "(III.1+III.2+III.3)","17","ost_prov_vyn", {sub:true}),
+    R("III.1.","  Tržby z prodeje DM",                           "",               "18", "trzby_prodany_dm",  {sub:true,note:true}),
+    R("III.2.","  Tržby z prodeje materiálu",                    "",               "19", "trzby_prodany_mat", {sub:true,note:true}),
+    R("III.3.","  Jiné provozní výnosy",                         "",               "20", "jine_prov_vynosy",  {sub:true,note:true}),
+    SEP(),
+    HEAD("NÁKLADY Z PROVOZNÍ ČINNOSTI"),
+    R("A.",    "Výkonová spotřeba",                               "(A.1+A.2+A.3)",  "03", "vyk_spotreba",   {bold:true}),
+    R("A.1.",  "  Náklady na prodané zboží",                     "",               "04", "nak_zbozi",      {sub:true}),
+    R("A.2.",  "  Spotřeba materiálu a energie",                 "",               "05", "spotreba_mat_energie", {sub:true}),
+    R("A.3.",  "  Služby",                                       "",               "06", "sluzby",         {sub:true}),
+    R("B.",    "Změna stavu zásob vlastní činnosti",             "",               "07", "zmena_zasoby_vc",{note:true}),
+    R("C.",    "Aktivace",                                       "",               "08", "aktivace",       {note:true}),
+    R("D.",    "Osobní náklady",                                 "(D.1+D.2)",      "09", "osobni_naklady", {bold:true}),
+    R("D.1.",  "  Mzdové náklady",                               "",               "10", "mzdy",           {sub:true}),
+    R("D.2.",  "  Náklady na SZ, ZP a ost. nákl.",              "",               "11", "naklady_sp_zp",  {sub:true,note:true}),
+    R("E.",    "Úpravy hodnot v provozní oblasti",               "(E.1+E.2+E.3+E.4)","12","odpisy",       {bold:true}),
+    R("E.1.",  "  Úpravy hodnot DNM a DHM – trvalé",            "",               "13", "odpisy",         {sub:true}),
+    R("E.2.",  "  Úpravy hodnot DNM a DHM – dočasné",           "",               "14", "op_dhm_docasne", {sub:true,note:true}),
+    R("E.3.",  "  Úpravy hodnot zásob",                         "",               "15", "op_zasoby",      {sub:true,note:true}),
+    R("E.4.",  "  Úpravy hodnot pohledávek",                    "",               "16", "op_pohledavky",  {sub:true,note:true}),
+    R("F.",    "Ostatní provozní náklady",                       "(F.1+…+F.5)",    "21", "ost_prov_nak",   {bold:true}),
+    R("F.1.",  "  ZC prodaného DM",                              "",               "22", "zc_dm",          {sub:true,note:true}),
+    R("F.2.",  "  ZC prodaného materiálu",                      "",               "23", "zc_mat",         {sub:true,note:true}),
+    R("F.3.",  "  Daně a poplatky",                              "",               "24", "dane_poplatky",  {sub:true,note:true}),
+    R("F.4.",  "  Rezervy v provozní oblasti",                   "",               "25", "rezervy_prov",   {sub:true,note:true}),
+    R("F.5.",  "  Jiné provozní náklady",                        "",               "26", "jine_prov_nak",  {sub:true,note:true}),
+    SEP(),
+    R("*",     "PROVOZNÍ VÝSLEDEK HOSPODAŘENÍ",                 "",               "27", "provozni_vh",    {bold:true,negOk:true}),
+    SEP(),
+    HEAD("VÝNOSY Z FINANČNÍ ČINNOSTI"),
+    R("IV.",   "Výnosy z DFM – podíly",                          "",               "28", "vyn_dfm_podily", {note:true}),
+    R("V.",    "Výnosy z DFM – ostatní",                         "",               "30", "vyn_dfm_ostatni",{note:true}),
+    R("VI.",   "Výnosové úroky a podobné výnosy",               "(VI.1+VI.2)",    "32", "vyn_uroky",      {bold:true}),
+    R("VI.2.", "  Ostatní výnosové úroky",                       "",               "34", "vyn_uroky",      {sub:true}),
+    R("VII.",  "Ostatní finanční výnosy",                        "",               "39", "ost_fin_vyn",    {note:true}),
+    HEAD("NÁKLADY Z FINANČNÍ ČINNOSTI"),
+    R("G.",    "Náklady na prodané podíly",                      "",               "29", "nak_prodane_podily",{note:true}),
+    R("H.",    "Náklady na ostatní DFM",                         "",               "31", "nak_jiny_dfm",   {note:true}),
+    R("I.",    "Úpravy hodnot a rezervy ve fin. oblasti",        "",               "35", "up_hodnot_fin",  {note:true}),
+    R("J.",    "Nákladové úroky a podobné náklady",              "(J.1+J.2)",      "36", "nak_uroky",      {bold:true}),
+    R("J.2.",  "  Ostatní nákladové úroky",                      "",               "38", "nak_uroky",      {sub:true}),
+    R("K.",    "Ostatní finanční náklady",                       "",               "40", "ost_fin_nak",    {note:true}),
+    SEP(),
+    R("*",     "FINANČNÍ VÝSLEDEK HOSPODAŘENÍ",                 "",               "41", "financni_vh",    {bold:true,negOk:true}),
+    SEP(),
+    R("**",    "VÝSLEDEK HOSPODAŘENÍ PŘED ZDANĚNÍM",            "(*+*)",          "42", "vh_pred_zdanenim",{bold:true,negOk:true}),
+    R("L.",    "Daň z příjmů  *odhad",                          "(L.1+L.2)",      "43", "dan",            {sub:true}),
+    R("L.1.",  "  Daň z příjmů splatná",                        "",               "44", "dan",            {sub:true}),
+    R("L.2.",  "  Daň z příjmů odložená",                       "",               "45", "dan_odlozena",   {sub:true,note:true}),
+    R("**",    "VÝSLEDEK HOSPODAŘENÍ PO ZDANĚNÍ",               "",               "46", "vh_za_obdobi",   {bold:true,negOk:true}),
+    R("M.",    "Převod podílu na VH společníkům",               "",               "47", "prevod_vh",      {note:true}),
+    R("***",   "VÝSLEDEK HOSPODAŘENÍ ZA ÚČETNÍ OBDOBÍ",         "(**−M.)",        "48", "vh_za_obdobi",   {bold:true,negOk:true}),
+    SEP(),
+    R("",      "Čistý obrat za účetní období",                   "",               "49", "cisty_obrat"),
   ].join("");
 });
-</script></body></html>
+</script>
+</body></html>
