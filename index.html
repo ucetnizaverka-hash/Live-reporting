@@ -1,522 +1,112 @@
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Živé výkaznictví | 22HLAV</title>
+<!DOCTYPE html><html lang="cs"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard | Živé výkaznictví</title>
+<link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<style>
-  :root {
-    --gold: #D4952A;
-    --navy: #1B2469;
-    --gray: #6b7280;
-    --light: #f8f9fa;
-    --green: #16a34a;
-    --red: #dc2626;
-    --orange: #ea580c;
-    --white: #ffffff;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f1f3f7; color: #1e293b; }
-
-  /* HEADER */
-  header {
-    background: var(--navy);
-    color: white;
-    padding: 16px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
-  header .logo { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
-  header .logo span { color: var(--gold); }
-  header .meta { font-size: 13px; color: #94a3b8; text-align: right; }
-  header .meta strong { color: white; font-size: 15px; display: block; }
-
-  /* MAIN */
-  main { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
-
-  /* KPI CARDS */
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .kpi {
-    background: white;
-    border-radius: 10px;
-    padding: 18px 20px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    border-left: 4px solid var(--gold);
-  }
-  .kpi .label { font-size: 12px; color: var(--gray); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
-  .kpi .value { font-size: 22px; font-weight: 700; color: var(--navy); }
-  .kpi .sub { font-size: 12px; color: var(--gray); margin-top: 4px; }
-  .kpi .delta { font-size: 12px; font-weight: 600; margin-top: 4px; }
-  .kpi .delta.up { color: var(--green); }
-  .kpi .delta.down { color: var(--red); }
-
-  /* SECTIONS */
-  .section {
-    background: white;
-    border-radius: 10px;
-    padding: 20px 24px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
-  }
-  .section h2 {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--navy);
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    margin-bottom: 14px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid var(--gold);
-  }
-
-  /* TABULKY */
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: white; background: var(--navy); padding: 8px 10px; text-align: right; }
-  th:first-child { text-align: left; }
-  td { padding: 7px 10px; border-bottom: 1px solid #f1f3f7; text-align: right; }
-  td:first-child { text-align: left; }
-  tr:nth-child(even) td { background: #fafbfc; }
-  tr.bold td { font-weight: 700; color: var(--navy); background: #eef0f8 !important; }
-  tr.total td { font-weight: 700; color: var(--navy); border-top: 2px solid var(--gold); }
-  td.neg { color: var(--red); }
-  td.pos { color: var(--green); }
-  td.gray { color: var(--gray); }
-  td.indent { padding-left: 24px; color: #374151; }
-
-  /* GRAFY */
-  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-  .chart-box { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-  .chart-box h3 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 14px; text-transform: uppercase; letter-spacing: .4px; }
-  canvas { max-height: 220px; }
-
-  /* ALTMAN BADGE */
-  .altman-badge {
-    display: inline-block;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 15px;
-    margin-left: 10px;
-  }
-  .zelene { background: #dcfce7; color: var(--green); }
-  .sede   { background: #fef9c3; color: #92400e; }
-  .cervene{ background: #fee2e2; color: var(--red); }
-
-  /* DISCLAIMER */
-  .disclaimer {
-    background: #fffbeb;
-    border: 1px solid #fde68a;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 12px;
-    color: #78350f;
-    margin-bottom: 20px;
-  }
-
-  /* PDF BUTTON */
-  .pdf-btn {
-    display: inline-block;
-    background: var(--gold);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 13px;
-    text-decoration: none;
-    margin-top: 8px;
-  }
-  .pdf-btn:hover { background: #b8811f; }
-
-  /* FOOTER */
-  footer {
-    text-align: center;
-    font-size: 12px;
-    color: var(--gray);
-    padding: 20px;
-    border-top: 1px solid #e2e8f0;
-    margin-top: 8px;
-  }
-  footer span { color: var(--gold); font-weight: 700; }
-
-  /* LOADING / ERROR */
-  #loading { text-align: center; padding: 60px; color: var(--gray); font-size: 16px; }
-  #error-box { background: #fee2e2; color: #991b1b; border-radius: 8px; padding: 16px; margin: 20px; display: none; }
-
-  @media (max-width: 700px) {
-    .charts { grid-template-columns: 1fr; }
-    header { flex-direction: column; gap: 8px; text-align: center; }
-  }
-</style>
-</head>
-<body>
-
+</head><body>
 <header>
-  <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Živé výkaznictví</div>
-  <div class="meta">
-    <strong id="hdr-nazev">—</strong>
-    <span id="hdr-period">načítám…</span> &nbsp;·&nbsp; IČO: <span id="hdr-ico">—</span>
+  <div class="header-top">
+    <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Živé výkaznictví</div>
+    <div class="header-meta"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span> · IČO: <span id="hdr-ico"></span></div>
   </div>
+  <nav id="nav-links"></nav>
 </header>
-
 <main>
-  <div id="loading">⏳ Načítám výkazy…</div>
-  <div id="error-box"></div>
+  <div id="loading">⏳ Načítám…</div>
+  <div id="err"></div>
   <div id="app" style="display:none">
-
-    <div class="disclaimer" id="disclaimer-box"></div>
-
-    <!-- KPI CARDS -->
-    <div class="kpi-grid">
-      <div class="kpi">
-        <div class="label">Tržby celkem</div>
-        <div class="value" id="kpi-trzby">—</div>
-        <div class="delta" id="kpi-trzby-delta"></div>
-      </div>
-      <div class="kpi">
-        <div class="label">VH za období</div>
-        <div class="value" id="kpi-vh">—</div>
-        <div class="delta" id="kpi-vh-delta"></div>
-      </div>
-      <div class="kpi">
-        <div class="label">Aktiva celkem</div>
-        <div class="value" id="kpi-aktiva">—</div>
-        <div class="delta" id="kpi-aktiva-delta"></div>
-      </div>
-      <div class="kpi">
-        <div class="label">Peněžní prostředky</div>
-        <div class="value" id="kpi-pp">—</div>
-        <div class="sub">CF provozní: <span id="kpi-cf">—</span></div>
-      </div>
-      <div class="kpi" style="border-left-color: var(--navy)">
-        <div class="label">Altman Z-skóre</div>
-        <div class="value">
-          <span id="kpi-altman-z">—</span>
-          <span class="altman-badge" id="kpi-altman-pasmo"></span>
-        </div>
-        <div class="sub" id="kpi-altman-sub"></div>
-      </div>
-      <div class="kpi" style="border-left-color: var(--navy)">
-        <div class="label">Celková zadluženost</div>
-        <div class="value" id="kpi-zadluzenost">—</div>
-        <div class="sub">Likvidita: <span id="kpi-likvidita">—</span></div>
-      </div>
-    </div>
-
-    <!-- CHARTS -->
-    <div class="charts">
-      <div class="chart-box">
-        <h3>Výsledovka</h3>
-        <canvas id="chart-vzz"></canvas>
-      </div>
-      <div class="chart-box">
-        <h3>Struktura aktiv</h3>
-        <canvas id="chart-aktiva"></canvas>
-      </div>
-    </div>
-
-    <!-- VZZ TABLE -->
+    <div class="disclaimer" id="disclaimer" style="display:none"></div>
+    <div class="kpi-grid" id="kpi-grid"></div>
+    <div class="charts-2" id="charts"></div>
     <div class="section">
-      <h2>Výkaz zisku a ztráty</h2>
-      <table>
-        <thead>
-          <tr>
-            <th style="width:55%">Položka</th>
-            <th id="th-vzz-bk">Aktuální</th>
-            <th id="th-vzz-min" class="gray-th" style="display:none">Minulé</th>
-            <th id="th-vzz-chg" style="display:none">Změna</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-vzz"></tbody>
-      </table>
+      <h2>Vývoj klíčových ukazatelů</h2>
+      <table><thead id="trend-head"></thead><tbody id="trend-body"></tbody></table>
     </div>
-
-    <!-- ROZVAHA -->
-    <div class="section">
-      <h2>Rozvaha</h2>
-      <table>
-        <thead>
-          <tr>
-            <th style="width:55%">Položka</th>
-            <th id="th-roz-bk">Aktuální</th>
-            <th id="th-roz-min" style="display:none">Minulé</th>
-            <th id="th-roz-chg" style="display:none">Změna</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-roz"></tbody>
-      </table>
+    <div class="section" style="padding:14px 20px;display:flex;align-items:center;gap:16px">
+      <a class="btn-gold" id="pdf-btn" href="#" target="_blank">⬇ Stáhnout PDF výkaz</a>
+      <span style="font-size:12px;color:var(--gray)" id="updated"></span>
     </div>
-
-    <!-- CASH FLOW -->
-    <div class="section">
-      <h2>Přehled o peněžních tocích (CF)</h2>
-      <table>
-        <thead>
-          <tr>
-            <th style="width:55%">Položka</th>
-            <th id="th-cf-bk">Aktuální</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-cf"></tbody>
-      </table>
-    </div>
-
-    <!-- UKAZATELE -->
-    <div class="section">
-      <h2>Klíčové ukazatele</h2>
-      <table>
-        <thead><tr><th>Ukazatel</th><th>Hodnota</th></tr></thead>
-        <tbody id="tbody-uk"></tbody>
-      </table>
-    </div>
-
-    <!-- PDF DOWNLOAD -->
-    <div class="section" style="padding:16px 24px">
-      <a class="pdf-btn" id="pdf-link" href="#" target="_blank">⬇ Stáhnout PDF výkaz</a>
-      <span style="font-size:12px; color:var(--gray); margin-left:16px;" id="updated-label"></span>
-    </div>
-
-  </div><!-- #app -->
+  </div>
 </main>
-
-<footer>
-  <span>22HLAV</span> &nbsp;·&nbsp; Živé výkaznictví v1.0 &nbsp;·&nbsp;
-  Data se automaticky aktualizují po každém zpracování deníku.
-</footer>
-
+<footer><span>22HLAV</span> · Živé výkaznictví v2.0 · Data se aktualizují po každém zpracování</footer>
+<script src="common.js"></script>
 <script>
-// ============================================================
-// KONFIGURACE – sem dosad URL z raw.githubusercontent.com
-// ============================================================
-const DATA_URL = "https://raw.githubusercontent.com/ucetnizaverka-hash/Live-reporting/main/data/vykazy_demo_sro.json";
-const PDF_URL  = "https://raw.githubusercontent.com/ucetnizaverka-hash/Live-reporting/main/data/vykazy_demo_sro.pdf";
-// ============================================================
+document.getElementById("pdf-btn").href = PDF_URL;
 
-const kc = (v, empty = "—") => {
-  if (v === null || v === undefined) return empty;
-  const n = parseFloat(v);
-  if (isNaN(n)) return String(v);
-  return n.toLocaleString("cs-CZ", { maximumFractionDigits: 0 }) + " Kč";
-};
-const pct = v => (v === null || v === undefined) ? "—" : parseFloat(v).toFixed(1) + " %";
-const delta = (a, b) => {
-  if (!b || b === 0) return null;
-  return ((a - b) / Math.abs(b) * 100).toFixed(1);
-};
-const arrow = d => {
-  if (d === null) return "";
-  const n = parseFloat(d);
-  if (n > 0) return `<span class="delta up">▲ ${n}%</span>`;
-  if (n < 0) return `<span class="delta down">▼ ${Math.abs(n)}%</span>`;
-  return "";
-};
-
-function row(label, bk, mn, isBold, isIndent, isGray) {
-  const cls = isBold ? "bold" : "";
-  const tdCls = isIndent ? "indent" : (isGray ? "gray" : "");
-  const chg = (mn !== undefined && mn !== null && bk !== null) ? delta(bk, mn) : null;
-  const bkColor = (bk < 0) ? " neg" : "";
-  let tr = `<tr class="${cls}">
-    <td class="${tdCls}">${label}</td>
-    <td class="${bkColor}">${kc(bk)}</td>`;
-  if (mn !== undefined) {
-    tr += `<td class="gray">${kc(mn)}</td>`;
-    tr += `<td>${chg !== null ? (parseFloat(chg) >= 0 ? `<span style="color:var(--green)">▲ ${chg}%</span>` : `<span style="color:var(--red)">▼ ${Math.abs(parseFloat(chg))}%</span>`) : "—"}</td>`;
-  }
-  tr += `</tr>`;
-  return tr;
-}
-
-fetch(DATA_URL + "?t=" + Date.now())
-  .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-  .then(d => render(d))
-  .catch(e => {
-    document.getElementById("loading").style.display = "none";
-    const eb = document.getElementById("error-box");
-    eb.style.display = "block";
-    eb.innerHTML = `<strong>Nepodařilo se načíst data.</strong> ${e.message}<br>
-      <small>URL: ${DATA_URL}</small>`;
-  });
-
-function render(d) {
-  document.getElementById("loading").style.display = "none";
-  document.getElementById("app").style.display = "block";
-
-  const m = d.meta, r = d.rozvaha, v = d.vzz, cf = d.cashflow, a = d.analyza;
-  const mn = d.minule || {};
-  const hasMin = Object.keys(mn).length > 0;
-
-  // HEADER
-  document.getElementById("hdr-nazev").textContent = m.nazev || m.klient_id;
-  document.getElementById("hdr-period").textContent = m.period_label;
-  document.getElementById("hdr-ico").textContent = m.ico || "—";
-  document.title = (m.nazev || "Výkazy") + " | Živé výkaznictví";
-
-  // DISCLAIMER
-  document.getElementById("disclaimer-box").textContent = m.upozorneni || "";
-
-  // PDF link
-  document.getElementById("pdf-link").href = PDF_URL;
-  document.getElementById("updated-label").textContent = "Aktualizováno: " + (m.updated || "").replace("T", " ").slice(0, 16);
+loadData(d => {
+  const a = d.aktualni, s = d.sektor;
+  const periody = d.periody || [];
+  document.title = (d.nazev||"")+" | Dashboard";
+  document.getElementById("updated").textContent = "Aktualizováno: "+(a.period_label||"")+" · "+(d.updated||"").slice(0,10);
 
   // KPI
-  document.getElementById("kpi-trzby").textContent = kc(v.trzby_celkem);
-  document.getElementById("kpi-trzby-delta").innerHTML = hasMin ? arrow(delta(v.trzby_celkem, mn.trzby_celkem)) : "";
-  document.getElementById("kpi-vh").textContent = kc(v.vh_po_zdaneni);
-  document.getElementById("kpi-vh-delta").innerHTML = hasMin ? arrow(delta(v.vh_po_zdaneni, mn.vh_za_obdobi)) : "";
-  document.getElementById("kpi-aktiva").textContent = kc(r.aktiva_celkem);
-  document.getElementById("kpi-aktiva-delta").innerHTML = hasMin ? arrow(delta(r.aktiva_celkem, mn.aktiva_netto)) : "";
-  document.getElementById("kpi-pp").textContent = kc(r.penezni_prostredky);
-  document.getElementById("kpi-cf").textContent = kc(cf.cf_provozni);
-
-  // Altman
-  const azEl = document.getElementById("kpi-altman-z");
-  const azPasmo = document.getElementById("kpi-altman-pasmo");
-  azEl.textContent = a.altman_z;
-  const pasmoMap = { zelene: ["zelene", "ZDRAVÁ FIRMA"], sede: ["sede", "ŠEDÁ ZÓNA"], cervene: ["cervene", "RIZIKO"] };
-  const [cls, lbl] = pasmoMap[a.altman_pasmo] || ["sede", a.altman_pasmo];
-  azPasmo.textContent = lbl;
-  azPasmo.className = "altman-badge " + cls;
-  document.getElementById("kpi-altman-sub").textContent = "Model predikce bankrotu";
-
-  document.getElementById("kpi-zadluzenost").textContent = pct(a.celkova_zadluzenost);
-  document.getElementById("kpi-likvidita").textContent = a.bezna_likvidita ?? "—";
-
-  // VZZ TABLE
-  const vzzHasMin = hasMin && mn.trzby_celkem !== undefined;
-  if (vzzHasMin) {
-    document.getElementById("th-vzz-bk").textContent = m.period_label;
-    document.getElementById("th-vzz-min").style.display = "";
-    document.getElementById("th-vzz-min").textContent = mn.rok || "Minulé";
-    document.getElementById("th-vzz-chg").style.display = "";
-    document.getElementById("th-vzz-chg").textContent = "Δ %";
-  }
-  const vzz_rows = [
-    ["Tržby z prodeje výrobků a služeb", v.trzby_sluzby, mn.trzby_vyrobky_sluzby, false, false],
-    ["Tržby za prodej zboží", v.trzby_zbozi, mn.trzby_zbozi, false, false],
-    ["TRŽBY CELKEM", v.trzby_celkem, mn.trzby_celkem, true, false],
-    ["Výkonová spotřeba", v.vyk_spotreba, mn.vyk_spotreba, false, true],
-    ["Osobní náklady", v.osobni_naklady, mn.osobni_naklady, false, true],
-    ["Odpisy", v.odpisy, mn.odpisy, false, true],
-    ["Ostatní provozní výnosy", v.ost_prov_vyn, null, false, true],
-    ["Ostatní provozní náklady", v.ost_prov_nak, null, false, true],
-    ["PROVOZNÍ VH", v.provozni_vh, mn.provozni_vh, true, false],
-    ["Finanční VH", v.financni_vh, mn.financni_vh, false, false],
-    ["VH PŘED ZDANĚNÍM", v.vh_pred_zdanenim, mn.vh_pred_zdanenim, true, false],
-    ["Daň z příjmů (21 % odhad)", v.dan, mn.dan_z_prijmu, false, false, true],
-    ["VH ZA OBDOBÍ", v.vh_po_zdaneni, mn.vh_za_obdobi, true, false],
+  const prevP = periody[periody.length-1];
+  const kpiData = [
+    {lbl:"Tržby celkem", val:kc(a.trzby_celkem), delta: prevP?deltaHtml(a.trzby_celkem,prevP.trzby_celkem):""},
+    {lbl:"VH za období", val:kc(a.vh_za_obdobi), delta: prevP?deltaHtml(a.vh_za_obdobi,prevP.vh_za_obdobi):""},
+    {lbl:"EBITDA",       val:kc(a.ebitda),        delta: prevP?deltaHtml(a.ebitda,prevP.ebitda):""},
+    {lbl:"Aktiva celkem",val:kc(a.aktiva_netto),  delta: prevP?deltaHtml(a.aktiva_netto,prevP.aktiva_netto):""},
+    {lbl:"Peněžní prostředky",val:kc(a.pp),       sub:"CF provozní: "+kc(a.cf_provozni)},
+    {lbl:"Altman Z-skóre", val:a.altman_z, extra: altmanBadge(a.altman_pasmo), cls:"navy"},
+    {lbl:"Celk. zadluženost",val:pct(a.celkova_zadluzenost), sub:"Benchmark: "+pct(s.celkova_zadluzenost)},
+    {lbl:"Běžná likvidita",  val:num(a.bezna_likvidita),     sub:"Benchmark: "+num(s.bezna_likvidita)},
   ];
-  document.getElementById("tbody-vzz").innerHTML = vzz_rows.map(([lbl, bk, mnv, bold, indent, gray]) =>
-    row(lbl, bk, vzzHasMin ? mnv : undefined, bold, indent, gray)
-  ).join("");
+  document.getElementById("kpi-grid").innerHTML = kpiData.map(k=>`
+    <div class="kpi ${k.cls||''}">
+      <div class="lbl">${k.lbl}</div>
+      <div class="val">${k.val} ${k.extra||""}</div>
+      ${k.delta?`<div>${k.delta}</div>`:""}
+      ${k.sub?`<div class="sub">${k.sub}</div>`:""}
+    </div>`).join("");
 
-  // ROZVAHA TABLE
-  const rozHasMin = hasMin && mn.aktiva_netto !== undefined;
-  if (rozHasMin) {
-    document.getElementById("th-roz-bk").textContent = m.period_label;
-    document.getElementById("th-roz-min").style.display = "";
-    document.getElementById("th-roz-min").textContent = mn.rok || "Minulé";
-    document.getElementById("th-roz-chg").style.display = "";
-    document.getElementById("th-roz-chg").textContent = "Δ %";
-  }
-  const roz_rows = [
-    ["AKTIVA CELKEM", r.aktiva_celkem, mn.aktiva_netto, true, false],
-    ["Stálá aktiva", r.stala_aktiva, mn.stala_netto, false, true],
-    ["Oběžná aktiva", r.obezna_aktiva, mn.obezna_netto, false, true],
-    ["— Zásoby", r.zasoby, mn.zasoby, false, true],
-    ["— Pohledávky kr.", r.pohledavky_kr, mn.pohledavky_kr, false, true],
-    ["— Peněžní prostředky", r.penezni_prostredky, mn.pp, false, true],
-    ["", null, null, false, false],
-    ["PASIVA CELKEM", r.pasiva_celkem, mn.pasiva_celkem, true, false],
-    ["Vlastní kapitál", r.vlastni_kapital, mn.vk, false, true],
-    ["— VH minulých let", r.vh_min_let, null, false, true],
-    ["— VH běžného období", r.vh_bezne_obdobi, mn.vh_za_obdobi, false, true],
-    ["Cizí zdroje", r.cizi_zdroje, mn.cizi_zdroje, false, true],
-    ["— Závazky kr.", r.zavazky_kr, mn.zav_kr, false, true],
+  // Charts – vsechny dostupne periody + aktualni
+  const allP = [...periody, a];
+  const labels = allP.map(p=>p.label||p.period_label);
+  const trzby  = allP.map(p=>p.trzby_celkem||0);
+  const vh     = allP.map(p=>p.vh_za_obdobi||0);
+  const aktiva = allP.map(p=>p.aktiva_netto||0);
+  const roa_d  = allP.map(p=>p.roa||0);
+
+  const cw = document.getElementById("charts");
+  cw.innerHTML = `
+    <div class="chart-box"><h3>Tržby a VH (Kč)</h3><canvas id="ch1"></canvas></div>
+    <div class="chart-box"><h3>Aktiva a ROA (%)</h3><canvas id="ch2"></canvas></div>`;
+
+  new Chart(document.getElementById("ch1"),{type:"bar",data:{labels,datasets:[
+    {label:"Tržby",data:trzby,backgroundColor:"rgba(27,36,105,.75)",borderRadius:4},
+    {label:"VH",   data:vh,   backgroundColor:"rgba(212,149,42,.85)",borderRadius:4},
+  ]},options:{responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{position:"bottom",labels:{font:{size:11}}}},
+    scales:{y:{ticks:{callback:v=>(v/1000).toFixed(0)+" tis."}}}}});
+
+  new Chart(document.getElementById("ch2"),{type:"bar",data:{labels,datasets:[
+    {label:"Aktiva",data:aktiva,backgroundColor:"rgba(27,36,105,.6)",borderRadius:4,yAxisID:"y"},
+    {label:"ROA %", data:roa_d, backgroundColor:"rgba(212,149,42,.9)",borderRadius:4,yAxisID:"y2",type:"line",tension:.3},
+  ]},options:{responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{position:"bottom",labels:{font:{size:11}}}},
+    scales:{y:{ticks:{callback:v=>(v/1000).toFixed(0)+" tis."}},
+            y2:{position:"right",ticks:{callback:v=>v+"%"},grid:{drawOnChartArea:false}}}}});
+
+  // Trend tabulka
+  const cols = allP.map(p=>p.label);
+  document.getElementById("trend-head").innerHTML =
+    `<tr><th style="width:35%">Ukazatel</th>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>`;
+  const rows = [
+    {lbl:"Tržby celkem",      key:"trzby_celkem",      fmt:kc},
+    {lbl:"Provozní VH",       key:"provozni_vh",        fmt:kc},
+    {lbl:"VH za období",      key:"vh_za_obdobi",       fmt:kc},
+    {lbl:"EBITDA",            key:"ebitda",             fmt:kc},
+    {lbl:"Aktiva celkem",     key:"aktiva_netto",       fmt:kc},
+    {lbl:"ROA",               key:"roa",                fmt:pct},
+    {lbl:"ROE",               key:"roe",                fmt:pct},
+    {lbl:"ROS",               key:"ros",                fmt:pct},
+    {lbl:"Běžná likvidita",   key:"bezna_likvidita",    fmt:num},
+    {lbl:"Celk. zadluženost", key:"celkova_zadluzenost",fmt:pct},
+    {lbl:"Altman Z",          key:"altman_z",           fmt:v=>v??"-"},
   ];
-  document.getElementById("tbody-roz").innerHTML = roz_rows.map(([lbl, bk, mnv, bold, indent]) => {
-    if (!lbl) return `<tr><td colspan="4" style="padding:4px"></td></tr>`;
-    return row(lbl, bk, rozHasMin ? mnv : undefined, bold, indent);
+  document.getElementById("trend-body").innerHTML = rows.map(r=>{
+    const vals = allP.map(p=>r.fmt(p[r.key]));
+    return `<tr><td>${r.lbl}</td>${vals.map(v=>`<td>${v}</td>`).join("")}</tr>`;
   }).join("");
-
-  // CF TABLE
-  const cf_rows = [
-    ["PP na začátku období", cf.pp_zacatek, false],
-    ["CF provozní činnost", cf.cf_provozni, true],
-    ["CF investiční činnost", cf.cf_investicni, false],
-    ["CF finanční činnost", cf.cf_financni, false],
-    ["PP na konci (CF)", cf.pp_konec_cf, true],
-    ["PP na konci (rozvaha)", cf.pp_konec_rozvaha, false],
-  ];
-  document.getElementById("tbody-cf").innerHTML = cf_rows.map(([lbl, val, bold]) => {
-    const cls = bold ? "bold" : "";
-    const neg = val < 0 ? " neg" : "";
-    return `<tr class="${cls}"><td>${lbl}</td><td class="${neg}">${kc(val)}</td></tr>`;
-  }).join("");
-
-  // UKAZATELE
-  const az_colors = { zelene: "var(--green)", sede: "#92400e", cervene: "var(--red)" };
-  const az_color = az_colors[a.altman_pasmo] || "black";
-  document.getElementById("tbody-uk").innerHTML = `
-    <tr><td>Rentabilita aktiv (ROA)</td><td>${pct(a.roa)}</td></tr>
-    <tr><td>Rentabilita vl. kapitálu (ROE)</td><td>${pct(a.roe)}</td></tr>
-    <tr><td>Rentabilita tržeb (ROS)</td><td>${pct(a.ros)}</td></tr>
-    <tr><td>Běžná likvidita</td><td>${a.bezna_likvidita ?? "—"}</td></tr>
-    <tr><td>Okamžitá likvidita</td><td>${a.okamzita_likvidita ?? "—"}</td></tr>
-    <tr><td>Celková zadluženost</td><td>${pct(a.celkova_zadluzenost)}</td></tr>
-    <tr class="bold"><td>Altman Z-skóre</td><td style="color:${az_color}">${a.altman_z} [${(a.altman_pasmo||"").toUpperCase()}]</td></tr>
-  `;
-
-  // CHART – VZZ
-  const labels = hasMin ? [mn.rok || "Minulé", m.period_label] : [m.period_label];
-  const trzby_data = hasMin ? [mn.trzby_celkem || 0, v.trzby_celkem] : [v.trzby_celkem];
-  const vh_data    = hasMin ? [mn.vh_za_obdobi || 0, v.vh_po_zdaneni] : [v.vh_po_zdaneni];
-  new Chart(document.getElementById("chart-vzz"), {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        { label: "Tržby", data: trzby_data, backgroundColor: "rgba(27,36,105,0.75)", borderRadius: 4 },
-        { label: "VH", data: vh_data, backgroundColor: "rgba(212,149,42,0.85)", borderRadius: 4 },
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: true,
-      plugins: { legend: { position: "bottom", labels: { font: { size: 11 } } } },
-      scales: { y: { ticks: { font: { size: 10 }, callback: v => (v/1000).toFixed(0) + " tis." } } }
-    }
-  });
-
-  // CHART – Aktiva
-  new Chart(document.getElementById("chart-aktiva"), {
-    type: "doughnut",
-    data: {
-      labels: ["Stálá aktiva", "Zásoby", "Pohledávky", "Pen. prostředky", "Ostatní OA"],
-      datasets: [{
-        data: [
-          r.stala_aktiva || 0,
-          r.zasoby || 0,
-          r.pohledavky_kr || 0,
-          r.penezni_prostredky || 0,
-          Math.max(0, (r.obezna_aktiva || 0) - (r.zasoby||0) - (r.pohledavky_kr||0) - (r.penezni_prostredky||0))
-        ],
-        backgroundColor: ["#1B2469","#D4952A","#3b82f6","#16a34a","#94a3b8"],
-        borderWidth: 2, borderColor: "white"
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: true,
-      plugins: { legend: { position: "bottom", labels: { font: { size: 10 }, boxWidth: 12 } } }
-    }
-  });
-}
-</script>
-</body>
-</html>
+});
+</script></body></html>
