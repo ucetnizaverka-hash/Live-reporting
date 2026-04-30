@@ -10,9 +10,9 @@
   --navy-lt:      #2d4a9e;
   --bg-from:      #1e3585;
   --bg-to:        #2e52c0;
-  --surface:      rgba(255,255,255,.09);
-  --surface-hov:  rgba(255,255,255,.14);
-  --border:       rgba(255,255,255,.13);
+  --surface:      rgba(255,255,255,.97);
+  --surface-hov:  rgba(255,255,255,1);
+  --border:       rgba(30,53,133,.15);
   --border-hov:   rgba(212,149,42,.35);
   --text:         #f0f4ff;
   --text-muted:   rgba(240,244,255,.6);
@@ -24,6 +24,19 @@
   --sep:          rgba(255,255,255,.1);
 }
 
+/* Card text - tmave na bilem pozadi */
+.section, .kpi, .chart-box, .uk-card {
+  color: #1a2035;
+}
+.kpi .lbl { color: #4b5563 !important; }
+.kpi .val { color: #111827 !important; }
+.kpi .sub { color: #6b7280 !important; }
+.section h2 { color: #1e3585 !important; }
+.chart-box h3 { color: #1e3585 !important; }
+table th { color: #4b5563 !important; background: rgba(30,53,133,.06) !important; }
+table td { color: #1a2035 !important; }
+tr.bold td { color: #111827 !important; background: rgba(30,53,133,.05) !important; }
+tr.highlight td { background: rgba(212,149,42,.08) !important; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
