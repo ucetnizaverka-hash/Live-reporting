@@ -4,7 +4,7 @@
   "ico": "12345678",
   "nace": "62.01",
   "nace_nazev": "Vyvoj pocitacoveho software",
-  "updated": "2026-04-30T19:29:26",
+  "updated": "2026-04-30T19:58:33",
   "aktualni": {
     "label": "1.1.2024–17.4.2024",
     "rok": 2024,
@@ -27,6 +27,9 @@
     "trzby_sluzby": 373193.61,
     "trzby_zbozi": 353051.28,
     "vyk_spotreba": 745305.33,
+    "nak_zbozi": 244992.61,
+    "spotreba_mat_energie": 30676.29,
+    "sluzby": 469636.43,
     "osobni_naklady": 24000.0,
     "mzdy": 24000.0,
     "odpisy": 38397.0,
