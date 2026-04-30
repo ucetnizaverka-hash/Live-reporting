@@ -1,0 +1,403 @@
+<!DOCTYPE html><html lang="cs"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Historická analýza | Průběžné výkaznictví</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+<style>
+/* -- Historika: rozsireni tmaveho themu -- */
+.page-tabs { display:flex; gap:0; margin-bottom:20px; border-radius:10px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.3); }
+.page-tab  { flex:1; padding:13px 20px; text-align:center; font-weight:700; font-size:12px; cursor:pointer; border:none; outline:none; transition:.2s; letter-spacing:.3px; }
+.page-tab.hist { background:rgba(212,149,42,.9); color:#fff; }
+.page-tab.live { background:rgba(255,255,255,.1); color:rgba(240,244,255,.7); }
+.page-tab.inactive { opacity:.4; filter:grayscale(.4); }
+.sec-header { display:flex; align-items:center; gap:12px; margin:24px 0 12px;
+  padding:10px 18px; border-radius:8px; font-weight:700; font-size:11px;
+  text-transform:uppercase; letter-spacing:.6px; }
+.sec-header.hist { background:rgba(255,255,255,.06); color:rgba(240,244,255,.6); border-left:3px solid var(--gold); }
+.sec-header.live { background:rgba(212,149,42,.1); color:var(--gold-lt); border-left:3px solid var(--gold); }
+.ana-table { width:100%; border-collapse:collapse; font-size:12px; margin-bottom:16px; }
+.ana-table th { background:rgba(255,255,255,.1); color:rgba(240,244,255,.6); padding:7px 10px; text-align:right; font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:.3px; border-bottom:1px solid rgba(255,255,255,.1); }
+.ana-table th:first-child { text-align:left; }
+.ana-table td { padding:6px 10px; border-bottom:1px solid rgba(255,255,255,.05); text-align:right; color:var(--text); }
+.ana-table td:first-child { text-align:left; font-weight:500; color:var(--text); }
+.ana-table tr.group-head td, .ana-table tr.grp td { background:rgba(255,255,255,.06); font-weight:700; color:var(--gold-lt); }
+.ana-table tr:hover td { background:rgba(255,255,255,.04); }
+.pos { color:var(--green); font-weight:600; }
+.neg { color:var(--red); font-weight:600; }
+.pct-cell { font-size:11px; color:var(--text-hint); }
+.charts-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px; }
+@media(max-width:900px){ .charts-3{ grid-template-columns:1fr 1fr; } }
+@media(max-width:600px){ .charts-3{ grid-template-columns:1fr; } }
+.proj-banner { background:rgba(212,149,42,.1); border:1px solid rgba(212,149,42,.3); border-radius:10px; padding:16px 20px; margin-bottom:20px; }
+.proj-banner h3 { font-size:13px; font-weight:700; color:var(--gold-lt); margin:0 0 10px; }
+.proj-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+.proj-item { text-align:center; }
+.proj-item .pv { font-size:17px; font-weight:700; color:var(--gold-lt); }
+.proj-item .pl { font-size:11px; color:var(--text-muted); }
+</style>
+</head><body>
+<header>
+  <div class="header-top">
+    <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Historická analýza</div>
+    <div class="header-meta" style="display:flex;align-items:center;gap:10px">
+      <strong id="hdr-nazev">—</strong><span id="hdr-period"></span><span id="mode-badge"></span> · IČO: <span id="hdr-ico"></span>
+    </div>
+  </div>
+  <nav id="nav-links"></nav>
+  <div id="mode-toggle"></div>
+</header>
+<main>
+  <div id="loading">Načítám…</div><div id="err"></div>
+  <div id="app" style="display:none">
+
+    <!-- přepínač stránek -->
+    <div class="page-tabs">
+      <button class="page-tab hist" onclick="location.href='historika.html'">Historická analýza</button>
+      <button class="page-tab live inactive" onclick="location.href='index.html'">Průběžné výkaznictví</button>
+    </div>
+
+    <!-- ========== ČÁST 1: HORIZONTÁLNÍ ANALÝZA ========== -->
+    <div class="sec-header hist">Horizontální analýza — meziroční změny</div>
+    <div class="section">
+      <h2>Výkaz zisku a ztráty</h2>
+      <div style="overflow-x:auto"><table class="ana-table" id="horiz-vzz"></table></div>
+    </div>
+    <div class="section">
+      <h2>Rozvaha — aktiva &amp; pasiva</h2>
+      <div style="overflow-x:auto"><table class="ana-table" id="horiz-rozvaha"></table></div>
+    </div>
+
+    <!-- ========== ČÁST 2: VERTIKÁLNÍ ANALÝZA ========== -->
+    <div class="sec-header hist">Vertikální analýza — struktura (%)</div>
+    <div class="section">
+      <h2>Struktura VZZ (% z tržeb celkem)</h2>
+      <div style="overflow-x:auto"><table class="ana-table" id="vert-vzz"></table></div>
+    </div>
+    <div class="section">
+      <h2>Struktura rozvahy (% z bilanční sumy)</h2>
+      <div style="overflow-x:auto"><table class="ana-table" id="vert-rozvaha"></table></div>
+    </div>
+
+    <!-- ========== ČÁST 3: FINANČNÍ UKAZATELE ========== -->
+    <div class="sec-header hist">Finanční ukazatele — srovnání let</div>
+    <div class="section">
+      <h2>Ukazatele rentability, likvidity a zadluženosti</h2>
+      <div style="overflow-x:auto"><table class="ana-table" id="ukazatele-table"></table></div>
+    </div>
+
+    <!-- ========== ČÁST 4: GRAFY TRENDŮ ========== -->
+    <div class="sec-header hist">Grafický přehled trendů</div>
+    <div class="charts-3">
+      <div class="chart-box"><h3>Tržby &amp; VH (tis. Kč)</h3><div id="ch-trzby" style="height:200px"></div></div>
+      <div class="chart-box"><h3>Struktura nákladů (tis. Kč)</h3><div id="ch-naklady" style="height:200px"></div></div>
+      <div class="chart-box"><h3>Rentabilita (%)</h3><div id="ch-rent" style="height:200px"></div></div>
+      <div class="chart-box"><h3>Likvidita &amp; zadluženost</h3><div id="ch-lik" style="height:200px"></div></div>
+      <div class="chart-box"><h3>Aktiva — struktura (tis. Kč)</h3><div id="ch-aktiva" style="height:200px"></div></div>
+      <div class="chart-box"><h3>Altman Z-skóre</h3><div id="ch-altman" style="height:200px"></div></div>
+    </div>
+
+    <!-- ========== ČÁST 5: PROJEKCE ========== -->
+    <div id="proj-section"></div>
+
+    <!-- ========== ČÁST 6: ŽIVÉ VÝKAZNICTVÍ ========== -->
+    <div class="sec-header live">Průběžné výkaznictví — aktuální stav</div>
+    <div class="section">
+      <p style="font-size:13px;color:var(--text-muted);margin:0">
+        Detailní výkazy, ukazatele a predikce aktuálního živého období jsou dostupné na hlavní stránce.
+      </p>
+      <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap">
+        <a class="btn-gold" href="index.html">Živý dashboard</a>
+        <a class="btn-gold" href="vzz.html" >VZZ</a>
+        <a class="btn-gold" href="rozvaha.html" >Rozvaha</a>
+        <a class="btn-gold" href="cashflow.html" >Cash Flow</a>
+        <a class="btn-gold" href="ukazatele.html" >Ukazatele</a>
+        <a class="btn-gold" href="predikce.html" >Predikce</a>
+      </div>
+    </div>
+
+  </div><!-- #app -->
+</main>
+<footer><span>22HLAV</span> · Historická analýza · Zpracováno jednou ročně z ověřených dat</footer>
+
+<script src="common.js"></script>
+<script>
+(function(){
+  if(typeof window.getModeData!=="function"){
+    window.getMode=function(){return location.hash.includes("rocni")?"rocni":"live";};
+    window.getModeData=function(d){if(window.getMode()==="rocni"&&d.rocni&&Object.keys(d.rocni).length>0)return d.rocni;return d.aktualni;};
+    window.getModeAllP=function(d){var cur=window.getModeData(d);return(d.periody||[]).concat([cur]).filter(function(p){return p&&Object.keys(p).length>0;});};
+    window.hasRocni=function(d){return!!(d&&d.rocni&&Object.keys(d.rocni).length>0);};
+    window.kc=function(v,z){if(v===null||v===undefined)return z||"";return Math.round(v).toLocaleString("cs-CZ")+" Kč";};
+    window.delta=function(a,b){if(!b||b===0)return null;return Math.round((a-b)/Math.abs(b)*1000)/10;};
+  }
+})();
+</script>
+<script>
+// ---- Konstanty ----
+const HIST_URL = `https://raw.githubusercontent.com/ucetnizaverka-hash/Live-reporting/main/data/historika_demo_sro.json`;
+const n0 = v => (v===null||v===undefined) ? "—" : Math.round(v).toLocaleString("cs-CZ")+" Kč";
+const n2 = v => (v===null||v===undefined) ? "—" : parseFloat(v).toFixed(2);
+const p1 = v => (v===null||v===undefined) ? "—" : parseFloat(v).toFixed(1)+" %";
+const tis = v=> (v===null||v===undefined) ? 0 : Math.round(v/1000);
+const deltaCell = (abs,pct) => {
+  if(abs===null||abs===undefined) return "";
+  const sign = abs>=0 ? "" : "";
+  const cls  = abs>=0 ? "pos" : "neg";
+  return `<span class="${cls}">${sign} ${Math.abs(Math.round(abs)).toLocaleString("cs-CZ")} Kč</span><br><span class="pct-cell">${pct!==null&&pct!==undefined ? (pct>=0?"+":"")+pct.toFixed(1)+"%" : ""}</span>`;
+};
+
+// ---- Horizontální tabulka ----
+function buildHoriz(periody, rows, el) {
+  const n = periody.length;
+  const hasHoriz = periody.some(p=>p.horiz);
+  let head = `<thead><tr><th>Položka</th>`;
+  periody.forEach(p => head += `<th>${p.label}</th>`);
+  if(hasHoriz) periody.forEach((p,i) => { if(p.horiz) head += `<th>Δ ${periody[i-1]?.label?.slice(-4)||""}→${p.label?.slice(-4)||""}</th>`; });
+  head += `</tr></thead>`;
+
+  let body = "<tbody>";
+  rows.forEach(row => {
+    if(row.group) { body += `<tr class="group-head"><td colspan="${n + 1 + (hasHoriz ? periody.filter(p=>p.horiz).length : 0)}">${row.label}</td></tr>`; return; }
+    body += `<tr><td>${row.label}</td>`;
+    periody.forEach(p => { body += `<td>${row.fmt ? row.fmt(p[row.key]) : n0(p[row.key])}</td>`; });
+    if(hasHoriz) periody.forEach(p => {
+      if(!p.horiz) return;
+      const h = p.horiz[row.key] || {};
+      body += `<td>${deltaCell(h.abs, h.pct)}</td>`;
+    });
+    body += `</tr>`;
+  });
+  body += "</tbody>";
+  el.innerHTML = head + body;
+}
+
+// ---- Vertikální tabulka ----
+function buildVert(periody, rows, vertKey, el) {
+  const n = periody.length;
+  let head = `<thead><tr><th>Položka</th>`;
+  periody.forEach(p => { head += `<th>${p.label}</th><th>%</th>`; });
+  head += `</tr></thead>`;
+
+  let body = "<tbody>";
+  rows.forEach(row => {
+    if(row.group) { body += `<tr class="group-head"><td colspan="${1 + n*2}">${row.label}</td></tr>`; return; }
+    body += `<tr><td>${row.label}</td>`;
+    periody.forEach(p => {
+      const abs = p[row.key];
+      const pct = (p[vertKey]||{})[row.vertK || row.key];
+      body += `<td>${n0(abs)}</td><td class="pct-cell">${pct!==null&&pct!==undefined ? pct.toFixed(1)+"%" : "—"}</td>`;
+    });
+    body += `</tr>`;
+  });
+  body += "</tbody>";
+  el.innerHTML = head + body;
+}
+
+// ---- Ukazatele tabulka ----
+function buildUkazatele(periody, el) {
+  const rows = [
+    {lbl:"ROA (rentabilita aktiv)",      key:"roa",                 fmt:p1},
+    {lbl:"ROE (rentabilita VK)",         key:"roe",                 fmt:p1},
+    {lbl:"ROS (rentabilita tržeb)",      key:"ros",                 fmt:p1},
+    {lbl:"EBITDA",                       key:"ebitda",              fmt:n0},
+    {lbl:"EBITDA marže",                 key:"ebitda_marze",        fmt:p1},
+    {lbl:"Běžná likvidita",              key:"bezna_likvidita",     fmt:n2},
+    {lbl:"Okamžitá likvidita",           key:"okamzita_likvidita",  fmt:n2},
+    {lbl:"Celková zadluženost",          key:"celkova_zadluzenost", fmt:p1},
+    {lbl:"Altman Z-skóre",              key:"altman_z",            fmt:n2},
+  ];
+  let head = `<thead><tr><th>Ukazatel</th>`;
+  periody.forEach(p => head += `<th>${p.label}</th>`);
+  if(periody.length >= 2) head += `<th>Trend</th>`;
+  head += `</tr></thead>`;
+
+  let body = "<tbody>";
+  rows.forEach(r => {
+    body += `<tr><td>${r.lbl}</td>`;
+    const vals = periody.map(p => p[r.key]);
+    vals.forEach(v => body += `<td>${r.fmt(v)}</td>`);
+    if(periody.length >= 2) {
+      const first = vals[0], last = vals[vals.length-1];
+      const trend = (first!==null&&last!==null&&first!==undefined&&last!==undefined)
+        ? (last > first ? '<span class="pos">↑</span>' : last < first ? '<span class="neg">↓</span>' : '→') : '—';
+      body += `<td>${trend}</td>`;
+    }
+    body += `</tr>`;
+  });
+  body += "</tbody>";
+  el.innerHTML = head + body;
+}
+
+// ---- Načtení historických dat ----
+async function loadHist() {
+  const r = await fetch(HIST_URL+"?t="+Date.now());
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+
+// ---- Hlavní render ----
+async function main() {
+  // Načti základní data (pro nav/header)
+  loadData(async d => {
+    document.title = (d.nazev||"")+" | Historická analýza";
+
+    // Načti historická data
+    let h;
+    try { h = await loadHist(); }
+    catch(e) {
+      document.getElementById("err").innerHTML =
+        `<strong>Historická data nejsou dostupná.</strong> ${e.message}<br>
+         <small>Spusťte ZPRACUJ_HISTORII.bat a PUSH_GITHUB.bat.</small>`;
+      document.getElementById("err").style.display="block";
+      return;
+    }
+
+    const periody = h.periody || [];
+    if(!periody.length) return;
+
+    // Horizontální analýza – VZZ
+    buildHoriz(periody, [
+      {group:true, label:"Výnosy"},
+      {label:"Tržby celkem",        key:"trzby_celkem"},
+      {label:"  — z toho služby",   key:"trzby_sluzby"},
+      {label:"  — z toho zboží",    key:"trzby_zbozi"},
+      {group:true, label:"Náklady"},
+      {label:"Výkonová spotřeba",   key:"vyk_spotreba"},
+      {label:"Osobní náklady",      key:"osobni_naklady"},
+      {label:"Odpisy",              key:"odpisy"},
+      {group:true, label:"Výsledky"},
+      {label:"Provozní VH",         key:"provozni_vh"},
+      {label:"Finanční VH",         key:"financni_vh"},
+      {label:"VH před zdaněním",    key:"vh_pred_zdanenim"},
+      {label:"VH za účetní období", key:"vh_za_obdobi"},
+      {label:"Čistý obrat",         key:"cisty_obrat"},
+    ], document.getElementById("horiz-vzz"));
+
+    // Horizontální analýza – Rozvaha
+    buildHoriz(periody, [
+      {group:true, label:"AKTIVA"},
+      {label:"Aktiva celkem",       key:"aktiva_netto"},
+      {label:"Stálá aktiva",        key:"stala_netto"},
+      {label:"Oběžná aktiva",       key:"obezna_netto"},
+      {label:"  Zásoby",            key:"zasoby"},
+      {label:"  Pohledávky kr.",    key:"pohledavky_kr"},
+      {label:"  Peněžní prostředky",key:"pp"},
+      {group:true, label:"PASIVA"},
+      {label:"Vlastní kapitál",     key:"vk"},
+      {label:"Cizí zdroje",         key:"cizi_zdroje"},
+      {label:"Závazky krátkodobé",  key:"zav_kr"},
+    ], document.getElementById("horiz-rozvaha"));
+
+    // Vertikální analýza – VZZ
+    buildVert(periody, [
+      {label:"Tržby celkem",        key:"trzby_celkem",       vertK:"trzby_celkem"},
+      {label:"  Tržby ze služeb",   key:"trzby_sluzby",       vertK:"trzby_sluzby"},
+      {label:"  Tržby ze zboží",    key:"trzby_zbozi",        vertK:"trzby_zbozi"},
+      {label:"Výkonová spotřeba",   key:"vyk_spotreba",       vertK:"vyk_spotreba"},
+      {label:"Osobní náklady",      key:"osobni_naklady",     vertK:"osobni_naklady"},
+      {label:"Odpisy",              key:"odpisy",             vertK:"odpisy"},
+      {label:"Provozní VH",         key:"provozni_vh",        vertK:"provozni_vh"},
+      {label:"Finanční VH",         key:"financni_vh",        vertK:"financni_vh"},
+      {label:"VH za období",        key:"vh_za_obdobi",       vertK:"vh_za_obdobi"},
+    ], "vert_vzz", document.getElementById("vert-vzz"));
+
+    // Vertikální analýza – Rozvaha
+    buildVert(periody, [
+      {label:"Aktiva celkem",       key:"aktiva_netto",  vertK:"aktiva_netto"},
+      {label:"Stálá aktiva",        key:"stala_netto",   vertK:"stala_netto"},
+      {label:"Oběžná aktiva",       key:"obezna_netto",  vertK:"obezna_netto"},
+      {label:"  Zásoby",            key:"zasoby",        vertK:"zasoby"},
+      {label:"  Pohledávky kr.",    key:"pohledavky_kr", vertK:"pohledavky_kr"},
+      {label:"  Peněžní prostředky",key:"pp",            vertK:"pp"},
+      {label:"Vlastní kapitál",     key:"vk",            vertK:"vk"},
+      {label:"Cizí zdroje",         key:"cizi_zdroje",   vertK:"cizi_zdroje"},
+      {label:"Závazky krátkodobé",  key:"zav_kr",        vertK:"zav_kr"},
+    ], "vert_rozvaha", document.getElementById("vert-rozvaha"));
+
+    // Ukazatele
+    buildUkazatele(periody, document.getElementById("ukazatele-table"));
+
+    // ---- Charts ----
+    const clrs  = ["rgba(27,36,105,.8)","rgba(212,149,42,.85)","rgba(22,163,74,.8)"];
+    const lclrs = ["#1b2469","#d4952a","#16a34a"];
+    const labels = periody.map(p=>p.label);
+
+    // ── Plotly dark layout ──────────────────────────────────────
+    const _PH = {paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
+      font:{color:'#f0f4ff',size:10,family:'Segoe UI,system-ui'},
+      margin:{t:6,r:10,b:44,l:50},showlegend:true,
+      legend:{bgcolor:'rgba(0,0,0,0)',orientation:'h',y:-0.3,font:{size:10}},
+      xaxis:{gridcolor:'rgba(255,255,255,.08)',tickfont:{size:10},automargin:true},
+      yaxis:{gridcolor:'rgba(255,255,255,.08)',tickfont:{size:10}}};
+    const _HC = {responsive:true,displayModeBar:false};
+
+    Plotly.newPlot("ch-trzby",[
+      {name:"Tržby",x:labels,y:periody.map(p=>tis(p.trzby_celkem)),type:"bar",
+       marker:{color:periody.map((_,i)=>`rgba(45,74,158,${0.7+i*.1})`)}},
+      {name:"VH",x:labels,y:periody.map(p=>tis(p.vh_za_obdobi)),type:"bar",
+       marker:{color:periody.map((_,i)=>`rgba(212,149,42,${0.7+i*.1})`)}}
+    ],{..._PH,yaxis:{..._PH.yaxis,ticksuffix:" tis."}},_HC);
+
+    Plotly.newPlot("ch-naklady",[
+      {name:"Výk. spotřeba",x:labels,y:periody.map(p=>tis(p.vyk_spotreba)),type:"bar",marker:{color:"rgba(45,74,158,.8)"}},
+      {name:"Osobní nákl.",x:labels,y:periody.map(p=>tis(p.osobni_naklady)),type:"bar",marker:{color:"rgba(212,149,42,.8)"}},
+      {name:"Odpisy",x:labels,y:periody.map(p=>tis(p.odpisy)),type:"bar",marker:{color:"rgba(52,211,153,.7)"}}
+    ],{..._PH,barmode:"stack",yaxis:{..._PH.yaxis,ticksuffix:" tis."}},_HC);
+
+    // Rentabilita — line chart
+    Plotly.newPlot("ch-rent",[
+      {name:"ROA %",x:labels,y:periody.map(p=>p.roa||0),type:"scatter",mode:"lines+markers",
+       line:{color:"#3b82f6",width:2},marker:{size:6,color:"#3b82f6"},fill:"tozeroy",fillcolor:"rgba(59,130,246,.1)"},
+      {name:"ROE %",x:labels,y:periody.map(p=>p.roe||0),type:"scatter",mode:"lines+markers",
+       line:{color:"#fbbf24",width:2},marker:{size:6,color:"#fbbf24"},fill:"tozeroy",fillcolor:"rgba(251,191,36,.08)"},
+      {name:"ROS %",x:labels,y:periody.map(p=>p.ros||0),type:"scatter",mode:"lines+markers",
+       line:{color:"#34d399",width:2},marker:{size:6,color:"#34d399"},fill:"tozeroy",fillcolor:"rgba(52,211,153,.08)"}
+    ],{..._PH,yaxis:{..._PH.yaxis,ticksuffix:" %"}},_HC);
+
+    Plotly.newPlot("ch-lik",[
+      {name:"Běžná likvidita",x:labels,y:periody.map(p=>p.bezna_likvidita||0),type:"bar",marker:{color:"rgba(45,74,158,.8)"}},
+      {name:"Zadluženost %",x:labels,y:periody.map(p=>p.celkova_zadluzenost||0),type:"scatter",mode:"lines+markers",yaxis:"y2",line:{color:"#f87171",width:2},marker:{size:6}}
+    ],{..._PH,yaxis:{..._PH.yaxis,title:{text:"Likvidita",font:{size:9}}},
+      yaxis2:{overlaying:"y",side:"right",gridcolor:"rgba(0,0,0,0)",ticksuffix:"%",tickfont:{size:9}}},_HC);
+
+    Plotly.newPlot("ch-aktiva",[
+      {name:"Stálá aktiva",x:labels,y:periody.map(p=>tis(p.stala_netto)),type:"bar",marker:{color:"rgba(212,149,42,.85)"}},
+      {name:"Oběžná aktiva",x:labels,y:periody.map(p=>tis(p.obezna_netto)),type:"bar",marker:{color:"rgba(45,74,158,.85)"}}
+    ],{..._PH,barmode:"stack",yaxis:{..._PH.yaxis,ticksuffix:" tis."}},_HC);
+
+    Plotly.newPlot("ch-altman",[
+      {name:"Altman Z",x:labels,y:periody.map(p=>p.altman_z||0),type:"scatter",mode:"lines+markers+text",
+       line:{color:"#fbbf24",width:2.5},marker:{size:9,color:"#fbbf24"},
+       text:periody.map(p=>(p.altman_z||0).toFixed(2)),textposition:"top center",textfont:{size:9}},
+      {name:"Hranice zdraví (2.9)",x:labels,y:labels.map(()=>2.9),type:"scatter",mode:"lines",line:{color:"#34d399",width:1,dash:"dot"}},
+      {name:"Hranice rizika (1.23)",x:labels,y:labels.map(()=>1.23),type:"scatter",mode:"lines",line:{color:"#f87171",width:1,dash:"dot"}}
+    ],{..._PH,yaxis:{..._PH.yaxis,range:[0,4]}},_HC);
+
+    // ---- Projekce ----
+    const proj = h.projekce || {};
+    if(proj.trzby_celkem) {
+      const items = [
+        {lbl:"Proj. tržby", val:proj.trzby_celkem},
+        {lbl:"Proj. provoz. VH", val:proj.provozni_vh},
+        {lbl:"Proj. VH čistý", val:proj.vh_za_obdobi},
+        {lbl:"Proj. EBITDA", val: proj.provozni_vh && proj.odpisy ? proj.provozni_vh + proj.odpisy : null},
+      ].filter(i=>i.val!==null&&i.val!==undefined);
+      document.getElementById("proj-section").innerHTML = `
+        <div class="sec-header live">Projekce — odhad na 12 měsíců</div>
+        <div class="proj-banner">
+          <h3>Extrapolace z ${proj._měsíce} měsíců (×${proj._koef}) — orientační odhad</h3>
+          <div class="proj-grid">
+            ${items.map(i=>`<div class="proj-item"><div class="pv">${Math.round(i.val).toLocaleString("cs-CZ")} Kč</div><div class="pl">${i.lbl}</div></div>`).join("")}
+          </div>
+          <p style="font-size:11px;color:#92400e;margin:10px 0 0"> Projekce předpokládá lineární vývoj — nezohledňuje sezónnost ani mimořádné vlivy.</p>
+        </div>`;
+    }
+
+    document.getElementById("loading").style.display="none";
+    document.getElementById("app").style.display="block";
+  });
+}
+main();
+
+</script>
+</body></html>
