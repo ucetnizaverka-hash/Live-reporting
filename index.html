@@ -2,7 +2,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard | Průběžné výkaznictví</title>
 <link rel="stylesheet" href="style.css">
-<!-- Plotly načteno dole v body -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
 <style>
 /* ===== STICKY TABS (dark) ===== */
 .sticky-tabs {
@@ -100,19 +100,11 @@
   <div id="err"></div>
   <div id="app" style="display:none">
 
-    <!-- STICKY TABS -->
-    <div class="sticky-tabs">
-      <button class="sticky-tab live" id="tab-live" onclick="scrollTo('sec-live')">Průběžné výkaznictví</button>
-      <button class="sticky-tab hist inactive" id="tab-hist" onclick="scrollTo('sec-hist')">Historická analýza</button>
-    </div>
 
     <!-- 
          SEKCE 1 — PRŮBĚŽNÉ VÝKAZNICTVÍ (zlatá)
      -->
-    <div class="sec-header live" id="sec-live">
-      Průběžné výkaznictví — aktuální období
-      <span class="sec-pill" id="live-period-pill"></span>
-    </div>
+    <div style="margin:20px 0 12px;font-size:13px;font-weight:700;color:var(--gold-lt);letter-spacing:.5px">PRŮBĚŽNÉ VÝKAZNICTVÍ &nbsp;<span id="live-period-pill" style="font-weight:500;color:var(--gray)"></span></div>
 
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
     <div class="kpi-grid" id="kpi-grid"></div>
@@ -126,68 +118,11 @@
       <span style="font-size:12px;color:var(--gray)" id="updated"></span>
     </div>
 
-    <!-- VIZUÁLNÍ ODDĚLOVAČ -->
-    <div class="section-sep"></div>
 
-    <!-- 
-         SEKCE 2 — HISTORICKÁ ANALÝZA (modrá)
-     -->
-    <div class="sec-header hist" id="sec-hist">
-      Historická analýza — meziroční srovnání
-      <span class="sec-pill">Zpracováno jednou ročně</span>
-    </div>
-
-    <div id="hist-loading" style="color:#888;font-size:13px;padding:10px 0">Načítám historická data…</div>
-    <div id="hist-err" style="display:none"></div>
-    <div id="hist-content" style="display:none">
-
-      <!-- Horizontální analýza -->
-      <div class="section">
-        <h2>Výkaz zisku a ztráty — meziroční změny</h2>
-        <div style="overflow-x:auto"><table class="ana-table" id="horiz-vzz"></table></div>
-      </div>
-      <div class="section">
-        <h2>Rozvaha — aktiva &amp; pasiva</h2>
-        <div style="overflow-x:auto"><table class="ana-table" id="horiz-rozvaha"></table></div>
-      </div>
-
-      <!-- Vertikální analýza -->
-      <div class="section">
-        <h2>Struktura VZZ (% z tržeb)</h2>
-        <div style="overflow-x:auto"><table class="ana-table" id="vert-vzz"></table></div>
-      </div>
-      <div class="section">
-        <h2>Struktura rozvahy (% z bilanční sumy)</h2>
-        <div style="overflow-x:auto"><table class="ana-table" id="vert-rozvaha"></table></div>
-      </div>
-
-      <!-- Finanční ukazatele -->
-      <div class="section">
-        <h2>Finanční ukazatele — srovnání let</h2>
-        <div style="overflow-x:auto"><table class="ana-table" id="ukazatele-table"></table></div>
-      </div>
-
-      <!-- Grafy trendů -->
-      <div class="section">
-        <h2>Grafický přehled trendů</h2>
-        <div class="charts-3">
-          <div class="chart-box"><h3>Tržby &amp; VH (tis. Kč)</h3><div id="hch-trzby" style="height:220px"></div></div>
-          <div class="chart-box"><h3>Struktura nákladů (tis. Kč)</h3><div id="hch-naklady" style="height:220px"></div></div>
-          <div class="chart-box"><h3>Rentabilita (%)</h3><div id="hch-rent" style="height:220px"></div></div>
-          <div class="chart-box"><h3>Likvidita &amp; zadluženost</h3><div id="hch-lik" style="height:220px"></div></div>
-          <div class="chart-box"><h3>Aktiva — struktura (tis. Kč)</h3><div id="hch-aktiva" style="height:220px"></div></div>
-          <div class="chart-box"><h3>Altman Z-skóre</h3><div id="hch-altman" style="height:220px"></div></div>
-        </div>
-      </div>
-
-      <!-- Projekce -->
-      <div id="proj-section"></div>
-
-    </div><!-- #hist-content -->
 
   </div><!-- #app -->
 </main>
-<footer><span>22HLAV</span> · Průběžné výkaznictví v2.0 · Historická analýza zpracována jednou ročně</footer>
+<footer><span>22HLAV</span> · Průběžné výkaznictví v2.0 </footer>
 <script src="common.js"></script>
 <script>
 (function(){
@@ -201,22 +136,6 @@
   }
 })();
 
-// Scroll helper + tab spy
-function scrollTo(id) {
-  document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"});
-}
-window.addEventListener("scroll", () => {
-  const histTop = document.getElementById("sec-hist")?.getBoundingClientRect().top ?? 9999;
-  const tl = document.getElementById("tab-live");
-  const th = document.getElementById("tab-hist");
-  if(!tl||!th) return;
-  if(histTop < 200) {
-    tl.classList.add("inactive"); th.classList.remove("inactive");
-  } else {
-    th.classList.add("inactive"); tl.classList.remove("inactive");
-  }
-}, {passive:true});
-</script>
 <script>
 // ================================================================
 // SEKCE 1: PRŮBĚŽNÉ VÝKAZNICTVÍ
@@ -557,5 +476,4 @@ function buildUkazatele(periody, el) {
   }
 })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
 </body></html>
