@@ -161,4 +161,16 @@ function benchColor(val, bench, higherBetter=true, tolerance=0.15) {
   if(isNaN(v)||isNaN(b)) return "";
   const ratio = higherBetter ? v/b : b/v;
   if(ratio>=1-tolerance) return "bench-ok";
-  if
+  if(ratio>=1-tolerance*2) return "bench-warn";
+  return "bench-bad";
+}
+
+// --- Trend sipka ---
+function trendArrow(cur, prev) {
+  if(prev===null||prev===undefined||cur===null||cur===undefined) return "";
+  const d = cur - prev;
+  if(Math.abs(d) < 0.01) return '<span class="delta">→</span>';
+  return d > 0
+    ? '<span class="delta up">▲ ' + Math.abs(d).toFixed(1) + '</span>'
+    : '<span class="delta down">▼ ' + Math.abs(d).toFixed(1) + '</span>';
+}
