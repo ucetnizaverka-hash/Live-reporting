@@ -8,7 +8,7 @@
     "period_label": "1.1.2024–17.4.2024",
     "datum_od": "2024-01-01",
     "datum_do": "2024-04-17",
-    "updated": "2026-04-30T19:58:33",
+    "updated": "2026-04-30T20:04:11",
     "kategorie_uj": "mikro",
     "pocet_zamestnancu": 0,
     "zdroj": "podklady.xlsx",
@@ -152,6 +152,6 @@
     "dan_z_prijmu": 0.0,
     "vh_za_obdobi": -102057.46,
     "cisty_obrat": 726244.89,
-    "archivovano": "2026-04-30T19:58:33"
+    "archivovano": "2026-04-30T20:04:11"
   }
 }
