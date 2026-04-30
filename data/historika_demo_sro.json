@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "klient_id": "demo_sro",
+    "nazev": "Demo s.r.o.",
+    "ico": "12345678",
+    "updated": "2026-04-30T07:32:33",
+    "roky": [
+      2023,
+      2024
+    ],
+    "pocet_roku": 2
+  },
+  "periody": [
+    {
+      "rok": 2023,
+      "label": "Rok 2023",
+      "mesice": 12,
+      "period_label": "Rok 2023",
+      "je_plny_rok": true,
+      "aktiva_netto": 3013000,
+      "stala_netto": 407000,
+      "obezna_netto": 2605000,
+      "zasoby": 0,
+      "pohledavky_kr": 0,
+      "pp": 0,
+      "vk": 241000,
+      "cizi_zdroje": 2707000,
+      "zav_kr": 2707000,
+      "trzby_sluzby": 1523000,
+      "trzby_zbozi": 2979000,
+      "trzby_celkem": 4502000,
+      "vyk_spotreba": 3625000,
+      "osobni_naklady": 450000,
+      "odpisy": 153000,
+      "provozni_vh": 199000,
+      "financni_vh": -29000,
+      "vh_pred_zdanenim": 170000,
+      "vh_za_obdobi": 170000,
+      "cisty_obrat": 4513000,
+      "roa": 5.64,
+      "roe": 70.54,
+      "ros": 3.78,
+      "ebitda": 352000,
+      "ebitda_marze": 7.82,
+      "bezna_likvidita": 0.96,
+      "okamzita_likvidita": 0.0,
+      "celkova_zadluzenost": 89.84,
+      "altman_z": 1.915,
+      "altman_pasmo": "sede",
+      "horiz": null,
+      "vert_rozvaha": {
+        "stala_netto": 13.51,
+        "obezna_netto": 86.46,
+        "zasoby": 0.0,
+        "pohledavky_kr": 0.0,
+        "pp": 0.0,
+        "vk": 8.0,
+        "cizi_zdroje": 89.84,
+        "zav_kr": 89.84
+      },
+      "vert_vzz": {
+        "trzby_sluzby": 33.83,
+        "trzby_zbozi": 66.17,
+        "vyk_spotreba": 80.52,
+        "osobni_naklady": 10.0,
+        "odpisy": 3.4,
+        "provozni_vh": 4.42,
+        "financni_vh": -0.64,
+        "vh_pred_zdanenim": 3.78,
+        "vh_za_obdobi": 3.78
+      }
+    },
+    {
+      "rok": 2024,
+      "label": "1.1.2024–17.4.2024",
+      "mesice": 4,
+      "period_label": "1.1.2024–17.4.2024",
+      "je_plny_rok": false,
+      "aktiva_netto": 2869221.54,
+      "stala_netto": 368829.64,
+      "obezna_netto": 2499391.9,
+      "zasoby": 1249957.06,
+      "pohledavky_kr": 229557.9,
+      "pp": 1019876.94,
+      "vk": 139489.73,
+      "cizi_zdroje": 2729731.81,
+      "zav_kr": 2729731.81,
+      "trzby_sluzby": 373193.61,
+      "trzby_zbozi": 353051.28,
+      "trzby_celkem": 726244.89,
+      "vyk_spotreba": 745305.33,
+      "osobni_naklady": 24000.0,
+      "odpisy": 38397.0,
+      "provozni_vh": -95251.93,
+      "financni_vh": -6805.53,
+      "vh_pred_zdanenim": -102057.46,
+      "vh_za_obdobi": -102057.46,
+      "cisty_obrat": 726244.89,
+      "roa": -3.56,
+      "roe": -73.16,
+      "ros": -14.05,
+      "ebitda": -56855.0,
+      "ebitda_marze": -7.83,
+      "bezna_likvidita": 0.92,
+      "okamzita_likvidita": 0.37,
+      "celkova_zadluzenost": 95.14,
+      "altman_z": 0.148,
+      "altman_pasmo": "cervene",
+      "horiz": {
+        "aktiva_netto": {
+          "abs": -143778.0,
+          "pct": -4.8
+        },
+        "stala_netto": {
+          "abs": -38170.0,
+          "pct": -9.4
+        },
+        "obezna_netto": {
+          "abs": -105608.0,
+          "pct": -4.1
+        },
+        "zasoby": {
+          "abs": 1249957.0,
+          "pct": null
+        },
+        "pohledavky_kr": {
+          "abs": 229558.0,
+          "pct": null
+        },
+        "pp": {
+          "abs": 1019877.0,
+          "pct": null
+        },
+        "vk": {
+          "abs": -101510.0,
+          "pct": -42.1
+        },
+        "cizi_zdroje": {
+          "abs": 22732.0,
+          "pct": 0.8
+        },
+        "zav_kr": {
+          "abs": 22732.0,
+          "pct": 0.8
+        },
+        "trzby_celkem": {
+          "abs": -3775755.0,
+          "pct": -83.9
+        },
+        "vyk_spotreba": {
+          "abs": -2879695.0,
+          "pct": -79.4
+        },
+        "osobni_naklady": {
+          "abs": -426000.0,
+          "pct": -94.7
+        },
+        "odpisy": {
+          "abs": -114603.0,
+          "pct": -74.9
+        },
+        "provozni_vh": {
+          "abs": -294252.0,
+          "pct": -147.9
+        },
+        "financni_vh": {
+          "abs": 22194.0,
+          "pct": 76.5
+        },
+        "vh_pred_zdanenim": {
+          "abs": -272057.0,
+          "pct": -160.0
+        },
+        "vh_za_obdobi": {
+          "abs": -272057.0,
+          "pct": -160.0
+        },
+        "cisty_obrat": {
+          "abs": -3786755.0,
+          "pct": -83.9
+        }
+      },
+      "vert_rozvaha": {
+        "stala_netto": 12.85,
+        "obezna_netto": 87.11,
+        "zasoby": 43.56,
+        "pohledavky_kr": 8.0,
+        "pp": 35.55,
+        "vk": 4.86,
+        "cizi_zdroje": 95.14,
+        "zav_kr": 95.14
+      },
+      "vert_vzz": {
+        "trzby_sluzby": 51.39,
+        "trzby_zbozi": 48.61,
+        "vyk_spotreba": 102.62,
+        "osobni_naklady": 3.3,
+        "odpisy": 5.29,
+        "provozni_vh": -13.12,
+        "financni_vh": -0.94,
+        "vh_pred_zdanenim": -14.05,
+        "vh_za_obdobi": -14.05
+      }
+    }
+  ],
+  "projekce": {
+    "trzby_celkem": 2178735.0,
+    "vyk_spotreba": 2235916.0,
+    "osobni_naklady": 72000.0,
+    "odpisy": 115191.0,
+    "provozni_vh": -285756.0,
+    "vh_pred_zdanenim": -306172.0,
+    "vh_za_obdobi": -306172.0,
+    "cisty_obrat": 2178735.0,
+    "_koef": 3.0,
+    "_mesice": 4,
+    "_poznamka": "Extrapolace z 4 měsíců na 12 (×3.00)"
+  }
+}
