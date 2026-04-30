@@ -28,7 +28,7 @@ const deltaHtml = (a,b,invert=false) => {
 };
 
 // ============================================================
-// REZIM: "live" (živé výkaznictví) nebo "rocni" (roční výkazy)
+// REZIM: "live" (průběžné výkaznictví) nebo "rocni" (roční výkazy)
 // ============================================================
 const getMode = () => location.hash.includes("rocni") ? "rocni" : "live";
 const setMode = (m) => {
@@ -58,12 +58,13 @@ const hasRocni = (d) => d && d.rocni && Object.keys(d.rocni).length > 0;
 
 // --- Nav html ---
 const pages = [
-  {href:"index.html",    label:"Dashboard"},
-  {href:"vzz.html",      label:"VZZ"},
-  {href:"rozvaha.html",  label:"Rozvaha"},
-  {href:"cashflow.html", label:"Cash Flow"},
-  {href:"ukazatele.html",label:"Ukazatele"},
-  {href:"predikce.html", label:"Predikce"},
+  {href:"index.html",     label:"Dashboard"},
+  {href:"vzz.html",       label:"VZZ"},
+  {href:"rozvaha.html",   label:"Rozvaha"},
+  {href:"cashflow.html",  label:"Cash Flow"},
+  {href:"ukazatele.html", label:"Ukazatele"},
+  {href:"predikce.html",  label:"Predikce"},
+  {href:"historika.html", label:"Historická analýza"},
 ];
 
 function _updateModeToggle(d) {
@@ -74,7 +75,7 @@ function _updateModeToggle(d) {
   el.style.display = "flex";
   el.innerHTML = `
     <span style="font-size:11px;color:var(--gray);margin-right:6px">Zobrazení:</span>
-    <button class="${mode==='live'?'mt-active':''}"   onclick="setMode('live')">Živé výkaznictví</button>
+    <button class="${mode==='live'?'mt-active':''}"   onclick="setMode('live')">Průběžné výkaznictví</button>
     <button class="${mode==='rocni'?'mt-active':''}"  onclick="setMode('rocni')">Roční výkazy</button>`;
 }
 
@@ -116,7 +117,7 @@ async function loadData(renderFn) {
       const rocniOk = hasRocni(d);
       modeBadge.innerHTML = mode==="rocni" && rocniOk
         ? `<span class="badge yellow">Roční výkazy · ${d.rocni.period_label||""}</span>`
-        : `<span class="badge green">Živé výkaznictví · ${(d.aktualni||{}).period_label||""}</span>`;
+        : `<span class="badge green">Průběžné výkaznictví · ${(d.aktualni||{}).period_label||""}</span>`;
     }
 
     renderFn(d);
@@ -132,7 +133,7 @@ async function loadData(renderFn) {
       if(mb) {
         mb.innerHTML = mode2==="rocni" && hasRocni(d)
           ? `<span class="badge yellow">Roční výkazy · ${d.rocni.period_label||""}</span>`
-          : `<span class="badge green">Živé výkaznictví · ${(d.aktualni||{}).period_label||""}</span>`;
+          : `<span class="badge green">Průběžné výkaznictví · ${(d.aktualni||{}).period_label||""}</span>`;
       }
       renderFn(d);
     };
@@ -160,6 +161,4 @@ function benchColor(val, bench, higherBetter=true, tolerance=0.15) {
   if(isNaN(v)||isNaN(b)) return "";
   const ratio = higherBetter ? v/b : b/v;
   if(ratio>=1-tolerance) return "bench-ok";
-  if(ratio>=1-tolerance*2) return "bench-warn";
-  return "bench-bad";
-}
+  if
