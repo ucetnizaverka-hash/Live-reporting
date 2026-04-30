@@ -1,17 +1,17 @@
 <!DOCTYPE html><html lang="cs"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rozvaha | Živé výkaznictví</title>
+<title>Rozvaha | Průběžné výkaznictví</title>
 <link rel="stylesheet" href="style.css">
 <style>
   table { font-size: 12px; }
   th, td { padding: 4px 8px; }
-  td.oz { width:5%; text-align:center; font-weight:600; color:var(--navy); }
-  td.cr { width:4%; text-align:center; color:var(--gray); font-size:11px; }
+  td.oz { width:5%; text-align:center; font-weight:600; color:var(--gold-lt); }
+  td.cr { width:4%; text-align:center; color:var(--text-hint); font-size:11px; }
   td.tx { }
   td.num { text-align:right; }
-  tr.section-head td { background:#eef0f8 !important; font-weight:700; color:var(--navy); }
-  tr.zero td.num { color:#bbb; }
-  .tis-note { font-size:11px; color:var(--gray); margin-bottom:8px; }
+  tr.section-head td { background:rgba(255,255,255,.08) !important; font-weight:700; color:var(--gold-lt); }
+  tr.zero td.num { color:rgba(240,244,255,.25); }
+  .tis-note { font-size:11px; color:var(--text-muted); margin-bottom:8px; }
 </style>
 </head><body>
 <header>
@@ -39,7 +39,7 @@
     <div class="section" id="bilance-row" style="padding:12px 20px;font-size:13px"></div>
   </div>
 </main>
-<footer><span>22HLAV</span> · Živé výkaznictví v2.0 · Plný rozsah dle vyhlášky č. 500/2002 Sb.</footer>
+<footer><span>22HLAV</span> · Průběžné výkaznictví v2.0 · Plný rozsah dle vyhlášky č. 500/2002 Sb.</footer>
 <script src="common.js"></script>
 <script>
 (function(){
@@ -85,7 +85,7 @@ loadData(d => {
       <td class="oz">${oz}</td><td class="tx">${note?`<em style="color:var(--gray)">${txt}</em>`:txt}</td>
       <td class="cr">${cr}</td>`;
     vals.forEach(v => row += `<td class="num">${kc(v,'0 Kč')}</td>`);
-    if(showDelta){const d2=delta(last,prev); row+=d2===null?`<td></td>`:`<td class="${d2>=0?'pos':'neg'}">${d2>=0?'▲':'▼'} ${Math.abs(d2).toFixed(1)}%</td>`;}
+    if(showDelta){const d2=delta(last,prev); row+=d2===null?`<td></td>`:`<td class="${d2>=0?'pos':'neg'}">${d2>=0?'':''} ${Math.abs(d2).toFixed(1)}%</td>`;}
     return row+`</tr>`;
   };
   const ASEP = () => `<tr class="sep"><td colspan="${3+n+(showDelta?1:0)}"></td></tr>`;
@@ -198,7 +198,7 @@ loadData(d => {
   const bil = Math.abs((a.aktiva_netto||0) - (a.pasiva_celkem||0)) < 100;
   document.getElementById("bilance-row").innerHTML =
     `Bilanční rovnost: <strong style="color:${bil?'var(--green)':'var(--red)'}">
-    ${bil ? '✓ OK' : '✗ NEROVNOST ' + kc((a.aktiva_netto||0)-(a.pasiva_celkem||0))}</strong>
+    ${bil ? ' OK' : ' NEROVNOST ' + kc((a.aktiva_netto||0)-(a.pasiva_celkem||0))}</strong>
     &nbsp;·&nbsp; Aktiva: <strong>${kc(a.aktiva_netto)}</strong>
     &nbsp;=&nbsp; Pasiva: <strong>${kc(a.pasiva_celkem)}</strong>`;
 });
