@@ -5,13 +5,13 @@
 <style>
   table { font-size: 12px; }
   th, td { padding: 4px 8px; }
-  td.oz { width:5%; text-align:center; font-weight:600; color:var(--gold-lt); }
-  td.cr { width:4%; text-align:center; color:var(--text-hint); font-size:11px; }
+  td.oz { width:5%; text-align:center; font-weight:600; color:var(--gold); }
+  td.cr { width:4%; text-align:center; color:var(--text-dim); font-size:11px; }
   td.tx { }
   td.num { text-align:right; }
-  tr.section-head td { background:rgba(255,255,255,.08) !important; font-weight:700; color:var(--gold-lt); }
+  tr.section-head td { background:rgba(0,0,0,.03) !important; font-weight:700; color:var(--gold); }
   tr.zero td.num { color:rgba(240,244,255,.25); }
-  .tis-note { font-size:11px; color:var(--text-muted); margin-bottom:8px; }
+  .tis-note { font-size:11px; color:var(--text-m); margin-bottom:8px; }
 </style>
 </head><body>
 <header>
@@ -39,7 +39,7 @@
     <div class="section" id="bilance-row" style="padding:12px 20px;font-size:13px"></div>
   </div>
 </main>
-<footer><span>22HLAV</span> · Průběžné výkaznictví v2.0 · Plný rozsah dle vyhlášky č. 500/2002 Sb.</footer>
+<footer>Data jsou generována automatizovaným účetním procesem · 22HLAV · Průběžné výkaznictví v2.0</footer>
 <script src="common.js"></script>
 <script>
 (function(){
@@ -82,7 +82,7 @@ loadData(d => {
     const allZero = vals.every(v=>!v||v==0);
     const cls = sec?'section-head':bold?'bold':sub2?'sub2':sub?'sub':'';
     let row = `<tr class="${cls}${(!sec&&!bold&&allZero)?' zero':''}">
-      <td class="oz">${oz}</td><td class="tx">${note?`<em style="color:var(--gray)">${txt}</em>`:txt}</td>
+      <td class="oz">${oz}</td><td class="tx">${note?`<em style="color:var(--text-dim)">${txt}</em>`:txt}</td>
       <td class="cr">${cr}</td>`;
     vals.forEach(v => row += `<td class="num">${kc(v,'0 Kč')}</td>`);
     if(showDelta){const d2=delta(last,prev); row+=d2===null?`<td></td>`:`<td class="${d2>=0?'pos':'neg'}">${d2>=0?'':''} ${Math.abs(d2).toFixed(1)}%</td>`;}

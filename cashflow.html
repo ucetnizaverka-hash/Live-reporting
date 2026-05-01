@@ -5,13 +5,13 @@
 <style>
   table { font-size: 12px; }
   th, td { padding: 4px 8px; }
-  td.oz { width:6%; text-align:center; font-weight:600; color:var(--gold-lt); white-space:nowrap; }
-  td.cr { width:4%; text-align:center; color:var(--text-hint); font-size:11px; }
+  td.oz { width:6%; text-align:center; font-weight:600; color:var(--gold); white-space:nowrap; }
+  td.cr { width:4%; text-align:center; color:var(--text-dim); font-size:11px; }
   td.tx { width:46%; }
   td.num { text-align:right; }
-  tr.section-head td { background:rgba(255,255,255,.08) !important; font-weight:700; color:var(--gold-lt); font-size:12px; }
+  tr.section-head td { background:rgba(0,0,0,.03) !important; font-weight:700; color:var(--gold); font-size:12px; }
   tr.zero td.num { color:rgba(240,244,255,.25); }
-  .tis-note { font-size:11px; color:var(--text-muted); margin-bottom:8px; }
+  .tis-note { font-size:11px; color:var(--text-m); margin-bottom:8px; }
 </style>
 </head><body>
 <header>
@@ -33,10 +33,10 @@
         <table id="cf-table"><thead id="cf-head"></thead><tbody id="cf-body"></tbody></table>
       </div>
     </div>
-    <div id="cf-nota" style="font-size:11px;color:var(--gray);padding:12px 20px;border-top:1px solid #eee;margin-top:8px"></div>
+    <div id="cf-nota" style="font-size:11px;color:var(--text-dim);padding:12px 20px;border-top:1px solid #eee;margin-top:8px"></div>
   </div>
 </main>
-<footer><span>22HLAV</span> · Průběžné výkaznictví v2.0 · Plný rozsah dle vyhlášky č. 500/2002 Sb.</footer>
+<footer>Data jsou generována automatizovaným účetním procesem · 22HLAV · Průběžné výkaznictví v2.0</footer>
 <script src="common.js"></script>
 <script>
 (function(){
@@ -89,7 +89,7 @@ loadData(d => {
     const zeroCls = (!sec && !bold && allZero) ? ' zero' : '';
     let row = `<tr class="${cls}${zeroCls}">
       <td class="oz">${oz}</td>
-      <td class="tx">${note ? `<em style="color:var(--gray)">${txt}</em>` : txt}</td>
+      <td class="tx">${note ? `<em style="color:var(--text-dim)">${txt}</em>` : txt}</td>
       <td class="cr">${cr}</td>`;
     vals.forEach(v => {
       const neg = v < 0;

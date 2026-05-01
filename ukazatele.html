@@ -51,7 +51,7 @@
     </div>
   </div>
 </main>
-<footer><span>22HLAV</span> · Průběžné výkaznictví v2.0 · Benchmark: MPO ČR, CZ-NACE 62, 2023</footer>
+<footer>Data jsou generována automatizovaným účetním procesem · 22HLAV · Průběžné výkaznictví v2.0</footer>
 <script src="common.js"></script>
 <script>
 (function(){
@@ -93,7 +93,7 @@ loadData(d => {
   const R = (label, key, bench, fmtFn, higherBetter=true, note="") => {
     const vals = allP.map(p=>fmtFn(p[key]));
     const cur  = a[key];
-    let row = `<tr><td>${label}${note?`<br><small style="color:var(--gray)">${note}</small>`:""}</td>`;
+    let row = `<tr><td>${label}${note?`<br><small style="color:var(--text-dim)">${note}</small>`:""}</td>`;
     vals.forEach((v,i)=>{
       const bcls = (showBench&&i===allP.length-1) ? benchColor(a[key],bench,higherBetter) : "";
       row += `<td class="${bcls}">${v}</td>`;
@@ -167,7 +167,7 @@ loadData(d => {
       const ax = p.altman_x||{};
       return num(ax[xk]);
     });
-    return `<tr><td><strong>${xk}</strong> (×${w})<br><small style="color:var(--gray)">${form}</small></td><td>${w}</td>${vals.map(v=>`<td>${v}</td>`).join("")}<td class="gray">${desc}</td></tr>`;
+    return `<tr><td><strong>${xk}</strong> (×${w})<br><small style="color:var(--text-dim)">${form}</small></td><td>${w}</td>${vals.map(v=>`<td>${v}</td>`).join("")}<td class="gray">${desc}</td></tr>`;
   });
   const zVals = allP.map(p=>{
     const pasmo = {zelene:"green",sede:"yellow",cervene:"red"}[p.altman_pasmo]||"yellow";
@@ -181,11 +181,11 @@ loadData(d => {
   // --- CHARTS (Plotly) ---
   const rentLabels = [...labels, `Sektor ${s.rok}`];
   const _PL = {paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
-    font:{color:'#f0f4ff',size:10,family:'Segoe UI,system-ui'},
+    font:{color:'#374151',size:10,family:'Segoe UI,system-ui'},
     margin:{t:6,r:10,b:44,l:46},showlegend:true,
     legend:{bgcolor:'rgba(0,0,0,0)',orientation:'h',y:-0.32,font:{size:10}},
-    xaxis:{gridcolor:'rgba(255,255,255,.08)',tickfont:{size:10},automargin:true},
-    yaxis:{gridcolor:'rgba(255,255,255,.08)',tickfont:{size:10}}};
+    xaxis:{gridcolor:'rgba(0,0,0,.07)',tickfont:{size:10},automargin:true},
+    yaxis:{gridcolor:'rgba(0,0,0,.07)',tickfont:{size:10}}};
   const _CFG = {responsive:true,displayModeBar:false};
 
   const mkClr = (base, n) => {

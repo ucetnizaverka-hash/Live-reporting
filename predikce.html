@@ -7,25 +7,25 @@
   .tabs { display:flex; gap:4px; margin:0 0 16px; border-bottom:2px solid rgba(255,255,255,.12); }
   .tab-btn {
     padding:8px 20px; border:none; background:none; cursor:pointer;
-    font-size:13px; font-weight:600; color:var(--text-muted); border-bottom:3px solid transparent;
+    font-size:13px; font-weight:600; color:var(--text-m); border-bottom:3px solid transparent;
     margin-bottom:-2px; transition:color .15s, border-color .15s;
   }
-  .tab-btn.active { color:var(--gold-lt); border-bottom-color:var(--gold); }
+  .tab-btn.active { color:var(--gold); border-bottom-color:var(--gold); }
   .tab-btn.pes.active { color:#f87171; border-bottom-color:#f87171; }
-  .tab-btn.baz.active { color:var(--gold-lt); border-bottom-color:var(--gold); }
+  .tab-btn.baz.active { color:var(--gold); border-bottom-color:var(--gold); }
   .tab-btn.opt.active { color:#34d399; border-bottom-color:#34d399; }
   .tab-panel { display:none; } .tab-panel.active { display:block; }
   table.pred { width:100%; border-collapse:collapse; font-size:12px; }
-  table.pred th, table.pred td { padding:5px 10px; border-bottom:1px solid rgba(255,255,255,.07); color:#f0f4ff; }
-  table.pred th { background:rgba(255,255,255,.08); font-size:11px; text-align:right; color:rgba(240,244,255,.6); }
+  table.pred th, table.pred td { padding:5px 10px; border-bottom:1px solid rgba(0,0,0,.05); color:var(--text-d); }
+  table.pred th { background:rgba(0,0,0,.03); font-size:11px; text-align:right; color:var(--text-m); }
   table.pred th:first-child { text-align:left; }
   table.pred td:not(:first-child) { text-align:right; }
-  table.pred tr.bold td { font-weight:700; background:rgba(255,255,255,.05); }
-  table.pred tr.head td { background:rgba(255,255,255,.1); font-weight:700; color:var(--gold-lt); font-size:11px; padding:6px 10px; }
-  table.pred tr.sub td:first-child { padding-left:22px; color:rgba(240,244,255,.7); }
+  table.pred tr.bold td { font-weight:700; background:rgba(0,0,0,.02); }
+  table.pred tr.head td { background:rgba(0,0,0,.04); font-weight:700; color:var(--gold); font-size:11px; padding:6px 10px; }
+  table.pred tr.sub td:first-child { padding-left:22px; color:var(--text-m); }
   table.pred tr.sub2 td:first-child { padding-left:36px; color:rgba(240,244,255,.5); }
-  table.pred .oz { width:7%; color:var(--gold-lt); font-weight:600; font-size:11px; }
-  table.pred .cr { width:5%; color:var(--text-hint); font-size:10px; text-align:center; }
+  table.pred .oz { width:7%; color:var(--gold); font-weight:600; font-size:11px; }
+  table.pred .cr { width:5%; color:var(--text-dim); font-size:10px; text-align:center; }
   .pes-val { color:#f87171; } .baz-val { color:#fbbf24; } .opt-val { color:#34d399; }
   .scenario-badge { display:inline-block; padding:3px 10px; border-radius:4px; font-size:11px; font-weight:700; margin-bottom:12px; }
   .scenario-badge.pes { background:rgba(248,113,113,.12); color:#f87171; border:1px solid rgba(248,113,113,.25); }
@@ -128,10 +128,10 @@
       </div>
     </div><!-- /section -->
 
-    <div style="font-size:11px;color:var(--gray);padding:12px 20px;border-top:1px solid #eee" id="pred-metoda"></div>
+    <div style="font-size:11px;color:var(--text-dim);padding:12px 20px;border-top:1px solid #eee" id="pred-metoda"></div>
   </div>
 </main>
-<footer><span>22HLAV</span> · Průběžné výkaznictví v2.0</footer>
+<footer>Data jsou generována automatizovaným účetním procesem · 22HLAV · Průběžné výkaznictví v2.0</footer>
 <script src="common.js"></script>
 <script>
 (function(){
@@ -162,7 +162,7 @@ loadData(d => {
     document.getElementById("loading").style.display = "none";
     document.getElementById("app").style.display = "block";
     document.getElementById("app").innerHTML =
-      '<div style="padding:40px 20px;text-align:center;color:var(--gray)">' +
+      '<div style="padding:40px 20px;text-align:center;color:var(--text-dim)">' +
       '<h2 style="color:var(--navy)">Predikce je dostupna pouze v Živem výkaznictví</h2>' +
       '<p>Predikce je generovana z prubeznych dat za cast roku.<br>' +
       'Rocni vykazy uz jsou za cely rok — predikce k nim nema smysl.</p>' +
@@ -230,11 +230,11 @@ loadData(d => {
   const colBorder = ["#dc2626","#d4952a","#16a34a"];
 
   const _PL2 = {paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
-    font:{color:'#f0f4ff',size:10,family:'Segoe UI,system-ui'},
+    font:{color:'#374151',size:10,family:'Segoe UI,system-ui'},
     margin:{t:6,r:10,b:40,l:54},showlegend:true,
     legend:{bgcolor:'rgba(0,0,0,0)',orientation:'h',y:-0.3,font:{size:10}},
-    xaxis:{gridcolor:'rgba(255,255,255,.08)',tickfont:{size:10}},
-    yaxis:{gridcolor:'rgba(255,255,255,.08)',tickfont:{size:10},ticksuffix:" tis."}};
+    xaxis:{gridcolor:'rgba(0,0,0,.07)',tickfont:{size:10}},
+    yaxis:{gridcolor:'rgba(0,0,0,.07)',tickfont:{size:10},ticksuffix:" tis."}};
   const _CFG2 = {responsive:true,displayModeBar:false};
   const plotColors = ["rgba(220,38,38,.75)","rgba(212,149,42,.85)","rgba(52,211,153,.75)"];
 
