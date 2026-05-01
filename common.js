@@ -68,15 +68,9 @@ const pages = [
 ];
 
 function _updateModeToggle(d) {
+  // Mode toggle hidden on all pages
   const el = document.getElementById("mode-toggle");
-  if(!el) return;
-  if(!hasRocni(d)) { el.style.display="none"; return; }
-  const mode = getMode();
-  el.style.display = "flex";
-  el.innerHTML = `
-    <span style="font-size:11px;color:var(--gray);margin-right:6px">Zobrazení:</span>
-    <button class="${mode==='live'?'mt-active':''}"   onclick="setMode('live')">Průběžné výkaznictví</button>
-    <button class="${mode==='rocni'?'mt-active':''}"  onclick="setMode('rocni')">Roční výkazy</button>`;
+  if(el) el.style.display = "none";
 }
 
 function renderNav(d) {
