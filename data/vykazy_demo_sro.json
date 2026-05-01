@@ -1,17 +1,17 @@
 {
   "meta": {
     "klient_id": "demo_sro",
-    "nazev": "Demo s.r.o.",
-    "ico": "12345678",
+    "nazev": "Zkusebni s.r.o.",
+    "ico": "123456789",
     "obdobi": 2024,
     "mesice_obdobi": 4,
     "period_label": "1.1.2024–30.4.2024",
     "datum_od": "2024-01-01",
     "datum_do": "2024-04-30",
-    "updated": "2026-05-01T08:05:54",
+    "updated": "2026-05-01T08:33:48",
     "kategorie_uj": "mikro",
     "pocet_zamestnancu": 0,
-    "zdroj": "denik_2024_01-04.xlsx",
+    "zdroj": "pruberzne_vykaznictvi_2024.xlsx",
     "typ": "live",
     "upozorneni": "Vykaz ziveho vykaznictvi - sestaven automaticky. Zahrnuje odpisy a rezervy z predvahy. Dan z prijmu je vypoctena vzorcem (21 % ze zakladu VH/1000*1000) bez danovych uprav. Pro ucely danoveho priznani zpracujte s ucetnim."
   },
@@ -89,9 +89,9 @@
     "cf_splatky_uveru": 0,
     "cf_dividendy": 0,
     "cf_financni": 0.0,
-    "pp_zacatek": 170622.81,
+    "pp_zacatek": 1013424.72,
     "cf_cista_zmena": 67005.57,
-    "pp_konec_cf": 237628.38,
+    "pp_konec_cf": 1080430.29,
     "pp_konec_rozvaha": 1018851.71,
     "cf_minule_dostupne": true,
     "cf_poznamka": "Provozni CF – nepřímá metoda. Zmeny PK vypočteny z rozdilu vs minule obdobi. Investicni a financni CF = 0 (nelze zjistit z predvahy – doplnte rucne)."
@@ -152,6 +152,6 @@
     "dan_z_prijmu": 4200.0,
     "vh_za_obdobi": 15809.57,
     "cisty_obrat": 890721.73,
-    "archivovano": "2026-05-01T08:05:53"
+    "archivovano": "2026-05-01T08:33:48"
   }
 }
