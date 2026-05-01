@@ -259,10 +259,10 @@ loadData(d => {
     <div class="chart-box"><h3>Aktiva a ROA (%)</h3><div id="ch2" style="height:200px"></div></div>`;
 
   const PLY = {paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
-    font:{color:'#f0f4ff',size:10,family:'Segoe UI,system-ui'},
+    font:{color:'#1B2469',size:10,family:'Segoe UI,system-ui'},
     margin:{t:6,r:10,b:36,l:54},legend:{bgcolor:'rgba(0,0,0,0)',orientation:'h',y:-0.22,font:{size:10}},
-    xaxis:{gridcolor:'rgba(255,255,255,.08)',tickfont:{size:10},automargin:true},
-    yaxis:{gridcolor:'rgba(255,255,255,.08)',tickfont:{size:10}}};
+    xaxis:{gridcolor:'rgba(27,36,105,.12)',tickfont:{size:10,color:'#1B2469'},automargin:true},
+    yaxis:{gridcolor:'rgba(27,36,105,.12)',tickfont:{size:10,color:'#1B2469'}}};
 
   Plotly.newPlot("ch1",[
     {name:"Tržby",x:labels,y:allP.map(p=>Math.round((p.trzby_celkem||0)/1000)),type:"bar",
@@ -317,7 +317,7 @@ const tis = v => (v===null||v===undefined)?0:Math.round(v/1000);
 
 const deltaCell = (abs,pct) => {
   if(abs===null||abs===undefined) return "—";
-  const sign = abs>=0?"":"", cls=abs>=0?"pos":"neg";
+  const sign = abs>=0?"+":"−", cls=abs>=0?"pos":"neg";
   return `<span class="${cls}">${sign} ${Math.abs(Math.round(abs)).toLocaleString("cs-CZ")} Kč</span>`+
          (pct!=null?`<br><span class="pct-cell">${pct>=0?"+":""}${pct.toFixed(1)}%</span>`:"");
 };
@@ -464,11 +464,11 @@ function buildUkazatele(periody, el) {
     // Grafy
     // ── Plotly společný layout (dark) ──────────────────────────────
     const HP = {paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
-      font:{color:'#f0f4ff',size:10,family:'Segoe UI,system-ui'},
+      font:{color:'#1B2469',size:10,family:'Segoe UI,system-ui'},
       margin:{t:6,r:10,b:36,l:50},showlegend:true,
       legend:{bgcolor:'rgba(0,0,0,0)',orientation:'h',y:-0.28,font:{size:10}},
-      xaxis:{gridcolor:'rgba(255,255,255,.08)',tickfont:{size:10}},
-      yaxis:{gridcolor:'rgba(255,255,255,.08)',tickfont:{size:10}}};
+      xaxis:{gridcolor:'rgba(27,36,105,.12)',tickfont:{size:10,color:'#1B2469'}},
+      yaxis:{gridcolor:'rgba(27,36,105,.12)',tickfont:{size:10,color:'#1B2469'}}};
     const CFG = {responsive:true,displayModeBar:false};
 
     // ── 1. Tržby & VH ────────────────────────────────────────────────
