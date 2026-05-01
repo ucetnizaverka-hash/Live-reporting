@@ -189,12 +189,14 @@ main { max-width: 1140px; margin: 0 auto; padding: 20px 16px 40px; position: rel
 
 /* ---- SECTION ---- */
 .section {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.55);
   border-radius: 18px;
   padding: 20px 24px;
   margin-bottom: 18px;
-  box-shadow: var(--card-shadow);
+  box-shadow: 0 4px 24px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,0.8);
   transition: transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
   position: relative;
 }
@@ -218,12 +220,14 @@ main { max-width: 1140px; margin: 0 auto; padding: 20px 16px 40px; position: rel
   margin-bottom: 18px;
 }
 .kpi {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.55);
   border-radius: 18px;
   padding: 18px 20px;
   border-left: 3px solid var(--gold);
-  box-shadow: var(--card-shadow);
+  box-shadow: 0 4px 24px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,0.8);
   position: relative; overflow: hidden;
   transition: transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
 }
@@ -250,11 +254,13 @@ main { max-width: 1140px; margin: 0 auto; padding: 20px 16px 40px; position: rel
 /* ---- CHARTS ---- */
 .charts-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
 .chart-box {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.55);
   border-radius: 18px;
   padding: 18px 20px;
-  box-shadow: var(--card-shadow);
+  box-shadow: 0 4px 24px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,0.8);
   transition: transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
 }
 .chart-box:hover {
@@ -378,4 +384,21 @@ footer {
   .nav-center { font-size: 11px; }
   .header-top { flex-direction: column; gap: 6px; }
   .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ---- NAV GROUPS ---- */
+.nav-group-lbl {
+  font-size: 10px; font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase; letter-spacing: .6px;
+  padding: 0 4px; white-space: nowrap;
+  opacity: 0.9;
+}
+.nav-sep-gold {
+  display: inline-block;
+  width: 1px; height: 18px;
+  background: linear-gradient(180deg, transparent, var(--gold), transparent);
+  margin: 0 8px;
+  vertical-align: middle;
+  opacity: 0.6;
 }

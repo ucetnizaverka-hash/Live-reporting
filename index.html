@@ -112,10 +112,10 @@ main{max-width:1180px;margin:0 auto;padding:0 24px 60px;width:100%}
   color:var(--text-m);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--sep)}
 
 /* ─── CHARTS ─── */
-.charts-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-.charts-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
-.chart-box{background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;
-  padding:18px 20px;box-shadow:var(--card-shadow);
+.charts-2{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px}
+.charts-3{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.chart-box{background:rgba(255,255,255,0.72);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid rgba(255,255,255,0.55);border-radius:18px;
+  padding:18px 20px;box-shadow:0 4px 24px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,0.8);
   transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .3s}
 .chart-box:hover{transform:scale(1.03);box-shadow:var(--card-shadow-hover);z-index:10}
 .chart-box h3{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-m);margin-bottom:12px}
@@ -256,7 +256,7 @@ td.gray{color:var(--text-dim);font-size:12px}td.note{color:var(--text-dim);font-
     <span class="nav-sep">·</span>
     <span class="nav-ico-txt">IČO: <span id="hdr-ico">—</span></span>
   </div>
-  <div class="nav-right" id="nav-links"></div>
+  <div class="nav-right"><span class="nav-group-lbl" style="margin-right:4px;opacity:.7">Podrobná sestava:</span><span id="nav-links" style="display:contents"></span></div>
   <span id="mode-badge" style="display:none"></span>
   <div id="mode-toggle" style="display:none"></div>
 </nav>
@@ -273,8 +273,8 @@ td.gray{color:var(--text-dim);font-size:12px}td.note{color:var(--text-dim);font-
     </div>
 
     <div class="sticky-tabs">
-      <button class="sticky-tab live" id="tab-live" onclick="scrollToSec('sec-live')">📊 Průběžné výkaznictví</button>
-      <button class="sticky-tab hist inactive" id="tab-hist" onclick="scrollToSec('sec-hist')">📈 Historická analýza</button>
+      <button class="sticky-tab live" id="tab-live" onclick="scrollToSec('sec-live')">Průběžné výkaznictví</button>
+      <button class="sticky-tab hist inactive" id="tab-hist" onclick="scrollToSec('sec-hist')">Historická analýza</button>
     </div>
 
     <div class="sec-div gold" id="sec-live" style="margin-top:22px">
@@ -305,7 +305,6 @@ td.gray{color:var(--text-dim);font-size:12px}td.note{color:var(--text-dim);font-
     <div id="hist-loading" style="color:var(--bg-text);font-size:13px;padding:10px 0">Načítám historická data…</div>
     <div id="hist-err" style="display:none"></div>
     <div id="hist-content" style="display:none">
-      <div class="hist-note" id="hist-note" style="display:none"></div>
       <div class="section"><h2>Výkaz zisku a ztráty — meziroční změny</h2>
         <div style="overflow-x:auto"><table class="ana-table" id="horiz-vzz"></table></div></div>
       <div class="section"><h2>Rozvaha — aktiva &amp; pasiva</h2>
@@ -318,6 +317,10 @@ td.gray{color:var(--text-dim);font-size:12px}td.note{color:var(--text-dim);font-
         <div class="vert-note" id="vert-rozvaha-note"></div></div>
       <div class="section"><h2>Finanční ukazatele — srovnání let</h2>
         <div style="overflow-x:auto"><table class="ana-table" id="ukazatele-table"></table></div></div>
+      <div class="section"><h2>Altman Z-skóre — rozklad komponent</h2>
+        <div style="overflow-x:auto"><table class="ana-table" id="altman-table"></table></div>
+        <div class="vert-note" id="altman-note" style="margin-top:8px">Z = 1.2×X1 + 1.4×X2 + 3.3×X3 + 0.6×X4 + 1.0×X5 &nbsp;|&nbsp; Šedá zóna: 1.81–2.99 &nbsp;|&nbsp; Zdraví: ≥ 3.0</div>
+      </div>
       <div class="section"><h2>Grafický přehled trendů</h2>
         <div class="charts-3">
           <div class="chart-box"><h3>Tržby &amp; VH (tis. Kč)</h3><div id="hch-trzby" style="height:200px"></div></div>
@@ -397,11 +400,11 @@ loadData(d=>{
     </div>`).join("");
   const allP=getModeAllP(d),labels=allP.map(p=>p.label||p.period_label);
   document.getElementById("charts").innerHTML=`
-    <div class="chart-box"><h3>Tržby a VH (tis. Kč)</h3><div id="ch1" style="height:200px"></div></div>
-    <div class="chart-box"><h3>Aktiva a ROA (%)</h3><div id="ch2" style="height:200px"></div></div>`;
+    <div class="chart-box"><h3>Tržby a VH (tis. Kč)</h3><div id="ch1" style="height:260px"></div></div>
+    <div class="chart-box"><h3>Aktiva a ROA (%)</h3><div id="ch2" style="height:260px"></div></div>`;
   // Barevnější sloupce
-  const barClr1=allP.map((_,i)=>`hsl(${220+i*8},${70+i*5}%,${45+i*4}%)`);
-  const barClr2=allP.map((_,i)=>`hsl(${38-i*3},${80+i*3}%,${45+i*3}%)`);
+  const barClr1=allP.map(()=>"#3b82f6");
+  const barClr2=allP.map(()=>"#f59e0b");
   Plotly.newPlot("ch1",[
     {name:"Tržby",x:labels,y:allP.map(p=>Math.round((p.trzby_celkem||0)/1000)),type:"bar",
      marker:{color:barClr1,line:{width:0}},
@@ -442,6 +445,7 @@ const tis=v=>(v==null)?0:Math.round(v/1000);
 // Formát labelu: plné roky zobrazit jako "Rok 2023"
 const fmtLabel=p=>{
   if(p.je_plny_rok&&p.rok)return`Rok ${p.rok}`;
+  if(p.rok)return`${p.rok} (průběžný)`;
   return p.label||p.period_label||"—";
 };
 
@@ -526,27 +530,12 @@ const CFG={responsive:true,displayModeBar:false};
     if(!r.ok)throw new Error("HTTP "+r.status);
     const h=await r.json();
     const vsechny=h.periody||[];
+    const periody=vsechny; // zobrazit všechna dostupná období
 
-    // Zobrazit POUZE plné roky v historické analýze
-    const periody=vsechny.filter(p=>p.je_plny_rok);
-    const partial=vsechny.filter(p=>!p.je_plny_rok);
-
-    if(!periody.length&&!partial.length)throw new Error("Žádná historická data");
+    if(!periody.length)throw new Error("Žádná historická data");
 
     document.getElementById("hist-loading").style.display="none";
     document.getElementById("hist-content").style.display="block";
-
-    // Poznámka o vyfiltrovaných průběžných obdobích
-    if(partial.length){
-      const noteEl=document.getElementById("hist-note");
-      noteEl.style.display="block";
-      noteEl.innerHTML=`ℹ️ Průběžná období (${partial.map(p=>p.label).join(", ")}) nejsou zahrnutá v meziročním srovnání — porovnávají se pouze uzavřené roční výkazy. Pro přidání Roku 2024 nahrajte roční výkaz.`;
-    }
-
-    if(!periody.length){
-      document.getElementById("hist-content").innerHTML=`<div class="hist-note">Zatím nejsou k dispozici žádné uzavřené roční výkazy. Nahrajte roční výkaz za celý rok.</div>`;
-      return;
-    }
 
     const labels=periody.map(p=>fmtLabel(p));
 
@@ -578,8 +567,61 @@ const CFG={responsive:true,displayModeBar:false};
 
     buildUk(periody,document.getElementById("ukazatele-table"));
 
+    // Altman Z breakdown table
+    (function(){
+      const el=document.getElementById("altman-table");
+      if(!el)return;
+      const lbl=periody.map(p=>fmtLabel(p));
+      const n3=v=>(v==null||isNaN(v))?"—":parseFloat(v).toFixed(3);
+      const getXs=p=>({
+        x1:(p.obezna_netto-p.zav_kr)/p.aktiva_netto,
+        x2:p.vh_za_obdobi/p.aktiva_netto,
+        x3:p.provozni_vh/p.aktiva_netto,
+        x4:p.vk/p.cizi_zdroje,
+        x5:p.trzby_celkem/p.aktiva_netto,
+      });
+      const rows=[
+        {xk:"x1",lbl:"X1 — Pracovní kapitál / Aktiva",w:1.2,note:"(OA − kr.závazky) / A"},
+        {xk:"x2",lbl:"X2 — Nerozdělený zisk / Aktiva",w:1.4,note:"VH za období / A"},
+        {xk:"x3",lbl:"X3 — EBIT / Aktiva",w:3.3,note:"Provozní VH / A"},
+        {xk:"x4",lbl:"X4 — VK / Cizí zdroje",w:0.6,note:"VK / Cizí zdroje"},
+        {xk:"x5",lbl:"X5 — Tržby / Aktiva",w:1.0,note:"Tržby celkem / A"},
+      ];
+      let html=`<thead><tr><th style="text-align:left;min-width:220px">Komponenta</th><th style="text-align:left;font-size:10px">Vzorec</th><th>Váha</th>`;
+      lbl.forEach(l=>html+=`<th>${l}<br><small style="font-weight:400">raw</small></th><th>${l}<br><small style="font-weight:400">×váha</small></th>`);
+      html+=`</tr></thead><tbody>`;
+      rows.forEach(r=>{
+        html+=`<tr><td style="font-weight:600">${r.lbl}</td><td style="text-align:left;font-size:11px;color:var(--text-dim)">${r.note}</td><td style="text-align:center">${r.w}</td>`;
+        periody.forEach(p=>{
+          const xs=getXs(p);
+          const raw=xs[r.xk];
+          const weighted=!isNaN(raw)?raw*r.w:null;
+          html+=`<td>${n3(raw)}</td><td style="font-weight:700;color:#374151">${n3(weighted)}</td>`;
+        });
+        html+=`</tr>`;
+      });
+      // Total row
+      html+=`<tr class="total"><td colspan="3" style="text-align:left">Altman Z-skóre (součet)</td>`;
+      periody.forEach(p=>{
+        const z=p.altman_z??null;
+        const isNan=z==null||isNaN(z);
+        const cls=isNan?"":z>=3?"pos":z>=1.81?"":"neg";
+        html+=`<td colspan="2" class="${cls}" style="font-size:15px;font-weight:800">${isNan?"—":parseFloat(z).toFixed(2)}</td>`;
+      });
+      html+=`</tr>`;
+      // Hodnocení
+      html+=`<tr><td colspan="3" style="font-size:11px;color:var(--text-dim);text-align:left">Hodnocení (pásmo)</td>`;
+      periody.forEach(p=>{
+        const z=p.altman_z??null,pas=p.altman_pasmo||"—";
+        const cls=pas==="zdraví"?"pos":pas==="šedá zóna"?"":"neg";
+        html+=`<td colspan="2" class="${cls}" style="font-weight:600">${pas}</td>`;
+      });
+      html+=`</tr></tbody>`;
+      el.innerHTML=html;
+    })();
+
     // Grafy — barevnější paleta
-    const CL=["#3b82f6","#f59e0b","#10b981","#8b5cf6","#f97316"];
+    const CL=["#3b82f6","#6366f1","#0ea5e9","#8b5cf6","#06b6d4"];
     Plotly.newPlot("hch-trzby",[
       {name:"Tržby",x:labels,y:periody.map(p=>tis(p.trzby_celkem)),type:"bar",marker:{color:CL[0]},text:periody.map(p=>tis(p.trzby_celkem)+" tis."),textposition:"outside",textfont:{size:9,color:"#374151"}},
       {name:"VH",x:labels,y:periody.map(p=>tis(p.vh_za_obdobi)),type:"bar",marker:{color:CL[1]},text:periody.map(p=>tis(p.vh_za_obdobi)+" tis."),textposition:"outside",textfont:{size:9,color:"#374151"}}
