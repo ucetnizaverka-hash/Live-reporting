@@ -1,197 +1,307 @@
-<!DOCTYPE html><html lang="cs"><head>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard | Průběžné výkaznictví</title>
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
-<!-- Plotly načteno dole v body -->
 <style>
-/* ===== STICKY TABS (dark) ===== */
-.sticky-tabs {
-  position:sticky; top:52px; z-index:100;
-  display:flex; gap:0; overflow:hidden;
-  background:rgba(10,16,50,.92); backdrop-filter:blur(10px);
-  border-bottom:1px solid rgba(255,255,255,.1);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --font:'DM Sans','Segoe UI',system-ui,sans-serif;
+  --blue-accent:#2a5cff;--blue-glow:#4a8cff;
+  --gold:#D4952A;--gold-lt:#fbbf24;
+  --glass:rgba(255,255,255,.08);--glass-hov:rgba(255,255,255,.13);
+  --glass-border:rgba(255,255,255,.16);
+  --text:#f0f4ff;--text-muted:rgba(160,185,255,.75);--text-dim:rgba(120,150,220,.55);
+  --green:#22c55e;--red:#f87171;--sep:rgba(255,255,255,.10);
 }
-.sticky-tab {
-  flex:1; padding:11px 20px; text-align:center; font-weight:600; font-size:12px;
-  cursor:pointer; border:none; outline:none; transition:.2s; letter-spacing:.4px;
-  color:#f0f4ff;
-}
-.sticky-tab.live  { background:rgba(212,149,42,.25); border-bottom:2px solid #D4952A; color:#fbbf24; }
-.sticky-tab.hist  { background:rgba(27,36,105,.4);   border-bottom:2px solid #3b5bd9; color:#93c5fd; }
-.sticky-tab.inactive { opacity:.4; border-bottom-color:transparent; }
-
-/* ===== SEKCE ZÁHLAVÍ (dark) ===== */
-.sec-header {
-  display:flex; align-items:center; gap:14px;
-  margin:28px 0 14px; padding:12px 20px; border-radius:8px;
-  font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.7px;
-}
-.sec-header.live {
-  background:rgba(212,149,42,.08); color:#fbbf24;
-  border-left:4px solid #D4952A;
-}
-.sec-header.hist {
-  background:rgba(27,36,105,.25); color:#93c5fd;
-  border-left:4px solid #3b5bd9;
-}
-.sec-header .sec-pill {
-  margin-left:auto; font-size:10px; font-weight:500; padding:3px 10px;
-  border-radius:20px; text-transform:none; letter-spacing:0;
-}
-.sec-header.live .sec-pill { background:rgba(212,149,42,.2); color:#fbbf24; }
-.sec-header.hist .sec-pill { background:rgba(59,91,217,.2);   color:#93c5fd; }
-
-/* ===== ODDĚLOVAČ ===== */
-.section-sep {
-  margin:32px 0; height:2px;
-  background:linear-gradient(90deg,rgba(27,36,105,.9) 0%,rgba(212,149,42,.7) 100%);
-  border-radius:2px;
-}
-
-/* ===== HISTORICKÉ TABULKY (dark) ===== */
-.ana-table { width:100%; border-collapse:collapse; font-size:12px; margin-bottom:16px; }
-.ana-table th { background:rgba(255,255,255,.1); color:rgba(240,244,255,.6); padding:7px 10px; text-align:right; font-weight:600; border-bottom:1px solid rgba(255,255,255,.12); }
-.ana-table th:first-child { text-align:left; }
-.ana-table td { padding:6px 10px; border-bottom:1px solid rgba(255,255,255,.05); text-align:right; color:#f0f4ff; }
-.ana-table td:first-child { text-align:left; font-weight:500; color:rgba(240,244,255,.8); }
-.ana-table tr.grp td { background:rgba(255,255,255,.06); font-weight:700; color:#fbbf24; }
-.ana-table tr:hover td { background:rgba(255,255,255,.04); }
-.pos { color:#34d399; font-weight:600; }
-.neg { color:#f87171; font-weight:600; }
-.pct-cell { font-size:11px; color:rgba(240,244,255,.45); }
-
-/* ===== UKAZATELE KARTY (dark) ===== */
-.uk-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px; }
-.uk-card { background:rgba(255,255,255,.07); border-radius:8px; padding:14px 16px;
-  border:1px solid rgba(255,255,255,.1); border-top:3px solid rgba(255,255,255,.15); }
-.uk-card.c23 { border-top-color:#6b7280; }
-.uk-card.c24 { border-top-color:#D4952A; }
-.uk-card .uk-rok { font-size:10px; color:rgba(240,244,255,.4); text-transform:uppercase; margin-bottom:5px; }
-.uk-card .uk-val { font-size:19px; font-weight:700; color:#f0f4ff; }
-.uk-card .uk-lbl { font-size:11px; color:rgba(240,244,255,.5); margin-top:2px; }
-
-/* ===== CHARTS GRID ===== */
-.charts-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
-@media(max-width:900px){ .charts-3{ grid-template-columns:1fr 1fr; } }
-@media(max-width:600px){ .charts-3{ grid-template-columns:1fr; } }
-
-/* ===== PROJEKCE BANNER (dark) ===== */
-.proj-banner { background:rgba(212,149,42,.08); border:1px solid rgba(212,149,42,.25); border-radius:10px;
-  padding:16px 20px; margin-bottom:20px; }
-.proj-banner h3 { font-size:13px; font-weight:700; color:#fbbf24; margin:0 0 10px; }
-.proj-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; }
-.proj-item { text-align:center; }
-.proj-item .pv { font-size:17px; font-weight:700; color:#f0f4ff; }
-.proj-item .pl { font-size:11px; color:rgba(240,244,255,.5); }
+html,body{font-family:var(--font);color:var(--text);background:#010a2a;min-height:100vh;overflow-x:hidden}
+/* BG */
+.bg-stage{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(145deg,#010a2a 0%,#031050 30%,#061880 55%,#041260 75%,#020930 100%);overflow:hidden}
+.bg-lines{position:absolute;inset:0;
+  background-image:repeating-linear-gradient(62deg,transparent,transparent 5px,rgba(80,120,255,.05) 5px,rgba(80,120,255,.05) 6px)}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);mix-blend-mode:screen;animation:orbFloat linear infinite}
+.orb-1{width:700px;height:420px;top:-80px;left:-120px;background:radial-gradient(ellipse,rgba(40,80,220,.45) 0%,transparent 70%);animation-duration:24s}
+.orb-2{width:600px;height:380px;bottom:-80px;right:-80px;background:radial-gradient(ellipse,rgba(30,60,200,.40) 0%,transparent 70%);animation-duration:30s;animation-delay:-10s}
+.orb-3{width:350px;height:350px;top:38%;left:38%;background:radial-gradient(ellipse,rgba(60,100,255,.20) 0%,transparent 70%);animation-duration:20s;animation-delay:-5s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}25%{transform:translate(30px,-20px) scale(1.04)}50%{transform:translate(14px,40px) scale(.96)}75%{transform:translate(-22px,14px) scale(1.02)}100%{transform:translate(0,0) scale(1)}}
+.bg-waves{position:absolute;inset:0;width:100%;height:100%}
+.wave-g-1{animation:wd1 18s ease-in-out infinite}.wave-g-2{animation:wd2 22s ease-in-out infinite}
+@keyframes wd1{0%,100%{transform:translateY(0)}50%{transform:translateY(18px)}}
+@keyframes wd2{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+/* LAYOUT */
+.page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;
+  border-bottom:1px solid var(--glass-border);backdrop-filter:blur(24px) saturate(180%);
+  background:rgba(1,10,42,.65);position:sticky;top:0;z-index:200}
+.nav-brand{display:flex;align-items:center;gap:14px}
+.nav-logo{width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--blue-accent),var(--blue-glow));
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;box-shadow:0 0 20px rgba(42,92,255,.5)}
+.nav-title{font-size:15px;font-weight:600;color:var(--text)}
+.nav-sub{font-size:11px;font-weight:300;color:var(--text-muted);margin-top:1px}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{padding:7px 18px;border-radius:20px;font-size:12px;font-weight:400;color:var(--text-muted);
+  cursor:pointer;transition:.2s;border:1px solid transparent;background:none;text-decoration:none;display:inline-block}
+.nav-tab:hover{color:var(--text);background:var(--glass);border-color:var(--glass-border)}
+.nav-tab.active{color:var(--text);background:rgba(255,255,255,.10);border-color:var(--glass-border);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.nav-right{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:8px}
+/* MAIN */
+main{max-width:1200px;margin:0 auto;padding:0 28px 60px;width:100%}
+/* HERO */
+.hero{padding:36px 0 20px}
+.hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--blue-glow);margin-bottom:8px}
+.hero-title{font-size:28px;font-weight:300;line-height:1.2;color:var(--text)}
+.hero-title strong{font-weight:600}
+.hero-meta{margin-top:8px;font-size:12px;color:var(--text-muted);font-weight:300}
+/* SEC DIVIDER */
+.sec-div{display:flex;align-items:center;gap:14px;margin:28px 0 16px}
+.sec-div h2{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--text-muted);white-space:nowrap}
+.sec-div.gold h2{color:var(--gold-lt)}.sec-div.blue h2{color:#93c5fd}
+.sec-div-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.2),transparent)}
+.sec-div-pill{font-size:10px;padding:2px 10px;border-radius:20px;font-weight:400}
+.sec-div.gold .sec-div-pill{background:rgba(212,149,42,.12);color:var(--gold-lt);border:1px solid rgba(212,149,42,.25)}
+.sec-div.blue .sec-div-pill{background:rgba(59,91,217,.12);color:#93c5fd;border:1px solid rgba(59,91,217,.25)}
+/* GLASS CARD base */
+.gc{position:relative;border-radius:20px;overflow:hidden;
+  backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);
+  background:var(--glass);border:1px solid var(--glass-border);
+  box-shadow:0 4px 24px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.12);
+  transition:transform .25s,box-shadow .25s}
+.gc::before{content:'';position:absolute;top:0;left:10%;width:40%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);pointer-events:none}
+.gc:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.18)}
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px}
+.kpi{position:relative;border-radius:20px;overflow:hidden;
+  backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);
+  background:var(--glass);border:1px solid var(--glass-border);border-left:3px solid var(--gold);
+  box-shadow:0 4px 24px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.12);
+  padding:18px 20px;transition:transform .25s,box-shadow .25s}
+.kpi::before{content:'';position:absolute;top:0;left:10%;width:40%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);pointer-events:none}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.35)}
+.kpi.navy{border-left-color:var(--blue-accent)}
+.kpi .lbl{font-size:10px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+.kpi .val{font-size:21px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums lining-nums}
+.kpi .sub{font-size:11px;color:var(--text-dim);margin-top:4px}
+.kpi .delta{font-size:11px;font-weight:600;margin-top:4px}
+.delta.up{color:var(--green)}.delta.down{color:var(--red)}
+/* SECTION */
+.section{backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);
+  background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;
+  padding:22px 26px;margin-bottom:16px;
+  box-shadow:0 4px 24px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.10)}
+.section h2{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--sep)}
+/* CHARTS */
+.charts-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.charts-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.chart-box{backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);
+  background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;
+  padding:20px 22px;box-shadow:0 4px 24px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.10)}
+.chart-box h3{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px}
+/* TABLES — DM Sans tabular, žádná přeškrtnutá nula */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);
+  background:rgba(255,255,255,.05);padding:8px 10px;text-align:right;font-weight:600;
+  border-bottom:1px solid var(--sep)}
+th:first-child{text-align:left}
+td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.05);text-align:right;
+  color:var(--text);font-family:var(--font);
+  font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1,"lnum" 1}
+td:first-child{text-align:left;font-variant-numeric:normal;font-feature-settings:normal}
+tr:hover td{background:rgba(255,255,255,.04)}
+tr.bold td{font-weight:700;background:rgba(255,255,255,.06) !important}
+tr.total td{font-weight:700;color:var(--gold-lt);border-top:1px solid rgba(212,149,42,.4);background:rgba(212,149,42,.08) !important}
+tr.sub td:first-child{padding-left:22px;color:var(--text-muted)}
+tr.sub2 td:first-child{padding-left:36px;color:var(--text-dim);font-size:12px}
+tr.sep td{padding:2px;background:transparent !important;border:none}
+td.neg{color:var(--red);font-weight:600}td.pos{color:var(--green);font-weight:600}
+td.gray{color:var(--text-dim);font-size:12px}td.note{color:var(--text-dim);font-style:italic;font-size:11px}
+/* ANA TABLE */
+.ana-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px}
+.ana-table th{background:rgba(255,255,255,.07);color:var(--text-muted);padding:7px 10px;text-align:right;
+  font-weight:600;border-bottom:1px solid rgba(255,255,255,.10);font-size:10px;letter-spacing:.4px;text-transform:uppercase}
+.ana-table th:first-child{text-align:left}
+.ana-table td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.05);text-align:right;color:var(--text);
+  font-family:var(--font);font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1,"lnum" 1}
+.ana-table td:first-child{text-align:left;font-variant-numeric:normal;font-feature-settings:normal;font-weight:500;color:rgba(240,244,255,.85)}
+.ana-table tr.grp td{background:rgba(255,255,255,.06);font-weight:700;color:var(--gold-lt)}
+.ana-table tr:hover td{background:rgba(255,255,255,.04)}
+.pos{color:var(--green);font-weight:600}.neg{color:var(--red);font-weight:600}
+.pct-cell{font-size:11px;color:rgba(240,244,255,.45)}
+/* UK CARD */
+.uk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.uk-card{backdrop-filter:blur(20px);background:rgba(255,255,255,.07);border-radius:16px;padding:14px 16px;
+  border:1px solid var(--glass-border);border-top:3px solid rgba(255,255,255,.15)}
+.uk-card.c23{border-top-color:#6b7280}.uk-card.c24{border-top-color:var(--gold)}
+.uk-card .uk-rok{font-size:10px;color:rgba(240,244,255,.4);text-transform:uppercase;margin-bottom:5px}
+.uk-card .uk-val{font-size:19px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums lining-nums}
+.uk-card .uk-lbl{font-size:11px;color:rgba(240,244,255,.5);margin-top:2px}
+/* MISC */
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-weight:700;font-size:11px}
+.badge.green{background:rgba(34,197,94,.15);color:var(--green)}
+.badge.yellow{background:rgba(251,191,36,.15);color:var(--gold-lt)}
+.badge.red{background:rgba(248,113,113,.15);color:var(--red)}
+.disclaimer{background:rgba(212,149,42,.08);border:1px solid rgba(212,149,42,.25);border-radius:12px;
+  padding:10px 16px;font-size:12px;color:var(--gold-lt);margin-bottom:16px;backdrop-filter:blur(10px)}
+.btn-gold{display:inline-block;background:rgba(212,149,42,.18);border:1px solid rgba(212,149,42,.40);
+  color:var(--gold-lt);padding:9px 22px;border-radius:20px;font-weight:600;font-size:13px;
+  text-decoration:none;backdrop-filter:blur(10px);transition:background .15s,box-shadow .15s;
+  box-shadow:0 2px 12px rgba(212,149,42,.15)}
+.btn-gold:hover{background:rgba(212,149,42,.28);box-shadow:0 4px 20px rgba(212,149,42,.25)}
+.section-sep{margin:36px 0;height:1px;background:linear-gradient(90deg,rgba(42,92,255,.6),rgba(212,149,42,.5))}
+/* STICKY TABS */
+.sticky-tabs{position:sticky;top:65px;z-index:100;display:flex;overflow:hidden;
+  background:rgba(1,10,42,.88);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08)}
+.sticky-tab{flex:1;padding:11px 20px;text-align:center;font-weight:600;font-size:11px;
+  cursor:pointer;border:none;outline:none;transition:.2s;letter-spacing:.4px;color:var(--text-muted);background:none}
+.sticky-tab.live{background:rgba(212,149,42,.18);border-bottom:2px solid var(--gold);color:var(--gold-lt)}
+.sticky-tab.hist{background:rgba(42,92,255,.18);border-bottom:2px solid var(--blue-accent);color:#93c5fd}
+.sticky-tab.inactive{opacity:.35;border-bottom-color:transparent;background:none}
+/* PROJEKCE */
+.proj-banner{background:rgba(212,149,42,.07);border:1px solid rgba(212,149,42,.22);border-radius:16px;padding:16px 20px;margin-bottom:20px}
+.proj-banner h3{font-size:13px;font-weight:700;color:var(--gold-lt);margin:0 0 10px}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.proj-item{text-align:center}
+.proj-item .pv{font-size:17px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums lining-nums}
+.proj-item .pl{font-size:11px;color:var(--text-muted)}
+#mode-toggle{display:none;align-items:center;gap:4px;padding:5px 20px;background:rgba(255,255,255,.03);border-top:1px solid var(--sep)}
+#mode-toggle button{padding:4px 14px;border:1px solid var(--glass-border);background:transparent;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text-muted);transition:.15s}
+#mode-toggle button.mt-active{background:rgba(212,149,42,.18);color:var(--gold-lt);border-color:rgba(212,149,42,.4)}
+#mode-badge{display:inline-block;margin-left:auto}
+#loading{text-align:center;padding:80px;color:var(--text-muted);font-size:14px}
+#err{background:rgba(248,113,113,.10);border:1px solid rgba(248,113,113,.3);color:#fca5a5;border-radius:14px;padding:14px;margin:20px;display:none}
+.footer{padding:16px 28px;border-top:1px solid var(--sep);display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text-dim);letter-spacing:.4px}
+.footer span.brand{color:var(--gold);font-weight:700}
+@media(max-width:900px){.charts-3{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.charts-2,.charts-3{grid-template-columns:1fr}.nav{padding:12px 16px}main{padding:0 14px 40px}.kpi-grid{grid-template-columns:1fr 1fr}.hero-title{font-size:22px}}
 </style>
-</head><body>
-<header>
-  <div class="header-top">
-    <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Výkaznictví</div>
-    <div class="header-meta" style="display:flex;align-items:center;gap:10px">
-      <strong id="hdr-nazev">—</strong><span id="hdr-period"></span><span id="mode-badge"></span> · IČO: <span id="hdr-ico"></span>
-    </div>
+</head>
+<body>
+<!-- BG STAGE -->
+<div class="bg-stage">
+  <div class="bg-lines"></div>
+  <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+  <svg class="bg-waves" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="wg1" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="rgba(80,140,255,0)"/><stop offset="30%" stop-color="rgba(100,160,255,.55)"/>
+        <stop offset="70%" stop-color="rgba(80,140,255,.55)"/><stop offset="100%" stop-color="rgba(80,140,255,0)"/>
+      </linearGradient>
+      <linearGradient id="wg2" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="rgba(60,110,230,0)"/><stop offset="40%" stop-color="rgba(80,130,240,.35)"/>
+        <stop offset="60%" stop-color="rgba(60,110,230,.35)"/><stop offset="100%" stop-color="rgba(60,110,230,0)"/>
+      </linearGradient>
+      <filter id="wblur"><feGaussianBlur stdDeviation="6"/></filter>
+    </defs>
+    <g class="wave-g-1" filter="url(#wblur)">
+      <path d="M -100 420 C 200 280,500 560,800 380 C 1100 200,1350 460,1600 320" fill="none" stroke="url(#wg1)" stroke-width="40" stroke-linecap="round" opacity=".7"/>
+    </g>
+    <g class="wave-g-1">
+      <path d="M -100 420 C 200 280,500 560,800 380 C 1100 200,1350 460,1600 320" fill="none" stroke="rgba(160,200,255,.55)" stroke-width="1.5" stroke-linecap="round"/>
+    </g>
+    <g class="wave-g-2" filter="url(#wblur)">
+      <path d="M -100 540 C 250 400,550 620,900 460 C 1200 300,1450 540,1700 420" fill="none" stroke="url(#wg2)" stroke-width="28" stroke-linecap="round" opacity=".5"/>
+    </g>
+  </svg>
+</div>
+
+<div class="page">
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo">22H</div>
+    <div><div class="nav-title">22HLAV</div><div class="nav-sub" id="hdr-period"></div></div>
   </div>
-  <nav id="nav-links"></nav>
+  <div class="nav-tabs" id="nav-links"></div>
+  <div class="nav-right">
+    <strong id="hdr-nazev">—</strong>&nbsp;·&nbsp;IČO:&nbsp;<span id="hdr-ico">—</span>
+    <span id="mode-badge"></span>
+  </div>
   <div id="mode-toggle"></div>
-</header>
+</nav>
+
 <main>
-  <div id="loading">Načítám…</div>
+  <div id="loading">Načítám data…</div>
   <div id="err"></div>
   <div id="app" style="display:none">
 
-    <!-- STICKY TABS -->
-    <div class="sticky-tabs">
-      <button class="sticky-tab live" id="tab-live" onclick="scrollTo('sec-live')">Průběžné výkaznictví</button>
-      <button class="sticky-tab hist inactive" id="tab-hist" onclick="scrollTo('sec-hist')">Historická analýza</button>
+    <div class="hero">
+      <div class="hero-eyebrow">Průběžné výkaznictví — aktuální období</div>
+      <h1 class="hero-title">Klíčové finanční <strong>ukazatele</strong></h1>
+      <div class="hero-meta" id="updated"></div>
     </div>
 
-    <!-- 
-         SEKCE 1 — PRŮBĚŽNÉ VÝKAZNICTVÍ (zlatá)
-     -->
-    <div class="sec-header live" id="sec-live">
-      Průběžné výkaznictví — aktuální období
-      <span class="sec-pill" id="live-period-pill"></span>
+    <div class="sticky-tabs">
+      <button class="sticky-tab live" id="tab-live" onclick="scrollToSec('sec-live')">Průběžné výkaznictví</button>
+      <button class="sticky-tab hist inactive" id="tab-hist" onclick="scrollToSec('sec-hist')">Historická analýza</button>
+    </div>
+
+    <div class="sec-div gold" id="sec-live" style="margin-top:24px">
+      <h2>Průběžné výkaznictví</h2><div class="sec-div-line"></div>
+      <span class="sec-div-pill" id="live-period-pill"></span>
     </div>
 
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
     <div class="kpi-grid" id="kpi-grid"></div>
     <div class="charts-2" id="charts"></div>
+
     <div class="section">
       <h2>Vývoj klíčových ukazatelů</h2>
-      <table><thead id="trend-head"></thead><tbody id="trend-body"></tbody></table>
+      <div style="overflow-x:auto"><table><thead id="trend-head"></thead><tbody id="trend-body"></tbody></table></div>
     </div>
-    <div class="section" style="padding:14px 20px;display:flex;align-items:center;gap:16px">
+    <div class="section" style="padding:14px 22px;display:flex;align-items:center;gap:16px">
       <a class="btn-gold" id="pdf-btn" href="#" target="_blank">Stáhnout PDF výkaz</a>
-      <span style="font-size:12px;color:var(--gray)" id="updated"></span>
+      <span style="font-size:12px;color:var(--text-dim)" id="updated2"></span>
     </div>
 
-    <!-- VIZUÁLNÍ ODDĚLOVAČ -->
     <div class="section-sep"></div>
 
-    <!-- 
-         SEKCE 2 — HISTORICKÁ ANALÝZA (modrá)
-     -->
-    <div class="sec-header hist" id="sec-hist">
-      Historická analýza — meziroční srovnání
-      <span class="sec-pill">Zpracováno jednou ročně</span>
+    <div class="sec-div blue" id="sec-hist">
+      <h2>Historická analýza</h2><div class="sec-div-line"></div>
+      <span class="sec-div-pill">Jednou ročně</span>
     </div>
 
-    <div id="hist-loading" style="color:#888;font-size:13px;padding:10px 0">Načítám historická data…</div>
+    <div id="hist-loading" style="color:var(--text-muted);font-size:13px;padding:10px 0">Načítám historická data…</div>
     <div id="hist-err" style="display:none"></div>
     <div id="hist-content" style="display:none">
-
-      <!-- Horizontální analýza -->
-      <div class="section">
-        <h2>Výkaz zisku a ztráty — meziroční změny</h2>
-        <div style="overflow-x:auto"><table class="ana-table" id="horiz-vzz"></table></div>
-      </div>
-      <div class="section">
-        <h2>Rozvaha — aktiva &amp; pasiva</h2>
-        <div style="overflow-x:auto"><table class="ana-table" id="horiz-rozvaha"></table></div>
-      </div>
-
-      <!-- Vertikální analýza -->
-      <div class="section">
-        <h2>Struktura VZZ (% z tržeb)</h2>
-        <div style="overflow-x:auto"><table class="ana-table" id="vert-vzz"></table></div>
-      </div>
-      <div class="section">
-        <h2>Struktura rozvahy (% z bilanční sumy)</h2>
-        <div style="overflow-x:auto"><table class="ana-table" id="vert-rozvaha"></table></div>
-      </div>
-
-      <!-- Finanční ukazatele -->
-      <div class="section">
-        <h2>Finanční ukazatele — srovnání let</h2>
-        <div style="overflow-x:auto"><table class="ana-table" id="ukazatele-table"></table></div>
-      </div>
-
-      <!-- Grafy trendů -->
-      <div class="section">
-        <h2>Grafický přehled trendů</h2>
+      <div class="section"><h2>Výkaz zisku a ztráty — meziroční změny</h2>
+        <div style="overflow-x:auto"><table class="ana-table" id="horiz-vzz"></table></div></div>
+      <div class="section"><h2>Rozvaha — aktiva &amp; pasiva</h2>
+        <div style="overflow-x:auto"><table class="ana-table" id="horiz-rozvaha"></table></div></div>
+      <div class="section"><h2>Struktura VZZ (% z tržeb)</h2>
+        <div style="overflow-x:auto"><table class="ana-table" id="vert-vzz"></table></div></div>
+      <div class="section"><h2>Struktura rozvahy (% z bilanční sumy)</h2>
+        <div style="overflow-x:auto"><table class="ana-table" id="vert-rozvaha"></table></div></div>
+      <div class="section"><h2>Finanční ukazatele — srovnání let</h2>
+        <div style="overflow-x:auto"><table class="ana-table" id="ukazatele-table"></table></div></div>
+      <div class="section"><h2>Grafický přehled trendů</h2>
         <div class="charts-3">
           <div class="chart-box"><h3>Tržby &amp; VH (tis. Kč)</h3><div id="hch-trzby" style="height:220px"></div></div>
-          <div class="chart-box"><h3>Struktura nákladů (tis. Kč)</h3><div id="hch-naklady" style="height:220px"></div></div>
+          <div class="chart-box"><h3>Struktura nákladů</h3><div id="hch-naklady" style="height:220px"></div></div>
           <div class="chart-box"><h3>Rentabilita (%)</h3><div id="hch-rent" style="height:220px"></div></div>
           <div class="chart-box"><h3>Likvidita &amp; zadluženost</h3><div id="hch-lik" style="height:220px"></div></div>
-          <div class="chart-box"><h3>Aktiva — struktura (tis. Kč)</h3><div id="hch-aktiva" style="height:220px"></div></div>
+          <div class="chart-box"><h3>Aktiva — struktura</h3><div id="hch-aktiva" style="height:220px"></div></div>
           <div class="chart-box"><h3>Altman Z-skóre</h3><div id="hch-altman" style="height:220px"></div></div>
         </div>
       </div>
-
-      <!-- Projekce -->
       <div id="proj-section"></div>
-
-    </div><!-- #hist-content -->
-
-  </div><!-- #app -->
+    </div>
+  </div>
 </main>
-<footer><span>22HLAV</span> · Průběžné výkaznictví v2.0 · Historická analýza zpracována jednou ročně</footer>
+
+<div class="footer">
+  <span class="brand">22HLAV</span> · Průběžné výkaznictví v2.0
+  <span style="color:var(--blue-glow)">● Živá data</span>
+</div>
+</div>
 <script src="common.js"></script>
 <script>
-// Fallback pokud common.js neni dostupny
 (function(){
   if(typeof window.getModeData!=="function"){
     window.getMode=function(){return location.hash.includes("rocni")?"rocni":"live";};
@@ -202,356 +312,220 @@
     window.delta=function(a,b){if(!b||b===0)return null;return Math.round((a-b)/Math.abs(b)*1000)/10;};
   }
 })();
-
-// Scroll helper + tab spy
-function scrollTo(id) {
-  document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"});
-}
-window.addEventListener("scroll", () => {
-  const histTop = document.getElementById("sec-hist")?.getBoundingClientRect().top ?? 9999;
-  const tl = document.getElementById("tab-live");
-  const th = document.getElementById("tab-hist");
-  if(!tl||!th) return;
-  if(histTop < 200) {
-    tl.classList.add("inactive"); th.classList.remove("inactive");
-  } else {
-    th.classList.add("inactive"); tl.classList.remove("inactive");
-  }
-}, {passive:true});
+function scrollToSec(id){document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"});}
+window.addEventListener("scroll",()=>{
+  const histTop=document.getElementById("sec-hist")?.getBoundingClientRect().top??9999;
+  const tl=document.getElementById("tab-live"),th=document.getElementById("tab-hist");
+  if(!tl||!th)return;
+  if(histTop<200){tl.classList.add("inactive");th.classList.remove("inactive");}
+  else{th.classList.add("inactive");tl.classList.remove("inactive");}
+},{passive:true});
 </script>
 <script>
-// ================================================================
-// SEKCE 1: PRŮBĚŽNÉ VÝKAZNICTVÍ
-// ================================================================
-document.getElementById("pdf-btn").href = PDF_URL;
-
-loadData(d => {
-  const a = getModeData(d), s = d.sektor || {};
-  const periody = d.periody || [];
-  document.title = (d.nazev||"")+" | Dashboard";
-  document.getElementById("updated").textContent = "Aktualizováno: "+(a.period_label||"")+" · "+(d.updated||"").slice(0,10);
-  document.getElementById("live-period-pill").textContent = a.period_label || "";
-
-  const prevP = periody[periody.length-1];
-  const kpiData = [
-    {lbl:"Tržby celkem",       val:kc(a.trzby_celkem),          delta:prevP?deltaHtml(a.trzby_celkem,prevP.trzby_celkem):""},
-    {lbl:"VH za období",       val:kc(a.vh_za_obdobi),          delta:prevP?deltaHtml(a.vh_za_obdobi,prevP.vh_za_obdobi):""},
-    {lbl:"EBITDA",             val:kc(a.ebitda),                delta:prevP?deltaHtml(a.ebitda,prevP.ebitda):""},
-    {lbl:"Aktiva celkem",      val:kc(a.aktiva_netto),          delta:prevP?deltaHtml(a.aktiva_netto,prevP.aktiva_netto):""},
-    {lbl:"Peněžní prostředky", val:kc(a.pp),                   sub:"CF provozní: "+kc(a.cf_provozni)},
-    {lbl:"Altman Z-skóre",     val:a.altman_z,                 extra:altmanBadge(a.altman_pasmo), cls:"navy"},
-    {lbl:"Celk. zadluženost",  val:pct(a.celkova_zadluzenost), sub:"Benchmark: "+pct(s.celkova_zadluzenost)},
-    {lbl:"Běžná likvidita",    val:num(a.bezna_likvidita),      sub:"Benchmark: "+num(s.bezna_likvidita)},
+document.getElementById("pdf-btn").href=PDF_URL;
+loadData(d=>{
+  const a=getModeData(d),s=d.sektor||{},periody=d.periody||[];
+  document.title=(d.nazev||"")+" | Dashboard";
+  const updTxt="Aktualizováno: "+(a.period_label||"")+" · "+(d.updated||"").slice(0,10);
+  document.getElementById("updated").textContent=updTxt;
+  const u2=document.getElementById("updated2");if(u2)u2.textContent=updTxt;
+  document.getElementById("live-period-pill").textContent=a.period_label||"";
+  document.getElementById("hdr-period").textContent=a.period_label||"";
+  const prevP=periody[periody.length-1];
+  const kpiData=[
+    {lbl:"Tržby celkem",      val:kc(a.trzby_celkem),         delta:prevP?deltaHtml(a.trzby_celkem,prevP.trzby_celkem):""},
+    {lbl:"VH za období",      val:kc(a.vh_za_obdobi),         delta:prevP?deltaHtml(a.vh_za_obdobi,prevP.vh_za_obdobi):""},
+    {lbl:"EBITDA",            val:kc(a.ebitda),               delta:prevP?deltaHtml(a.ebitda,prevP.ebitda):""},
+    {lbl:"Aktiva celkem",     val:kc(a.aktiva_netto),         delta:prevP?deltaHtml(a.aktiva_netto,prevP.aktiva_netto):""},
+    {lbl:"Peněžní prostředky",val:kc(a.pp),                  sub:"CF provozní: "+kc(a.cf_provozni)},
+    {lbl:"Altman Z-skóre",   val:a.altman_z,                 extra:altmanBadge(a.altman_pasmo),cls:"navy"},
+    {lbl:"Celk. zadluženost", val:pct(a.celkova_zadluzenost),sub:"Benchmark: "+pct(s.celkova_zadluzenost)},
+    {lbl:"Běžná likvidita",   val:num(a.bezna_likvidita),     sub:"Benchmark: "+num(s.bezna_likvidita)},
   ];
-  document.getElementById("kpi-grid").innerHTML = kpiData.map(k=>`
+  document.getElementById("kpi-grid").innerHTML=kpiData.map(k=>`
     <div class="kpi ${k.cls||''}">
       <div class="lbl">${k.lbl}</div>
       <div class="val">${k.val} ${k.extra||""}</div>
       ${k.delta?`<div>${k.delta}</div>`:""}
       ${k.sub?`<div class="sub">${k.sub}</div>`:""}
     </div>`).join("");
-
-  const allP = getModeAllP(d);
-  const labels = allP.map(p=>p.label||p.period_label);
-  const cw = document.getElementById("charts");
-  cw.innerHTML = `
-    <div class="chart-box"><h3>Tržby a VH (Kč)</h3><div id="ch1" style="height:200px"></div></div>
+  const allP=getModeAllP(d),labels=allP.map(p=>p.label||p.period_label);
+  document.getElementById("charts").innerHTML=`
+    <div class="chart-box"><h3>Tržby a VH (tis. Kč)</h3><div id="ch1" style="height:200px"></div></div>
     <div class="chart-box"><h3>Aktiva a ROA (%)</h3><div id="ch2" style="height:200px"></div></div>`;
-
-  const PLY = {paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
-    font:{color:'#f0f4ff',size:10,family:'Segoe UI,system-ui'},
-    margin:{t:6,r:10,b:36,l:54},legend:{bgcolor:'rgba(0,0,0,0)',orientation:'h',y:-0.22,font:{size:10}},
-    xaxis:{gridcolor:'rgba(255,255,255,.1)',tickfont:{size:10,color:'#f0f4ff'},automargin:true},
-    yaxis:{gridcolor:'rgba(255,255,255,.1)',tickfont:{size:10,color:'#f0f4ff'}}};
-
+  const PLY={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
+    font:{color:"#c0d0ff",size:10,family:"DM Sans,system-ui"},
+    margin:{t:6,r:10,b:36,l:54},
+    legend:{bgcolor:"rgba(0,0,0,0)",orientation:"h",y:-0.22,font:{size:10,color:"#c0d0ff"}},
+    xaxis:{gridcolor:"rgba(255,255,255,.08)",tickfont:{size:10,color:"#c0d0ff"},automargin:true},
+    yaxis:{gridcolor:"rgba(255,255,255,.08)",tickfont:{size:10,color:"#c0d0ff"}}};
   Plotly.newPlot("ch1",[
     {name:"Tržby",x:labels,y:allP.map(p=>Math.round((p.trzby_celkem||0)/1000)),type:"bar",
-     marker:{color:allP.map((_,i)=>`rgba(45,74,158,${0.6+i*0.1})`),line:{width:0}},
-     text:allP.map(p=>Math.round((p.trzby_celkem||0)/1000)+" tis."),textposition:"outside",textfont:{size:9,color:'#f0f4ff'}},
+     marker:{color:allP.map((_,i)=>`rgba(42,92,255,${.55+i*.08})`),line:{width:0}},
+     text:allP.map(p=>Math.round((p.trzby_celkem||0)/1000)+" tis."),textposition:"outside",textfont:{size:9,color:"#c0d0ff"}},
     {name:"VH",x:labels,y:allP.map(p=>Math.round((p.vh_za_obdobi||0)/1000)),type:"bar",
-     marker:{color:allP.map((_,i)=>`rgba(212,149,42,${0.6+i*0.1})`),line:{width:0}},
-     text:allP.map(p=>Math.round((p.vh_za_obdobi||0)/1000)+" tis."),textposition:"outside",textfont:{size:9,color:'#f0f4ff'}}
+     marker:{color:allP.map((_,i)=>`rgba(212,149,42,${.6+i*.08})`),line:{width:0}},
+     text:allP.map(p=>Math.round((p.vh_za_obdobi||0)/1000)+" tis."),textposition:"outside",textfont:{size:9,color:"#c0d0ff"}}
   ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:9}}}},{responsive:true,displayModeBar:false});
-
   Plotly.newPlot("ch2",[
     {name:"Aktiva",x:labels,y:allP.map(p=>Math.round((p.aktiva_netto||0)/1000)),type:"bar",
-     marker:{color:"rgba(45,74,158,.7)"},yaxis:"y"},
+     marker:{color:"rgba(42,92,255,.65)"},yaxis:"y"},
     {name:"ROA %",x:labels,y:allP.map(p=>p.roa||0),type:"scatter",mode:"lines+markers",
      line:{color:"#fbbf24",width:2},marker:{size:6,color:"#fbbf24"},yaxis:"y2"}
   ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:9}}},
-     yaxis2:{overlaying:"y",side:"right",gridcolor:"rgba(0,0,0,0)",ticksuffix:"%",tickfont:{size:9,color:"#f0f4ff"}}},
+     yaxis2:{overlaying:"y",side:"right",gridcolor:"rgba(0,0,0,0)",ticksuffix:"%",tickfont:{size:9,color:"#c0d0ff"}}},
   {responsive:true,displayModeBar:false});
-
-  const cols = allP.map(p=>p.label);
-  document.getElementById("trend-head").innerHTML =
-    `<tr><th style="width:35%">Ukazatel</th>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>`;
-  const trows = [
-    {lbl:"Tržby celkem",      key:"trzby_celkem",       fmt:kc},
-    {lbl:"Provozní VH",       key:"provozni_vh",         fmt:kc},
-    {lbl:"VH za období",      key:"vh_za_obdobi",        fmt:kc},
-    {lbl:"EBITDA",            key:"ebitda",              fmt:kc},
-    {lbl:"Aktiva celkem",     key:"aktiva_netto",        fmt:kc},
-    {lbl:"ROA",               key:"roa",                 fmt:pct},
-    {lbl:"ROE",               key:"roe",                 fmt:pct},
-    {lbl:"ROS",               key:"ros",                 fmt:pct},
-    {lbl:"Běžná likvidita",   key:"bezna_likvidita",     fmt:num},
-    {lbl:"Celk. zadluženost", key:"celkova_zadluzenost", fmt:pct},
-    {lbl:"Altman Z",          key:"altman_z",            fmt:v=>v??"-"},
-  ];
-  document.getElementById("trend-body").innerHTML = trows.map(r=>{
-    const vals = allP.map(p=>r.fmt(p[r.key]));
-    return `<tr><td>${r.lbl}</td>${vals.map(v=>`<td>${v}</td>`).join("")}</tr>`;
-  }).join("");
+  const cols=allP.map(p=>p.label||p.period_label);
+  document.getElementById("trend-head").innerHTML=`<tr><th style="width:35%">Ukazatel</th>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>`;
+  [{lbl:"Tržby celkem",key:"trzby_celkem",fmt:kc},{lbl:"Provozní VH",key:"provozni_vh",fmt:kc},
+   {lbl:"VH za období",key:"vh_za_obdobi",fmt:kc},{lbl:"EBITDA",key:"ebitda",fmt:kc},
+   {lbl:"Aktiva celkem",key:"aktiva_netto",fmt:kc},{lbl:"ROA",key:"roa",fmt:pct},
+   {lbl:"ROE",key:"roe",fmt:pct},{lbl:"ROS",key:"ros",fmt:pct},
+   {lbl:"Běžná likvidita",key:"bezna_likvidita",fmt:num},{lbl:"Celk. zadluženost",key:"celkova_zadluzenost",fmt:pct},
+   {lbl:"Altman Z",key:"altman_z",fmt:v=>v??"-"}
+  ].forEach(r=>{
+    document.getElementById("trend-body").innerHTML+=`<tr><td>${r.lbl}</td>${allP.map(p=>`<td>${r.fmt(p[r.key])}</td>`).join("")}</tr>`;
+  });
 });
 </script>
 <script>
-// ================================================================
-// SEKCE 2: HISTORICKÁ ANALÝZA
-// ================================================================
-const HIST_URL = `https://raw.githubusercontent.com/ucetnizaverka-hash/Live-reporting/main/data/historika_${KLIENT_ID}.json`;
-
-const n0  = v => (v===null||v===undefined)?"—":Math.round(v).toLocaleString("cs-CZ")+" Kč";
-const n2  = v => (v===null||v===undefined)?"—":parseFloat(v).toFixed(2);
-const p1  = v => (v===null||v===undefined)?"—":parseFloat(v).toFixed(1)+" %";
-const tis = v => (v===null||v===undefined)?0:Math.round(v/1000);
-
-const deltaCell = (abs,pct) => {
-  if(abs===null||abs===undefined) return "—";
-  const sign = abs>=0?"+":"−", cls=abs>=0?"pos":"neg";
+const HIST_URL=`https://raw.githubusercontent.com/ucetnizaverka-hash/Live-reporting/main/data/historika_${KLIENT_ID}.json`;
+const n0=v=>(v==null)?"—":Math.round(v).toLocaleString("cs-CZ")+" Kč";
+const n2=v=>(v==null)?"—":parseFloat(v).toFixed(2);
+const p1=v=>(v==null)?"—":parseFloat(v).toFixed(1)+" %";
+const tis=v=>(v==null)?0:Math.round(v/1000);
+const deltaCell=(abs,pct)=>{
+  if(abs==null)return "—";
+  const sign=abs>=0?"+":"−",cls=abs>=0?"pos":"neg";
   return `<span class="${cls}">${sign} ${Math.abs(Math.round(abs)).toLocaleString("cs-CZ")} Kč</span>`+
          (pct!=null?`<br><span class="pct-cell">${pct>=0?"+":""}${pct.toFixed(1)}%</span>`:"");
 };
-
-function buildHoriz(periody, rows, el) {
-  const hasH = periody.some(p=>p.horiz);
-  const hPeriody = periody.filter(p=>p.horiz);
-  let head = `<thead><tr><th>Položka</th>`;
-  periody.forEach(p=>head+=`<th>${p.label}</th>`);
-  hPeriody.forEach((p,i)=>{
-    const prev = periody[periody.indexOf(p)-1];
-    head+=`<th>Δ ${prev?.label?.slice(-4)||""}→${p.label?.slice(-4)||""}</th>`;
-  });
-  head+=`</tr></thead><tbody>`;
+function buildHoriz(periody,rows,el){
+  const hp=periody.filter(p=>p.horiz);
+  let s=`<thead><tr><th>Položka</th>`;
+  periody.forEach(p=>s+=`<th>${p.label}</th>`);
+  hp.forEach(p=>{const pv=periody[periody.indexOf(p)-1];s+=`<th>Δ ${pv?.label?.slice(-4)||""}→${p.label?.slice(-4)||""}</th>`;});
+  s+=`</tr></thead><tbody>`;
   rows.forEach(r=>{
-    if(r.group){head+=`<tr class="grp"><td colspan="${1+periody.length+hPeriody.length}">${r.label}</td></tr>`;return;}
-    head+=`<tr><td>${r.label}</td>`;
-    periody.forEach(p=>head+=`<td>${r.fmt?r.fmt(p[r.key]):n0(p[r.key])}</td>`);
-    hPeriody.forEach(p=>{const h=(p.horiz||{})[r.key]||{};head+=`<td>${deltaCell(h.abs,h.pct)}</td>`;});
-    head+=`</tr>`;
+    if(r.group){s+=`<tr class="grp"><td colspan="${1+periody.length+hp.length}">${r.label}</td></tr>`;return;}
+    s+=`<tr><td>${r.label}</td>`;
+    periody.forEach(p=>s+=`<td>${r.fmt?r.fmt(p[r.key]):n0(p[r.key])}</td>`);
+    hp.forEach(p=>{const h=(p.horiz||{})[r.key]||{};s+=`<td>${deltaCell(h.abs,h.pct)}</td>`;});
+    s+=`</tr>`;
   });
-  el.innerHTML=head+`</tbody>`;
+  el.innerHTML=s+`</tbody>`;
 }
-
-function buildVert(periody, rows, vk, el) {
-  let head=`<thead><tr><th>Položka</th>`;
-  periody.forEach(p=>head+=`<th>${p.label}</th><th>%</th>`);
-  head+=`</tr></thead><tbody>`;
+function buildVert(periody,rows,vk,el){
+  let s=`<thead><tr><th>Položka</th>`;
+  periody.forEach(p=>s+=`<th>${p.label}</th><th>%</th>`);
+  s+=`</tr></thead><tbody>`;
   rows.forEach(r=>{
-    if(r.group){head+=`<tr class="grp"><td colspan="${1+periody.length*2}">${r.label}</td></tr>`;return;}
-    head+=`<tr><td>${r.label}</td>`;
-    periody.forEach(p=>{
-      const pct=(p[vk]||{})[r.vk||r.key];
-      head+=`<td>${n0(p[r.key])}</td><td class="pct-cell">${pct!=null?pct.toFixed(1)+"%":"—"}</td>`;
-    });
-    head+=`</tr>`;
+    if(r.group){s+=`<tr class="grp"><td colspan="${1+periody.length*2}">${r.label}</td></tr>`;return;}
+    s+=`<tr><td>${r.label}</td>`;
+    periody.forEach(p=>{const pc=(p[vk]||{})[r.vk||r.key];s+=`<td>${n0(p[r.key])}</td><td class="pct-cell">${pc!=null?pc.toFixed(1)+"%":"—"}</td>`;});
+    s+=`</tr>`;
   });
-  el.innerHTML=head+`</tbody>`;
+  el.innerHTML=s+`</tbody>`;
 }
-
-function buildUkazatele(periody, el) {
+function buildUk(periody,el){
   const rows=[
-    {lbl:"ROA (rentabilita aktiv)",     key:"roa",                fmt:p1},
-    {lbl:"ROE (rentabilita VK)",        key:"roe",                fmt:p1},
-    {lbl:"ROS (rentabilita tržeb)",     key:"ros",                fmt:p1},
-    {lbl:"EBITDA",                      key:"ebitda",             fmt:n0},
-    {lbl:"EBITDA marže",                key:"ebitda_marze",       fmt:p1},
-    {lbl:"Běžná likvidita",             key:"bezna_likvidita",    fmt:n2},
-    {lbl:"Okamžitá likvidita",          key:"okamzita_likvidita", fmt:n2},
-    {lbl:"Celková zadluženost",         key:"celkova_zadluzenost",fmt:p1},
-    {lbl:"Altman Z-skóre",             key:"altman_z",           fmt:n2},
+    {lbl:"ROA",key:"roa",fmt:p1},{lbl:"ROE",key:"roe",fmt:p1},{lbl:"ROS",key:"ros",fmt:p1},
+    {lbl:"EBITDA",key:"ebitda",fmt:n0},{lbl:"EBITDA marže",key:"ebitda_marze",fmt:p1},
+    {lbl:"Běžná likvidita",key:"bezna_likvidita",fmt:n2},{lbl:"Okamžitá likvidita",key:"okamzita_likvidita",fmt:n2},
+    {lbl:"Celková zadluženost",key:"celkova_zadluzenost",fmt:p1},{lbl:"Altman Z",key:"altman_z",fmt:n2},
   ];
-  let head=`<thead><tr><th>Ukazatel</th>`;
-  periody.forEach(p=>head+=`<th>${p.label}</th>`);
-  if(periody.length>=2) head+=`<th>Trend</th>`;
-  head+=`</tr></thead><tbody>`;
+  let s=`<thead><tr><th>Ukazatel</th>`;
+  periody.forEach(p=>s+=`<th>${p.label}</th>`);
+  if(periody.length>=2)s+=`<th>Trend</th>`;
+  s+=`</tr></thead><tbody>`;
   rows.forEach(r=>{
-    head+=`<tr><td>${r.lbl}</td>`;
+    s+=`<tr><td>${r.lbl}</td>`;
     const vals=periody.map(p=>p[r.key]);
-    vals.forEach(v=>head+=`<td>${r.fmt(v)}</td>`);
-    if(periody.length>=2){
-      const f=vals[0],l=vals[vals.length-1];
-      const t=(f!=null&&l!=null)?(l>f?'<span class="pos">↑</span>':l<f?'<span class="neg">↓</span>':'→'):'—';
-      head+=`<td>${t}</td>`;
-    }
-    head+=`</tr>`;
+    vals.forEach(v=>s+=`<td>${r.fmt(v)}</td>`);
+    if(periody.length>=2){const f=vals[0],l=vals[vals.length-1];s+=`<td>${(f!=null&&l!=null)?(l>f?'<span class="pos">↑</span>':l<f?'<span class="neg">↓</span>':'→'):'—'}</td>`;}
+    s+=`</tr>`;
   });
-  el.innerHTML=head+`</tbody>`;
+  el.innerHTML=s+`</tbody>`;
 }
-
 (async()=>{
-  try {
+  try{
     const r=await fetch(HIST_URL+"?t="+Date.now());
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    const h=await r.json();
-    const periody=h.periody||[];
-    if(!periody.length) throw new Error("Žádná historická data");
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const h=await r.json(),periody=h.periody||[];
+    if(!periody.length)throw new Error("Žádná historická data");
     document.getElementById("hist-loading").style.display="none";
     document.getElementById("hist-content").style.display="block";
-
-    const clrs =["rgba(27,36,105,.8)","rgba(212,149,42,.85)","rgba(22,163,74,.8)"];
-    const lclrs=["#1b2469","#d4952a","#16a34a"];
     const labels=periody.map(p=>p.label);
-
-    // Horizontální VZZ
     buildHoriz(periody,[
-      {group:true,label:"Výnosy"},
-      {label:"Tržby celkem",        key:"trzby_celkem"},
-      {label:"  — ze služeb",       key:"trzby_sluzby"},
-      {label:"  — ze zboží",        key:"trzby_zbozi"},
-      {group:true,label:"Náklady"},
-      {label:"Výkonová spotřeba",   key:"vyk_spotreba"},
-      {label:"Osobní náklady",      key:"osobni_naklady"},
-      {label:"Odpisy",              key:"odpisy"},
-      {group:true,label:"Výsledky"},
-      {label:"Provozní VH",         key:"provozni_vh"},
-      {label:"VH před zdaněním",    key:"vh_pred_zdanenim"},
-      {label:"VH za účetní období", key:"vh_za_obdobi"},
+      {group:true,label:"Výnosy"},{label:"Tržby celkem",key:"trzby_celkem"},{label:"  — ze služeb",key:"trzby_sluzby"},{label:"  — ze zboží",key:"trzby_zbozi"},
+      {group:true,label:"Náklady"},{label:"Výkonová spotřeba",key:"vyk_spotreba"},{label:"Osobní náklady",key:"osobni_naklady"},{label:"Odpisy",key:"odpisy"},
+      {group:true,label:"Výsledky"},{label:"Provozní VH",key:"provozni_vh"},{label:"VH před zdaněním",key:"vh_pred_zdanenim"},{label:"VH za účetní období",key:"vh_za_obdobi"},
     ],document.getElementById("horiz-vzz"));
-
-    // Horizontální Rozvaha
     buildHoriz(periody,[
-      {group:true,label:"AKTIVA"},
-      {label:"Aktiva celkem",        key:"aktiva_netto"},
-      {label:"Stálá aktiva",         key:"stala_netto"},
-      {label:"Oběžná aktiva",        key:"obezna_netto"},
-      {label:"  Zásoby",             key:"zasoby"},
-      {label:"  Pohledávky kr.",     key:"pohledavky_kr"},
-      {label:"  Peněžní prostředky", key:"pp"},
-      {group:true,label:"PASIVA"},
-      {label:"Vlastní kapitál",      key:"vk"},
-      {label:"Cizí zdroje",          key:"cizi_zdroje"},
-      {label:"Závazky krátkodobé",   key:"zav_kr"},
+      {group:true,label:"AKTIVA"},{label:"Aktiva celkem",key:"aktiva_netto"},{label:"Stálá aktiva",key:"stala_netto"},{label:"Oběžná aktiva",key:"obezna_netto"},
+      {label:"  Zásoby",key:"zasoby"},{label:"  Pohledávky kr.",key:"pohledavky_kr"},{label:"  Peněžní prostředky",key:"pp"},
+      {group:true,label:"PASIVA"},{label:"Vlastní kapitál",key:"vk"},{label:"Cizí zdroje",key:"cizi_zdroje"},{label:"Závazky krátkodobé",key:"zav_kr"},
     ],document.getElementById("horiz-rozvaha"));
-
-    // Vertikální VZZ
     buildVert(periody,[
-      {label:"Tržby celkem",       key:"trzby_celkem",    vk:"trzby_celkem"},
-      {label:"  Tržby ze služeb",  key:"trzby_sluzby",    vk:"trzby_sluzby"},
-      {label:"  Tržby ze zboží",   key:"trzby_zbozi",     vk:"trzby_zbozi"},
-      {label:"Výkonová spotřeba",  key:"vyk_spotreba",    vk:"vyk_spotreba"},
-      {label:"Osobní náklady",     key:"osobni_naklady",  vk:"osobni_naklady"},
-      {label:"Odpisy",             key:"odpisy",           vk:"odpisy"},
-      {label:"Provozní VH",        key:"provozni_vh",     vk:"provozni_vh"},
-      {label:"VH za období",       key:"vh_za_obdobi",    vk:"vh_za_obdobi"},
+      {label:"Tržby celkem",key:"trzby_celkem",vk:"trzby_celkem"},{label:"  ze služeb",key:"trzby_sluzby",vk:"trzby_sluzby"},
+      {label:"  ze zboží",key:"trzby_zbozi",vk:"trzby_zbozi"},{label:"Výkonová spotřeba",key:"vyk_spotreba",vk:"vyk_spotreba"},
+      {label:"Osobní náklady",key:"osobni_naklady",vk:"osobni_naklady"},{label:"Odpisy",key:"odpisy",vk:"odpisy"},
+      {label:"Provozní VH",key:"provozni_vh",vk:"provozni_vh"},{label:"VH za období",key:"vh_za_obdobi",vk:"vh_za_obdobi"},
     ],"vert_vzz",document.getElementById("vert-vzz"));
-
-    // Vertikální Rozvaha
     buildVert(periody,[
-      {label:"Aktiva celkem",        key:"aktiva_netto",  vk:"aktiva_netto"},
-      {label:"Stálá aktiva",         key:"stala_netto",   vk:"stala_netto"},
-      {label:"Oběžná aktiva",        key:"obezna_netto",  vk:"obezna_netto"},
-      {label:"  Zásoby",             key:"zasoby",        vk:"zasoby"},
-      {label:"  Pohledávky kr.",     key:"pohledavky_kr", vk:"pohledavky_kr"},
-      {label:"  Peněžní prostředky", key:"pp",            vk:"pp"},
-      {label:"Vlastní kapitál",      key:"vk",            vk:"vk"},
-      {label:"Cizí zdroje",          key:"cizi_zdroje",   vk:"cizi_zdroje"},
-      {label:"Závazky krátkodobé",   key:"zav_kr",        vk:"zav_kr"},
+      {label:"Aktiva celkem",key:"aktiva_netto",vk:"aktiva_netto"},{label:"Stálá aktiva",key:"stala_netto",vk:"stala_netto"},
+      {label:"Oběžná aktiva",key:"obezna_netto",vk:"obezna_netto"},{label:"  Zásoby",key:"zasoby",vk:"zasoby"},
+      {label:"  Pohledávky kr.",key:"pohledavky_kr",vk:"pohledavky_kr"},{label:"  Peněžní prostředky",key:"pp",vk:"pp"},
+      {label:"Vlastní kapitál",key:"vk",vk:"vk"},{label:"Cizí zdroje",key:"cizi_zdroje",vk:"cizi_zdroje"},{label:"Závazky krátkodobé",key:"zav_kr",vk:"zav_kr"},
     ],"vert_rozvaha",document.getElementById("vert-rozvaha"));
-
-    // Ukazatele
-    buildUkazatele(periody,document.getElementById("ukazatele-table"));
-
-    // Grafy
-    // ── Plotly společný layout (dark) ──────────────────────────────
-    const HP = {paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
-      font:{color:'#f0f4ff',size:10,family:'Segoe UI,system-ui'},
+    buildUk(periody,document.getElementById("ukazatele-table"));
+    const HP={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
+      font:{color:"#c0d0ff",size:10,family:"DM Sans,system-ui"},
       margin:{t:6,r:10,b:36,l:50},showlegend:true,
-      legend:{bgcolor:'rgba(0,0,0,0)',orientation:'h',y:-0.28,font:{size:10}},
-      xaxis:{gridcolor:'rgba(255,255,255,.1)',tickfont:{size:10,color:'#f0f4ff'}},
-      yaxis:{gridcolor:'rgba(255,255,255,.1)',tickfont:{size:10,color:'#f0f4ff'}}};
-    const CFG = {responsive:true,displayModeBar:false};
-
-    // ── 1. Tržby & VH ────────────────────────────────────────────────
+      legend:{bgcolor:"rgba(0,0,0,0)",orientation:"h",y:-0.28,font:{size:10,color:"#c0d0ff"}},
+      xaxis:{gridcolor:"rgba(255,255,255,.08)",tickfont:{size:10,color:"#c0d0ff"}},
+      yaxis:{gridcolor:"rgba(255,255,255,.08)",tickfont:{size:10,color:"#c0d0ff"}}};
+    const CFG={responsive:true,displayModeBar:false};
     Plotly.newPlot("hch-trzby",[
-      {name:"Tržby",x:labels,y:periody.map(p=>tis(p.trzby_celkem)),type:"bar",
-       marker:{color:["rgba(45,74,158,.8)","rgba(45,74,158,.95)"],line:{width:0}},
-       text:periody.map(p=>tis(p.trzby_celkem)+" tis."),textposition:"outside",textfont:{size:9,color:'#f0f4ff'}},
-      {name:"VH",x:labels,y:periody.map(p=>tis(p.vh_za_obdobi)),type:"bar",
-       marker:{color:["rgba(212,149,42,.8)","rgba(212,149,42,.95)"],line:{width:0}},
-       text:periody.map(p=>tis(p.vh_za_obdobi)+" tis."),textposition:"outside",textfont:{size:9,color:'#f0f4ff'}}
+      {name:"Tržby",x:labels,y:periody.map(p=>tis(p.trzby_celkem)),type:"bar",marker:{color:"rgba(42,92,255,.8)"},text:periody.map(p=>tis(p.trzby_celkem)+" tis."),textposition:"outside",textfont:{size:9,color:"#c0d0ff"}},
+      {name:"VH",x:labels,y:periody.map(p=>tis(p.vh_za_obdobi)),type:"bar",marker:{color:"rgba(212,149,42,.85)"},text:periody.map(p=>tis(p.vh_za_obdobi)+" tis."),textposition:"outside",textfont:{size:9,color:"#c0d0ff"}}
     ],{...HP,yaxis:{...HP.yaxis,ticksuffix:" tis."}},CFG);
-
-    // ── 2. Náklady (stacked) ─────────────────────────────────────────
     Plotly.newPlot("hch-naklady",[
-      {name:"Výk. spotřeba",x:labels,y:periody.map(p=>tis(p.vyk_spotreba)),type:"bar",
-       marker:{color:"rgba(45,74,158,.8)"},stackgroup:"n"},
-      {name:"Osobní nákl.",x:labels,y:periody.map(p=>tis(p.osobni_naklady)),type:"bar",
-       marker:{color:"rgba(212,149,42,.8)"},stackgroup:"n"},
-      {name:"Odpisy",x:labels,y:periody.map(p=>tis(p.odpisy)),type:"bar",
-       marker:{color:"rgba(52,211,153,.7)"},stackgroup:"n"}
+      {name:"Výk. spotřeba",x:labels,y:periody.map(p=>tis(p.vyk_spotreba)),type:"bar",marker:{color:"rgba(42,92,255,.8)"},stackgroup:"n"},
+      {name:"Osobní nákl.",x:labels,y:periody.map(p=>tis(p.osobni_naklady)),type:"bar",marker:{color:"rgba(212,149,42,.8)"},stackgroup:"n"},
+      {name:"Odpisy",x:labels,y:periody.map(p=>tis(p.odpisy)),type:"bar",marker:{color:"rgba(52,211,153,.7)"},stackgroup:"n"}
     ],{...HP,barmode:"stack",yaxis:{...HP.yaxis,ticksuffix:" tis."}},CFG);
-
-    // ── 3. Rentabilita — line chart ──────────────────────────────────
     Plotly.newPlot("hch-rent",[
-      {name:"ROA %",x:labels,y:periody.map(p=>p.roa||0),type:"scatter",mode:"lines+markers",
-       line:{color:"#3b82f6",width:2},marker:{size:6,color:"#3b82f6"},fill:"tozeroy",fillcolor:"rgba(59,130,246,.1)"},
-      {name:"ROE %",x:labels,y:periody.map(p=>p.roe||0),type:"scatter",mode:"lines+markers",
-       line:{color:"#fbbf24",width:2},marker:{size:6,color:"#fbbf24"},fill:"tozeroy",fillcolor:"rgba(251,191,36,.08)"},
-      {name:"ROS %",x:labels,y:periody.map(p=>p.ros||0),type:"scatter",mode:"lines+markers",
-       line:{color:"#34d399",width:2},marker:{size:6,color:"#34d399"},fill:"tozeroy",fillcolor:"rgba(52,211,153,.08)"}
+      {name:"ROA %",x:labels,y:periody.map(p=>p.roa||0),type:"scatter",mode:"lines+markers",line:{color:"#60a5fa",width:2},marker:{size:6,color:"#60a5fa"},fill:"tozeroy",fillcolor:"rgba(96,165,250,.1)"},
+      {name:"ROE %",x:labels,y:periody.map(p=>p.roe||0),type:"scatter",mode:"lines+markers",line:{color:"#fbbf24",width:2},marker:{size:6,color:"#fbbf24"},fill:"tozeroy",fillcolor:"rgba(251,191,36,.08)"},
+      {name:"ROS %",x:labels,y:periody.map(p=>p.ros||0),type:"scatter",mode:"lines+markers",line:{color:"#34d399",width:2},marker:{size:6,color:"#34d399"},fill:"tozeroy",fillcolor:"rgba(52,211,153,.08)"}
     ],{...HP,yaxis:{...HP.yaxis,ticksuffix:" %"}},CFG);
-
-    // ── 4. Likvidita & zadluženost ────────────────────────────────────
     Plotly.newPlot("hch-lik",[
-      {name:"Běžná likvidita",x:labels,y:periody.map(p=>p.bezna_likvidita||0),type:"bar",
-       marker:{color:"rgba(45,74,158,.8)"}},
-      {name:"Zadluženost %",x:labels,y:periody.map(p=>p.celkova_zadluzenost||0),
-       type:"scatter",mode:"lines+markers",yaxis:"y2",
-       line:{color:"#f87171",width:2},marker:{size:6,color:"#f87171"}}
-    ],{...HP,
-       yaxis:{...HP.yaxis,title:{text:"Likvidita",font:{size:9}}},
-       yaxis2:{overlaying:"y",side:"right",gridcolor:"rgba(0,0,0,0)",
-               ticksuffix:"%",tickfont:{size:9},title:{text:"Zadluženost",font:{size:9}}}
-    },CFG);
-
-    // ── 5. Aktiva struktura (stacked bar) ────────────────────────────
+      {name:"Běžná likvidita",x:labels,y:periody.map(p=>p.bezna_likvidita||0),type:"bar",marker:{color:"rgba(42,92,255,.8)"}},
+      {name:"Zadluženost %",x:labels,y:periody.map(p=>p.celkova_zadluzenost||0),type:"scatter",mode:"lines+markers",yaxis:"y2",line:{color:"#f87171",width:2},marker:{size:6,color:"#f87171"}}
+    ],{...HP,yaxis:{...HP.yaxis,title:{text:"Likvidita",font:{size:9}}},yaxis2:{overlaying:"y",side:"right",gridcolor:"rgba(0,0,0,0)",ticksuffix:"%",tickfont:{size:9,color:"#c0d0ff"}}},CFG);
     Plotly.newPlot("hch-aktiva",[
-      {name:"Stálá aktiva",x:labels,y:periody.map(p=>tis(p.stala_netto)),type:"bar",
-       marker:{color:"rgba(212,149,42,.85)"},stackgroup:"a"},
-      {name:"Oběžná aktiva",x:labels,y:periody.map(p=>tis(p.obezna_netto)),type:"bar",
-       marker:{color:"rgba(45,74,158,.85)"},stackgroup:"a"}
+      {name:"Stálá aktiva",x:labels,y:periody.map(p=>tis(p.stala_netto)),type:"bar",marker:{color:"rgba(212,149,42,.85)"},stackgroup:"a"},
+      {name:"Oběžná aktiva",x:labels,y:periody.map(p=>tis(p.obezna_netto)),type:"bar",marker:{color:"rgba(42,92,255,.85)"},stackgroup:"a"}
     ],{...HP,barmode:"stack",yaxis:{...HP.yaxis,ticksuffix:" tis."}},CFG);
-
-    // ── 6. Altman Z s pásmovými zónami ───────────────────────────────
     Plotly.newPlot("hch-altman",[
-      {name:"Altman Z",x:labels,y:periody.map(p=>p.altman_z||0),
-       type:"scatter",mode:"lines+markers+text",
+      {name:"Altman Z",x:labels,y:periody.map(p=>p.altman_z||0),type:"scatter",mode:"lines+markers+text",
        line:{color:"#fbbf24",width:2.5},marker:{size:8,color:"#fbbf24"},
-       text:periody.map(p=>(p.altman_z||0).toFixed(2)),textposition:"top center",textfont:{size:9,color:'#f0f4ff'}},
-      {name:"Hranice zdraví (2.9)",x:labels,y:Array(labels.length).fill(2.9),
-       type:"scatter",mode:"lines",line:{color:"#34d399",width:1,dash:"dot"},showlegend:true},
-      {name:"Hranice rizika (1.23)",x:labels,y:Array(labels.length).fill(1.23),
-       type:"scatter",mode:"lines",line:{color:"#f87171",width:1,dash:"dot"},showlegend:true}
-    ],{...HP,yaxis:{...HP.yaxis,range:[0,Math.max(3.5,...periody.map(p=>p.altman_z||0))+0.5]}},CFG);
-
+       text:periody.map(p=>(p.altman_z||0).toFixed(2)),textposition:"top center",textfont:{size:9,color:"#fbbf24"}},
+      {name:"Zdraví (2.9)",x:labels,y:Array(labels.length).fill(2.9),type:"scatter",mode:"lines",line:{color:"#34d399",width:1,dash:"dot"}},
+      {name:"Riziko (1.23)",x:labels,y:Array(labels.length).fill(1.23),type:"scatter",mode:"lines",line:{color:"#f87171",width:1,dash:"dot"}}
+    ],{...HP,yaxis:{...HP.yaxis,range:[0,Math.max(3.5,...periody.map(p=>p.altman_z||0))+.5]}},CFG);
     const proj=h.projekce||{};
     if(proj.trzby_celkem){
-      const items=[
-        {lbl:"Proj. tržby",val:proj.trzby_celkem},
-        {lbl:"Proj. provoz. VH",val:proj.provozni_vh},
-        {lbl:"Proj. VH čistý",val:proj.vh_za_obdobi},
-        {lbl:"Proj. EBITDA",val:proj.provozni_vh&&proj.odpisy?proj.provozni_vh+proj.odpisy:null},
-      ].filter(i=>i.val!=null);
-      document.getElementById("proj-section").innerHTML=`
-        <div class="sec-header live" style="margin-top:8px"> Projekce na 12 měsíců</div>
-        <div class="proj-banner">
-          <h3>Extrapolace z ${proj._mesice} měsíců (&times;${proj._koef})</h3>
-          <div class="proj-grid">
-            ${items.map(i=>`<div class="proj-item"><div class="pv">${Math.round(i.val).toLocaleString("cs-CZ")} K&#269;</div><div class="pl">${i.lbl}</div></div>`).join("")}
-          </div>
-          <p style="font-size:11px;color:#92400e;margin:10px 0 0"> Projekce předpokládá lineární vývoj.</p>
-        </div>`;}
-
-  } catch(e) {
+      const items=[{lbl:"Proj. tržby",val:proj.trzby_celkem},{lbl:"Proj. provoz. VH",val:proj.provozni_vh},{lbl:"Proj. VH čistý",val:proj.vh_za_obdobi},{lbl:"Proj. EBITDA",val:proj.provozni_vh&&proj.odpisy?proj.provozni_vh+proj.odpisy:null}].filter(i=>i.val!=null);
+      document.getElementById("proj-section").innerHTML=`<div class="sec-div gold" style="margin-top:8px"><h2>Projekce na 12 měsíců</h2><div class="sec-div-line"></div></div><div class="proj-banner"><h3>Extrapolace z ${proj._mesice} měsíců (×${proj._koef})</h3><div class="proj-grid">${items.map(i=>`<div class="proj-item"><div class="pv">${Math.round(i.val).toLocaleString("cs-CZ")} Kč</div><div class="pl">${i.lbl}</div></div>`).join("")}</div><p style="font-size:11px;color:rgba(212,149,42,.7);margin:10px 0 0">Projekce předpokládá lineární vývoj.</p></div>`;
+    }
+  }catch(e){
     document.getElementById("hist-loading").style.display="none";
-    document.getElementById("hist-err").innerHTML=`<div class="section" style="color:#666;font-size:13px"><strong>Historická data nejsou dostupná.</strong> ${e.message}<br><small>Spusťte ZPRACUJ_HISTORII.bat a PUSH_GITHUB.bat.</small></div
+    document.getElementById("hist-err").innerHTML=`<div class="section" style="color:var(--text-muted);font-size:13px"><strong>Historická data nejsou dostupná.</strong> ${e.message}<br><small>Spusťte ZPRACUJ_HISTORII.bat a PUSH_GITHUB.bat.</small></div>`;
+    document.getElementById("hist-err").style.display="block";
+  }
+})();
+</script>
+</body>
+</html>
