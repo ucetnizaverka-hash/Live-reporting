@@ -47,10 +47,27 @@ const getModeData = (d) => {
   return d.aktualni;
 };
 
-// Vrati vsechny periody pro zobrazeni (historicke + aktualni v danem rezimu)
+// Vrati periody pro zobrazeni:
+//   live mode  → jen sledované období (d.aktualni)
+//   rocni mode → historické periody + roční (s labely "Rok XXXX")
 const getModeAllP = (d) => {
-  const cur = getModeData(d);
-  return [...(d.periody||[]), cur].filter(p => p && Object.keys(p).length > 0);
+  const mode = getMode();
+  if (mode === "rocni") {
+    const hist = (d.periody || []).map(p => ({
+      ...p,
+      label:        `Rok ${p.rok || p.period_label || ""}`,
+      period_label: `Rok ${p.rok || p.period_label || ""}`,
+    }));
+    const rocni = d.rocni && Object.keys(d.rocni).length > 0
+      ? [{...d.rocni,
+          label:        `Rok ${d.rocni.rok || ""}`,
+          period_label: `Rok ${d.rocni.rok || ""}`,
+        }]
+      : [];
+    return [...hist, ...rocni].filter(p => p && Object.keys(p).length > 0);
+  }
+  // Live mode: pouze sledované (průběžné) období
+  return [d.aktualni].filter(p => p && Object.keys(p).length > 0);
 };
 
 // Zjisti jestli existuji rocni data
