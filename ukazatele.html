@@ -72,7 +72,7 @@
   if(typeof window.getModeData!=="function"){
     window.getMode=function(){return location.hash.includes("rocni")?"rocni":"live";};
     window.getModeData=function(d){if(window.getMode()==="rocni"&&d.rocni&&Object.keys(d.rocni).length>0)return d.rocni;return d.aktualni;};
-    window.getModeAllP=function(d){var cur=window.getModeData(d);return(d.periody||[]).concat([cur]).filter(function(p){return p&&Object.keys(p).length>0;});};
+    window.getModeAllP=function(d){var mode=window.getMode();if(mode==="rocni"){var hist=(d.periody||[]).map(function(p){return Object.assign({},p,{label:"Rok "+(p.rok||""),period_label:"Rok "+(p.rok||"")});});var roc=(d.rocni&&Object.keys(d.rocni).length>0)?[Object.assign({},d.rocni,{label:"Rok "+(d.rocni.rok||""),period_label:"Rok "+(d.rocni.rok||"")})]:[]; return hist.concat(roc).filter(function(p){return p&&Object.keys(p).length>0;});}return[d.aktualni].filter(function(p){return p&&Object.keys(p).length>0;});};
     window.hasRocni=function(d){return!!(d&&d.rocni&&Object.keys(d.rocni).length>0);};
     window.kc=function(v,z){if(v===null||v===undefined)return z||"";return Math.round(v).toLocaleString("cs-CZ")+" Kč";};
     window.delta=function(a,b){if(!b||b===0)return null;return Math.round((a-b)/Math.abs(b)*1000)/10;};

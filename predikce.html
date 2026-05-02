@@ -81,9 +81,9 @@ table.mt td.pos{color:#16a34a}
       <h2>Predikce ke konci roku — scénáře</h2>
       <p class="tis-note" id="metoda-note"></p>
       <div class="sc-tabs">
-        <button class="sc-btn pes active" onclick="switchSc('pes')">📉 Pesimistický &minus;10 %</button>
-        <button class="sc-btn baz" onclick="switchSc('baz')">📊 Bazový (annualizace)</button>
-        <button class="sc-btn opt" onclick="switchSc('opt')">📈 Optimistický +10 %</button>
+        <button class="sc-btn pes active" onclick="switchSc('pes')">Pesimistický &minus;10 %</button>
+        <button class="sc-btn baz" onclick="switchSc('baz')">Bazový (annualizace)</button>
+        <button class="sc-btn opt" onclick="switchSc('opt')">Optimistický +10 %</button>
       </div>
 
       <!-- PES -->
@@ -352,19 +352,35 @@ loadData(d => {
   };
   const CFG = {responsive:true,displayModeBar:false};
 
+  // Kumulativni data pro grafy
+  let cumTr = 0, cumVh = 0;
+  const cumTrzbySkut = [], cumTrzbyPred = [], cumVHSkut = [], cumVHPred = [];
+  for(let m=0; m<12; m++){
+    cumTr += mesAvgTrzby;
+    cumVh += mesAvgVH;
+    if(m+1 <= mesice){
+      cumTrzbySkut.push(Math.round(cumTr/1000)); cumTrzbyPred.push(null);
+      cumVHSkut.push(Math.round(cumVh/1000));    cumVHPred.push(null);
+    } else {
+      cumTrzbySkut.push(null); cumTrzbyPred.push(Math.round(cumTr/1000));
+      cumVHSkut.push(null);    cumVHPred.push(Math.round(cumVh/1000));
+    }
+  }
+  const PLline = {...PL, xaxis:{...PL.xaxis,tickangle:-45}, yaxis:{...PL.yaxis,ticksuffix:" tis."}};
+
   Plotly.newPlot("ch-mesice",[
-    {name:"Skutečnost (průměr/měs)", x:mesNames, y:mesTrzbySkut, type:"bar",
-     marker:{color:"rgba(42,92,255,.65)"}},
-    {name:"Predikce", x:mesNames, y:mesTrzbyPred, type:"bar",
-     marker:{color:"rgba(212,149,42,.55)",pattern:{shape:"/"}}},
-  ], {...PL}, CFG);
+    {name:"Kumulativní tržby — skutečnost", x:mesNames, y:cumTrzbySkut, type:"scatter", mode:"lines+markers",
+     line:{color:"rgba(42,92,255,.85)",width:2}, marker:{size:6,color:"rgba(42,92,255,.9)"}},
+    {name:"Kumulativní tržby — predikce",   x:mesNames, y:cumTrzbyPred, type:"scatter", mode:"lines+markers",
+     line:{color:"rgba(212,149,42,.8)",width:2,dash:"dot"}, marker:{size:5,symbol:"circle-open",color:"rgba(212,149,42,.9)"}},
+  ], PLline, CFG);
 
   Plotly.newPlot("ch-vh-mes",[
-    {name:"VH skutečnost (průměr)", x:mesNames, y:mesVHSkut, type:"bar",
-     marker:{color:"rgba(22,163,74,.65)"}},
-    {name:"VH predikce", x:mesNames, y:mesVHPred, type:"bar",
-     marker:{color:"rgba(22,163,74,.35)",pattern:{shape:"/"}}},
-  ], {...PL}, CFG);
+    {name:"Kumulativní VH — skutečnost", x:mesNames, y:cumVHSkut, type:"scatter", mode:"lines+markers",
+     line:{color:"rgba(22,163,74,.85)",width:2}, marker:{size:6,color:"rgba(22,163,74,.9)"}},
+    {name:"Kumulativní VH — predikce",   x:mesNames, y:cumVHPred, type:"scatter", mode:"lines+markers",
+     line:{color:"rgba(212,149,42,.8)",width:2,dash:"dot"}, marker:{size:5,symbol:"circle-open",color:"rgba(212,149,42,.9)"}},
+  ], PLline, CFG);
 
   // Měsíční tabulka
   const mesColspan = 4;
