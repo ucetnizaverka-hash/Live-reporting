@@ -109,7 +109,7 @@ function renderNav(d) {
     {href:"predikce.html",  label:"Predikce"},
   ];
   const livePages = [
-    {href:"index.html",     label:"Dashboard"},
+    {href:"index.html",     label:"Úvodní stránka"},
     {href:"rozvaha.html",   label:"Rozvaha"},
     {href:"vzz.html",       label:"VZZ"},
     {href:"cashflow.html",  label:"Cash Flow"},
@@ -120,13 +120,13 @@ function renderNav(d) {
   const navEl = document.getElementById("nav-links");
   if(navEl) navEl.innerHTML = `
     <div class="nav-group">
-      <span class="nav-glbl">Historické výkaznictví</span>
-      <div class="nav-glinks">${histPages.map(mk).join("")}</div>
+      <span class="nav-glbl">Průběžné výkaznictví${period ? `<span class="nav-gdate"> · k ${period}</span>` : ""}</span>
+      <div class="nav-glinks">${livePages.map(mk).join("")}</div>
     </div>
     <div class="nav-divider"></div>
     <div class="nav-group">
-      <span class="nav-glbl">Průběžné výkaznictví${period ? `<span class="nav-gdate"> · k ${period}</span>` : ""}</span>
-      <div class="nav-glinks">${livePages.map(mk).join("")}</div>
+      <span class="nav-glbl">Historické výkaznictví</span>
+      <div class="nav-glinks">${histPages.map(mk).join("")}</div>
     </div>`;
   _updateModeToggle(d);
 }
