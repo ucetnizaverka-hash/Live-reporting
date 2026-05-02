@@ -68,7 +68,26 @@
         "financni_vh": -0.64,
         "vh_pred_zdanenim": 3.78,
         "vh_za_obdobi": 3.78
-      }
+      },
+      "pohotova_likvidita": 0.96,
+      "doba_obratu_zas": 0.0,
+      "roce": 65.03,
+      "debt_equity": 11.23,
+      "cf_rentabilita": 0.0,
+      "cf_dluh": 0.0,
+      "in05": 1.167,
+      "in05_pasmo": "šedá zóna",
+      "in05_x1": 1.113,
+      "in05_x2": 9.0,
+      "in05_x3": 0.066,
+      "in05_x4": 1.4942,
+      "in05_x5": 0.9623,
+      "taffler": 0.559,
+      "taffler_pasmo": "zdraví",
+      "taffler_x1": 0.0628,
+      "taffler_x2": 0.9623,
+      "taffler_x3": 0.8984,
+      "taffler_x4": 1.4942
     },
     {
       "rok": 2024,
@@ -200,7 +219,26 @@
         "financni_vh": -0.94,
         "vh_pred_zdanenim": -14.05,
         "vh_za_obdobi": -14.05
-      }
+      },
+      "pohotova_likvidita": 0.46,
+      "doba_obratu_zas": 619.6,
+      "roce": -68.29,
+      "debt_equity": 19.57,
+      "cf_rentabilita": 0.0,
+      "cf_dluh": 0.0,
+      "in05": 0.5,
+      "in05_pasmo": "ohrožení",
+      "in05_x1": 1.0511,
+      "in05_x2": 9.0,
+      "in05_x3": -0.0332,
+      "in05_x4": 0.2531,
+      "in05_x5": 0.9156,
+      "taffler": 0.311,
+      "taffler_pasmo": "zdraví",
+      "taffler_x1": -0.0374,
+      "taffler_x2": 0.9156,
+      "taffler_x3": 0.9514,
+      "taffler_x4": 0.2531
     }
   ],
   "projekce": {
