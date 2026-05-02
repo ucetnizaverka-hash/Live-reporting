@@ -68,7 +68,6 @@ const pages = [
 ];
 
 function _updateModeToggle(d) {
-  // Mode toggle hidden on all pages
   const el = document.getElementById("mode-toggle");
   if(el) el.style.display = "none";
 }
@@ -76,35 +75,12 @@ function _updateModeToggle(d) {
 function renderNav(d) {
   const cur = location.pathname.split("/").pop() || "index.html";
   const meta = d ? getModeData(d) : null;
-  if(document.getElementById("hdr-nazev"))
-    document.getElementById("hdr-nazev").textContent = d ? (d.nazev || d.klient_id) : "…";
-  if(document.getElementById("hdr-period"))
-    document.getElementById("hdr-period").textContent = meta ? (meta.period_label||"") : "";
-  if(document.getElementById("hdr-ico"))
-    document.getElementById("hdr-ico").textContent = d ? (d.ico||"") : "";
-
-  const histPages = [
-    {href:"historika.html", label:"Historická analýza"},
-    {href:"rozvaha.html",   label:"Rozvaha"},
-    {href:"vzz.html",       label:"VZZ"},
-    {href:"cashflow.html",  label:"Cash Flow"},
-    {href:"predikce.html",  label:"Predikce"},
-  ];
-  const livePages = [
-    {href:"index.html",     label:"Dashboard"},
-    {href:"rozvaha.html",   label:"Rozvaha"},
-    {href:"vzz.html",       label:"VZZ"},
-    {href:"cashflow.html",  label:"Cash Flow"},
-    {href:"ukazatele.html", label:"Ukazatele"},
-  ];
-  const mkLink = p => `<a href="${p.href}${location.hash}" class="${p.href===cur?'active':''}">${p.label}</a>`;
-  const navEl = document.getElementById("nav-links");
-  if(navEl) navEl.innerHTML =
-    `<span class="nav-group-lbl">Historická data:</span>`+
-    histPages.map(mkLink).join("")+
-    `<span class="nav-sep-gold"></span>`+
-    `<span class="nav-group-lbl">Průběžné výkaznictví:</span>`+
-    livePages.map(mkLink).join("");
+  document.getElementById("hdr-nazev").textContent = d ? (d.nazev || d.klient_id) : "…";
+  document.getElementById("hdr-period").textContent = meta ? (" · " + (meta.period_label||"")) : "";
+  document.getElementById("hdr-ico").textContent = d ? (d.ico||"") : "";
+  document.getElementById("nav-links").innerHTML = pages
+    .map(p=>`<a href="${p.href}${location.hash}" class="${p.href===cur?'active':''}">${p.label}</a>`)
+    .join("");
   _updateModeToggle(d);
 }
 
