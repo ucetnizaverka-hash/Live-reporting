@@ -38,10 +38,6 @@
       <table><thead id="akt-head"></thead><tbody id="akt-body"></tbody></table>
     </div>
     <div class="section">
-      <h2>Produktivita</h2>
-      <table><thead id="prod-head"></thead><tbody id="prod-body"></tbody></table>
-    </div>
-    <div class="section">
       <h2>Aktivita — Cash Flow ukazatele</h2>
       <table><thead id="cf-head"></thead><tbody id="cf-body"></tbody></table>
     </div>
@@ -219,13 +215,6 @@ loadData(d => {
   ].join("");
 
   // --- PRODUKTIVITA ---
-  document.getElementById("prod-head").innerHTML = headHtml(false);
-  document.getElementById("prod-body").innerHTML = [
-    `<tr><td>Tržby na zaměstnance</td>${allP.map(p=>`<td>${kc(p.produktivita_trzby)}</td>`).join("")}</tr>`,
-    `<tr><td>Počet zaměstnanců</td>${allP.map(p=>`<td>${p.pocet_zamestnancu??"-"}</td>`).join("")}</tr>`,
-    `<tr><td>Tržby celkem</td>${allP.map(p=>`<td>${kc(p.trzby_celkem)}</td>`).join("")}</tr>`,
-  ].join("");
-
   // --- ALTMAN ---
   document.getElementById("altman-head").innerHTML =
     `<tr><th>Složka</th><th>Váha</th>${labels.map(l=>`<th>${l}</th>`).join("")}<th>Interpretace</th></tr>`;
@@ -284,3 +273,4 @@ loadData(d => {
   ],_PL, _CFG);
 });
 </script></body></html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
