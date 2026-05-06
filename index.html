@@ -11,9 +11,9 @@
   --font:'DM Sans','Segoe UI',system-ui,sans-serif;
   --blue:#2a5cff;--blue-glow:#4a8cff;
   --gold:#D4952A;--gold-lt:#f59e0b;
-  --card-bg:rgba(255,255,255,0.93);--card-border:rgba(0,0,0,0.08);
+  --card-bg:rgba(255,255,255,0.95);--card-border:rgba(0,0,0,0.08);
   --card-shadow:0 2px 16px rgba(0,0,0,.10),0 1px 4px rgba(0,0,0,.06);
-  --card-shadow-hover:0 20px 60px rgba(0,0,0,.22),0 6px 20px rgba(0,0,0,.12);
+  --card-shadow-hover:0 16px 48px rgba(0,0,0,.20),0 4px 16px rgba(0,0,0,.10);
   --text-d:#111827;--text-m:#6b7280;--text-dim:#9ca3af;
   --green:#16a34a;--red:#dc2626;--sep:rgba(0,0,0,0.08);
   --bg-text:rgba(240,244,255,.75);--bg-text-dim:rgba(160,185,255,.55);
@@ -38,14 +38,14 @@ html,body{font-family:var(--font);color:var(--text-d);background:#010a2a;min-hei
 /* ─── LAYOUT ─── */
 .page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
 
-/* ─── NAV (čistší) ─── */
+/* ─── NAV ─── */
 .nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;
-  gap:20px;padding:12px 28px;
+  gap:20px;padding:10px 28px;
   border-bottom:1px solid rgba(255,255,255,.12);
   backdrop-filter:blur(24px) saturate(180%);background:rgba(1,10,42,.72);
   position:sticky;top:0;z-index:200}
 .nav-brand{display:flex;align-items:center;gap:12px;white-space:nowrap}
-.nav-logo{width:34px;height:34px;border-radius:9px;flex-shrink:0;
+.nav-logo{width:32px;height:32px;border-radius:8px;flex-shrink:0;
   background:linear-gradient(135deg,var(--blue),var(--blue-glow));
   display:flex;align-items:center;justify-content:center;
   font-size:11px;font-weight:700;color:#fff;box-shadow:0 0 18px rgba(42,92,255,.5)}
@@ -57,7 +57,7 @@ html,body{font-family:var(--font);color:var(--text-d);background:#010a2a;min-hei
 .nav-period{font-size:12px;color:var(--bg-text);white-space:nowrap}
 .nav-ico-txt{font-size:11px;color:var(--bg-text-dim);white-space:nowrap}
 .nav-right{display:flex;align-items:center;gap:3px;justify-content:flex-end}
-.nav-tab{padding:6px 14px;border-radius:16px;font-size:11px;font-weight:500;
+.nav-tab{padding:6px 12px;border-radius:14px;font-size:11px;font-weight:500;
   color:var(--bg-text);cursor:pointer;transition:.2s;border:1px solid transparent;
   background:none;text-decoration:none;display:inline-block;white-space:nowrap}
 .nav-tab:hover{color:#fff;background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.15)}
@@ -65,151 +65,170 @@ html,body{font-family:var(--font);color:var(--text-d);background:#010a2a;min-hei
   box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
 
 /* ─── MAIN ─── */
-main{max-width:1180px;margin:0 auto;padding:0 24px 60px;width:100%}
+main{max-width:1260px;margin:0 auto;padding:0 24px 60px;width:100%}
 
-/* ─── HERO ─── */
-.hero{padding:32px 0 18px}
-.hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--blue-glow);margin-bottom:7px}
-.hero-title{font-size:26px;font-weight:300;line-height:1.2;color:#f0f4ff}
-.hero-title strong{font-weight:600}
-.hero-meta{margin-top:6px;font-size:12px;color:var(--bg-text);font-weight:300}
+/* ─── HERO — kompaktní s gradient textem ─── */
+.hero{padding:20px 0 12px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.hero-left{flex:1;min-width:200px}
+.hero-eyebrow{font-size:10px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--blue-glow);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#22d3ee;
+  box-shadow:0 0 10px #22d3ee,0 0 20px rgba(34,211,238,.4);animation:lp 2s ease-in-out infinite}
+@keyframes lp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.75)}}
+.hero-title{font-size:23px;font-weight:300;line-height:1.2;color:#f0f4ff}
+.hero-title strong{font-weight:700;
+  background:linear-gradient(95deg,#fff 0%,#93c5fd 40%,var(--gold-lt) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-meta{margin-top:5px;font-size:11px;color:var(--bg-text-dim);font-weight:300}
+
+/* Hero číselné boxy vpravo */
+.hero-kpi-row{display:flex;gap:1px;align-items:stretch;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);flex-shrink:0}
+.hkp{padding:10px 18px;text-align:center;position:relative}
+.hkp+.hkp::before{content:"";position:absolute;left:0;top:25%;height:50%;width:1px;background:rgba(255,255,255,.12)}
+.hkp .hk-val{font-size:16px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+.hkp .hk-lbl{font-size:9px;color:var(--bg-text-dim);letter-spacing:.8px;text-transform:uppercase;margin-top:2px}
 
 /* ─── SEC DIVIDER ─── */
-.sec-div{display:flex;align-items:center;gap:14px;margin:26px 0 14px}
-.sec-div h2{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;white-space:nowrap}
+.sec-div{display:flex;align-items:center;gap:14px;margin:14px 0 10px}
+.sec-div h2{font-size:9.5px;font-weight:600;letter-spacing:2.2px;text-transform:uppercase;white-space:nowrap}
 .sec-div.gold h2{color:var(--gold-lt)}.sec-div.blue h2{color:#93c5fd}
 .sec-div-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.2),transparent)}
-.sec-div-pill{font-size:10px;padding:2px 10px;border-radius:20px;font-weight:400}
+.sec-div-pill{font-size:9.5px;padding:2px 10px;border-radius:20px;font-weight:400}
 .sec-div.gold .sec-div-pill{background:rgba(212,149,42,.12);color:var(--gold-lt);border:1px solid rgba(212,149,42,.25)}
 .sec-div.blue .sec-div-pill{background:rgba(59,91,217,.12);color:#93c5fd;border:1px solid rgba(59,91,217,.25)}
 
-/* ─── WHITE CARD BASE ─── */
-.wc{background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;
-  box-shadow:var(--card-shadow);transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;
-  position:relative;overflow:hidden}
-.wc:hover{transform:scale(1.03);box-shadow:var(--card-shadow-hover);z-index:10}
-
-/* ─── KPI CARDS ─── */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px;margin-bottom:18px}
-.kpi{background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;
+/* ─── KPI GRID — 4 sloupce ─── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:10px}
+.kpi{background:var(--card-bg);border:1px solid var(--card-border);border-radius:13px;
   border-left:3px solid var(--gold);
-  box-shadow:var(--card-shadow);padding:18px 20px;
-  transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;position:relative;overflow:hidden}
-.kpi:hover{transform:scale(1.04);box-shadow:var(--card-shadow-hover);z-index:10}
+  box-shadow:var(--card-shadow);padding:13px 15px;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  background:linear-gradient(135deg,rgba(255,255,255,.0) 0%,rgba(255,255,255,.05) 100%);pointer-events:none}
+.kpi:hover{transform:translateY(-3px) scale(1.018);box-shadow:var(--card-shadow-hover);z-index:10}
 .kpi.navy{border-left-color:var(--blue)}
-.kpi .lbl{font-size:10px;font-weight:500;letter-spacing:1.3px;text-transform:uppercase;color:var(--text-m);margin-bottom:8px}
-.kpi .val{font-size:20px;font-weight:700;color:var(--text-d);font-variant-numeric:tabular-nums lining-nums}
-.kpi .sub{font-size:11px;color:var(--text-dim);margin-top:4px}
-.kpi .delta{font-size:11px;font-weight:600;margin-top:4px}
+.kpi.teal{border-left-color:#0ea5e9}
+.kpi.violet{border-left-color:#7c3aed}
+.kpi .lbl{font-size:9px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(--text-m);margin-bottom:5px}
+.kpi .val{font-size:17px;font-weight:700;color:var(--text-d);font-variant-numeric:tabular-nums lining-nums;line-height:1.1}
+.kpi .sub{font-size:9.5px;color:var(--text-dim);margin-top:3px}
+.kpi .delta{font-size:9.5px;font-weight:600;margin-top:3px}
 .delta.up{color:var(--green)}.delta.down{color:var(--red)}
 
+/* ─── CHARTS 2 sloupce ─── */
+.charts-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.chart-box{background:var(--card-bg);border:1px solid rgba(255,255,255,.7);border-radius:13px;
+  padding:13px 15px;box-shadow:var(--card-shadow);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
+.chart-box:hover{transform:translateY(-2px);box-shadow:var(--card-shadow-hover);z-index:10}
+.chart-box h3{font-size:9px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(--text-m);margin-bottom:7px}
+
 /* ─── SECTION ─── */
-.section{background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;
-  padding:20px 24px;margin-bottom:14px;box-shadow:var(--card-shadow);
-  transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .3s}
-.section:hover{transform:scale(1.005);box-shadow:var(--card-shadow-hover)}
-.section h2{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;
-  color:var(--text-m);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--sep)}
+.section{background:var(--card-bg);border:1px solid var(--card-border);border-radius:13px;
+  padding:14px 18px;margin-bottom:10px;box-shadow:var(--card-shadow);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
+.section:hover{transform:scale(1.002);box-shadow:var(--card-shadow-hover)}
+.section h2{font-size:9.5px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--text-m);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--sep)}
 
-/* ─── CHARTS ─── */
-.charts-2{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px}
-.charts-3{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
-.chart-box{background:rgba(255,255,255,0.95);border:1px solid rgba(255,255,255,0.7);border-radius:18px;
-  padding:18px 20px;box-shadow:0 4px 24px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,0.8);
-  transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .3s}
-.chart-box:hover{transform:scale(1.03);box-shadow:var(--card-shadow-hover);z-index:10}
-.chart-box h3{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-m);margin-bottom:12px}
-
-/* ─── TABLES (DM Sans tabular, žádná přeškrtnutá nula) ─── */
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-m);
-  background:rgba(0,0,0,.03);padding:8px 10px;text-align:right;font-weight:600;
+/* ─── TABLES ─── */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-m);
+  background:rgba(0,0,0,.03);padding:6px 10px;text-align:right;font-weight:600;
   border-bottom:1px solid var(--sep)}
 th:first-child{text-align:left}
-td{padding:7px 10px;border-bottom:1px solid rgba(0,0,0,.05);text-align:right;
+td{padding:5.5px 10px;border-bottom:1px solid rgba(0,0,0,.05);text-align:right;
   color:var(--text-d);font-family:var(--font);
   font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1,"lnum" 1}
 td:first-child{text-align:left;font-variant-numeric:normal;font-feature-settings:normal}
 tr:hover td{background:rgba(0,0,0,.02)}
 tr.bold td{font-weight:700;background:rgba(0,0,0,.03) !important}
 tr.total td{font-weight:700;color:#92400e;border-top:1px solid rgba(212,149,42,.4);background:rgba(212,149,42,.06) !important}
-tr.sub td:first-child{padding-left:22px;color:var(--text-m)}
-tr.sub2 td:first-child{padding-left:36px;color:var(--text-dim);font-size:12px}
-tr.sep td{padding:2px;background:transparent !important;border:none}
+tr.sub td:first-child{padding-left:20px;color:var(--text-m)}
+tr.sub2 td:first-child{padding-left:34px;color:var(--text-dim);font-size:11px}
+tr.sep td{padding:1px;background:transparent !important;border:none}
 td.neg{color:var(--red);font-weight:600}td.pos{color:var(--green);font-weight:600}
-td.gray{color:var(--text-dim);font-size:12px}td.note{color:var(--text-dim);font-style:italic;font-size:11px}
+td.gray{color:var(--text-dim);font-size:11px}td.note{color:var(--text-dim);font-style:italic;font-size:10px}
 
-/* ─── ANA TABLE (historická) ─── */
-.ana-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px}
-.ana-table th{background:rgba(0,0,0,.04);color:var(--text-m);padding:7px 10px;text-align:right;
-  font-weight:600;border-bottom:1px solid var(--sep);font-size:10px;letter-spacing:.4px;text-transform:uppercase}
+/* ─── ANA TABLE ─── */
+.ana-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px}
+.ana-table th{background:rgba(0,0,0,.04);color:var(--text-m);padding:6px 9px;text-align:right;
+  font-weight:600;border-bottom:1px solid var(--sep);font-size:9px;letter-spacing:.4px;text-transform:uppercase}
 .ana-table th:first-child{text-align:left}
-.ana-table td{padding:6px 10px;border-bottom:1px solid rgba(0,0,0,.04);text-align:right;color:var(--text-d);
+.ana-table td{padding:5px 9px;border-bottom:1px solid rgba(0,0,0,.04);text-align:right;color:var(--text-d);
   font-family:var(--font);font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1,"lnum" 1}
 .ana-table td:first-child{text-align:left;font-variant-numeric:normal;font-feature-settings:normal;font-weight:500;color:#374151}
 .ana-table tr.grp td{background:rgba(0,0,0,.04);font-weight:700;color:#1a2035}
 .ana-table tr:hover td{background:rgba(0,0,0,.02)}
 .pos{color:var(--green);font-weight:600}.neg{color:var(--red);font-weight:600}
-.pct-cell{font-size:11px;color:var(--text-dim)}
+.pct-cell{font-size:10px;color:var(--text-dim)}
 
-/* ─── UK CARD ─── */
-.uk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
-.uk-card{background:var(--card-bg);border-radius:14px;padding:14px 16px;
+/* ─── UK CARDS ─── */
+.uk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin-bottom:12px}
+.uk-card{background:var(--card-bg);border-radius:11px;padding:11px 13px;
   border:1px solid var(--card-border);border-top:3px solid var(--card-border);box-shadow:var(--card-shadow)}
 .uk-card.c23{border-top-color:#6b7280}.uk-card.c24{border-top-color:var(--gold)}
-.uk-card .uk-rok{font-size:10px;color:var(--text-dim);text-transform:uppercase;margin-bottom:5px}
-.uk-card .uk-val{font-size:19px;font-weight:700;color:var(--text-d);font-variant-numeric:tabular-nums lining-nums}
-.uk-card .uk-lbl{font-size:11px;color:var(--text-m);margin-top:2px}
+.uk-card .uk-rok{font-size:9px;color:var(--text-dim);text-transform:uppercase;margin-bottom:3px}
+.uk-card .uk-val{font-size:17px;font-weight:700;color:var(--text-d);font-variant-numeric:tabular-nums lining-nums}
+.uk-card .uk-lbl{font-size:10px;color:var(--text-m);margin-top:2px}
 
 /* ─── BADGE ─── */
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-weight:700;font-size:11px}
+.badge{display:inline-block;padding:1px 7px;border-radius:7px;font-weight:700;font-size:10px}
 .badge.green{background:rgba(22,163,74,.12);color:var(--green)}
 .badge.yellow{background:rgba(245,158,11,.12);color:#92400e}
 .badge.red{background:rgba(220,38,38,.12);color:var(--red)}
 
 /* ─── DISCLAIMER ─── */
-.disclaimer{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:12px;
-  padding:10px 16px;font-size:12px;color:#92400e;margin-bottom:14px}
+.disclaimer{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:9px;
+  padding:7px 13px;font-size:11px;color:#92400e;margin-bottom:9px}
 
-/* ─── HISTORICKÁ POZNÁMKA ─── */
-.hist-note{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:10px;
-  padding:10px 16px;font-size:12px;color:#1e40af;margin-bottom:14px}
-.vert-note{font-size:11px;color:var(--text-dim);margin-top:6px;font-style:italic}
+/* ─── HIST NOTE ─── */
+.hist-note{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:8px;
+  padding:7px 13px;font-size:11px;color:#1e40af;margin-bottom:10px}
+.vert-note{font-size:10px;color:var(--text-dim);margin-top:4px;font-style:italic}
 
 /* ─── BUTTONS ─── */
 .btn-gold{display:inline-block;background:rgba(212,149,42,.15);border:1px solid rgba(212,149,42,.35);
-  color:#92400e;padding:8px 20px;border-radius:16px;font-weight:600;font-size:13px;
+  color:#92400e;padding:7px 16px;border-radius:12px;font-weight:600;font-size:11.5px;
   text-decoration:none;transition:background .15s;box-shadow:0 2px 8px rgba(212,149,42,.12)}
 .btn-gold:hover{background:rgba(212,149,42,.25)}
 
 /* ─── FOOTER ─── */
-.footer{padding:14px 24px;border-top:1px solid rgba(255,255,255,.08);
-  font-size:11px;color:var(--bg-text-dim);text-align:center;letter-spacing:.3px}
+.footer{padding:11px 24px;border-top:1px solid rgba(255,255,255,.08);
+  font-size:10px;color:var(--bg-text-dim);text-align:center;letter-spacing:.3px}
 
 /* ─── LOADING / ERROR ─── */
 #loading{text-align:center;padding:80px;color:var(--bg-text);font-size:14px}
-#err{background:rgba(220,38,38,.10);border:1px solid rgba(220,38,38,.25);color:#fca5a5;border-radius:14px;padding:14px;margin:20px;display:none}
+#err{background:rgba(220,38,38,.10);border:1px solid rgba(220,38,38,.25);color:#fca5a5;border-radius:12px;padding:12px;margin:20px;display:none}
 
 /* ─── STICKY TABS ─── */
-.sticky-tabs{position:sticky;top:58px;z-index:100;display:flex;
-  background:rgba(1,10,42,.90);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08)}
-.sticky-tab{flex:1;padding:10px 20px;text-align:center;font-weight:600;font-size:11px;
-  cursor:pointer;border:none;outline:none;transition:.2s;letter-spacing:.4px;color:var(--bg-text);background:none}
-.sticky-tab.live{background:rgba(212,149,42,.15);border-bottom:2px solid var(--gold);color:#f59e0b}
-.sticky-tab.hist{background:rgba(42,92,255,.15);border-bottom:2px solid var(--blue);color:#93c5fd}
-.sticky-tab.inactive{opacity:.35;border-bottom-color:transparent;background:none}
+.sticky-tabs{position:sticky;top:52px;z-index:100;display:flex;
+  background:rgba(1,10,42,.92);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.08)}
+.sticky-tab{flex:1;padding:8px 20px;text-align:center;font-weight:600;font-size:10px;
+  cursor:pointer;border:none;outline:none;transition:.2s;letter-spacing:.6px;color:var(--bg-text);background:none;text-transform:uppercase}
+.sticky-tab.live{background:rgba(212,149,42,.12);border-bottom:2px solid var(--gold);color:#f59e0b}
+.sticky-tab.hist{background:rgba(42,92,255,.12);border-bottom:2px solid var(--blue);color:#93c5fd}
+.sticky-tab.inactive{opacity:.3;border-bottom-color:transparent;background:none}
 
 /* ─── PROJEKCE ─── */
-.proj-banner{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:16px 20px;margin-bottom:18px;box-shadow:var(--card-shadow)}
-.proj-banner h3{font-size:13px;font-weight:700;color:var(--text-d);margin:0 0 10px}
-.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.proj-banner{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:13px 16px;margin-bottom:12px;box-shadow:var(--card-shadow)}
+.proj-banner h3{font-size:11.5px;font-weight:700;color:var(--text-d);margin:0 0 8px}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
 .proj-item{text-align:center}
-.proj-item .pv{font-size:17px;font-weight:700;color:var(--text-d);font-variant-numeric:tabular-nums lining-nums}
-.proj-item .pl{font-size:11px;color:var(--text-m)}
-.section-sep{margin:32px 0;height:1px;background:linear-gradient(90deg,rgba(42,92,255,.5),rgba(212,149,42,.4))}
+.proj-item .pv{font-size:14px;font-weight:700;color:var(--text-d);font-variant-numeric:tabular-nums lining-nums}
+.proj-item .pl{font-size:10px;color:var(--text-m)}
+.section-sep{margin:22px 0;height:1px;background:linear-gradient(90deg,rgba(42,92,255,.5),rgba(212,149,42,.4))}
+
+/* ─── CHARTS (hist) ─── */
+.charts-3{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+
 #mode-toggle{display:none}#mode-badge{display:none}
-@media(max-width:900px){.charts-3{grid-template-columns:1fr 1fr}}
-@media(max-width:700px){.charts-2,.charts-3{grid-template-columns:1fr}.nav{grid-template-columns:1fr;gap:8px}.kpi-grid{grid-template-columns:1fr 1fr}main{padding:0 14px 40px}.hero-title{font-size:20px}}
+
+@media(max-width:1000px){.kpi-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:860px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.charts-2col{grid-template-columns:1fr}.charts-3{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.charts-2col,.charts-3{grid-template-columns:1fr}.nav{grid-template-columns:1fr;gap:8px}.kpi-grid{grid-template-columns:repeat(2,1fr)}main{padding:0 14px 40px}.hero{flex-direction:column}.hero-kpi-row{display:none}}
 </style>
 </head>
 <body>
@@ -256,7 +275,7 @@ td.gray{color:var(--text-dim);font-size:12px}td.note{color:var(--text-dim);font-
     <span class="nav-sep">·</span>
     <span class="nav-ico-txt">IČO: <span id="hdr-ico">—</span></span>
   </div>
-  <div class="nav-right"><span class="nav-group-lbl" style="margin-right:4px;opacity:.7">Podrobná sestava:</span><span id="nav-links" style="display:contents"></span></div>
+  <div class="nav-right"><span style="margin-right:5px;opacity:.55;font-size:10px">Výkazy:</span><span id="nav-links" style="display:contents"></span></div>
   <span id="mode-badge" style="display:none"></span>
   <div id="mode-toggle" style="display:none"></div>
 </nav>
@@ -266,10 +285,18 @@ td.gray{color:var(--text-dim);font-size:12px}td.note{color:var(--text-dim);font-
   <div id="err"></div>
   <div id="app" style="display:none">
 
+    <!-- HERO -->
     <div class="hero">
-      <div class="hero-eyebrow">Průběžné výkaznictví — aktuální období</div>
-      <h1 class="hero-title">Finanční přehled <strong id="hero-nazev"></strong></h1>
-      <div class="hero-meta" id="updated"></div>
+      <div class="hero-left">
+        <div class="hero-eyebrow">
+          <span class="live-dot"></span>
+          Průběžné výkaznictví — aktuální stav
+        </div>
+        <h1 class="hero-title">Finanční přehled <strong id="hero-nazev"></strong></h1>
+        <div class="hero-meta" id="updated"></div>
+      </div>
+      <!-- 3 hl. čísla vpravo — doplní JS -->
+      <div class="hero-kpi-row" id="hero-kpi-row"></div>
     </div>
 
     <div class="sticky-tabs">
@@ -277,29 +304,35 @@ td.gray{color:var(--text-dim);font-size:12px}td.note{color:var(--text-dim);font-
       <button class="sticky-tab hist inactive" id="tab-hist" onclick="scrollToSec('sec-hist')">Historická analýza</button>
     </div>
 
-    <div class="sec-div gold" id="sec-live" style="margin-top:22px">
+    <!-- ─── LIVE SEKCE ─── -->
+    <div class="sec-div gold" id="sec-live" style="margin-top:14px">
       <h2>Průběžné výkaznictví</h2><div class="sec-div-line"></div>
       <span class="sec-div-pill" id="live-period-pill"></span>
     </div>
 
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
+
+    <!-- 4-sloupcová KPI mřížka -->
     <div class="kpi-grid" id="kpi-grid"></div>
-    <div class="charts-2" id="charts"></div>
 
+    <!-- 2-sloupcové grafy -->
+    <div class="charts-2col" id="charts"></div>
 
-    <div class="section" style="padding:14px 22px;display:flex;align-items:center;gap:16px">
+    <!-- PDF + datum -->
+    <div class="section" style="padding:11px 16px;display:flex;align-items:center;gap:14px">
       <a class="btn-gold" id="pdf-btn" href="#" target="_blank">Stáhnout PDF výkaz</a>
-      <span style="font-size:12px;color:var(--text-dim)" id="updated2"></span>
+      <span style="font-size:10.5px;color:var(--text-dim)" id="updated2"></span>
     </div>
 
     <div class="section-sep"></div>
 
+    <!-- ─── HISTORICKÁ SEKCE ─── -->
     <div class="sec-div blue" id="sec-hist">
       <h2>Historická analýza — meziroční srovnání</h2><div class="sec-div-line"></div>
       <span class="sec-div-pill">Celé roky</span>
     </div>
 
-    <div id="hist-loading" style="color:var(--bg-text);font-size:13px;padding:10px 0">Načítám historická data…</div>
+    <div id="hist-loading" style="color:var(--bg-text);font-size:12px;padding:8px 0">Načítám historická data…</div>
     <div id="hist-err" style="display:none"></div>
     <div id="hist-content" style="display:none">
       <div class="section"><h2>Výkaz zisku a ztráty — meziroční změny</h2>
@@ -316,16 +349,16 @@ td.gray{color:var(--text-dim);font-size:12px}td.note{color:var(--text-dim);font-
         <div style="overflow-x:auto"><table class="ana-table" id="ukazatele-table"></table></div></div>
       <div class="section"><h2>Altman Z-skóre — rozklad komponent</h2>
         <div style="overflow-x:auto"><table class="ana-table" id="altman-table"></table></div>
-        <div class="vert-note" id="altman-note" style="margin-top:8px">Z = 1.2×X1 + 1.4×X2 + 3.3×X3 + 0.6×X4 + 1.0×X5 &nbsp;|&nbsp; Šedá zóna: 1.81–2.99 &nbsp;|&nbsp; Zdraví: ≥ 3.0</div>
+        <div class="vert-note" id="altman-note" style="margin-top:6px">Z = 1.2×X1 + 1.4×X2 + 3.3×X3 + 0.6×X4 + 1.0×X5 &nbsp;|&nbsp; Šedá zóna: 1.81–2.99 &nbsp;|&nbsp; Zdraví: ≥ 3.0</div>
       </div>
       <div class="section"><h2>Grafický přehled trendů</h2>
         <div class="charts-3">
-          <div class="chart-box"><h3>Tržby &amp; VH (tis. Kč)</h3><div id="hch-trzby" style="height:200px"></div></div>
-          <div class="chart-box"><h3>Struktura nákladů</h3><div id="hch-naklady" style="height:200px"></div></div>
-          <div class="chart-box"><h3>Rentabilita (%)</h3><div id="hch-rent" style="height:200px"></div></div>
-          <div class="chart-box"><h3>Likvidita &amp; zadluženost</h3><div id="hch-lik" style="height:200px"></div></div>
-          <div class="chart-box"><h3>Aktiva — struktura</h3><div id="hch-aktiva" style="height:200px"></div></div>
-          <div class="chart-box"><h3>Altman Z-skóre</h3><div id="hch-altman" style="height:200px"></div></div>
+          <div class="chart-box"><h3>Tržby &amp; VH (tis. Kč)</h3><div id="hch-trzby" style="height:185px"></div></div>
+          <div class="chart-box"><h3>Struktura nákladů</h3><div id="hch-naklady" style="height:185px"></div></div>
+          <div class="chart-box"><h3>Rentabilita (%)</h3><div id="hch-rent" style="height:185px"></div></div>
+          <div class="chart-box"><h3>Likvidita &amp; zadluženost</h3><div id="hch-lik" style="height:185px"></div></div>
+          <div class="chart-box"><h3>Aktiva — struktura</h3><div id="hch-aktiva" style="height:185px"></div></div>
+          <div class="chart-box"><h3>Altman Z-skóre</h3><div id="hch-altman" style="height:185px"></div></div>
         </div>
       </div>
       <div id="proj-section"></div>
@@ -360,13 +393,13 @@ window.addEventListener("scroll",()=>{
 </script>
 <script>
 document.getElementById("pdf-btn").href=PDF_URL;
-// Plotly layout – tmavý text na bílém chart-box
+
 const PLY={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
-  font:{color:"#374151",size:10,family:"DM Sans,system-ui"},
-  margin:{t:6,r:10,b:36,l:54},
-  legend:{bgcolor:"rgba(0,0,0,0)",orientation:"h",y:-0.26,font:{size:10,color:"#374151"}},
-  xaxis:{gridcolor:"rgba(0,0,0,.08)",tickfont:{size:10,color:"#374151"},automargin:true},
-  yaxis:{gridcolor:"rgba(0,0,0,.08)",tickfont:{size:10,color:"#374151"}}};
+  font:{color:"#374151",size:9,family:"DM Sans,system-ui"},
+  margin:{t:8,r:12,b:32,l:52},
+  legend:{bgcolor:"rgba(0,0,0,0)",orientation:"h",y:-0.28,font:{size:9,color:"#374151"}},
+  xaxis:{gridcolor:"rgba(0,0,0,.06)",tickfont:{size:9,color:"#374151"},automargin:true},
+  yaxis:{gridcolor:"rgba(0,0,0,.06)",tickfont:{size:9,color:"#374151"}}};
 
 loadData(d=>{
   const a=getModeData(d),s=d.sektor||{},periody=d.periody||[];
@@ -377,48 +410,63 @@ loadData(d=>{
   document.getElementById("live-period-pill").textContent=a.period_label||"";
   document.getElementById("hdr-period").textContent=a.period_label||"";
   const hn=document.getElementById("hero-nazev");if(hn)hn.textContent=d.nazev||"";
+
+  // Hero KPI row — 3 headline numbers
+  const hkr=document.getElementById("hero-kpi-row");
+  if(hkr){
+    const items=[
+      {lbl:"Tržby",val:kc(a.trzby_celkem)},
+      {lbl:"VH za období",val:kc(a.vh_za_obdobi)},
+      {lbl:"Altman Z",val:a.altman_z!=null?parseFloat(a.altman_z).toFixed(2):"—"},
+    ];
+    hkr.innerHTML=items.map(i=>`<div class="hkp"><div class="hk-val">${i.val}</div><div class="hk-lbl">${i.lbl}</div></div>`).join("");
+  }
+
   const prevP=periody[periody.length-1];
+
+  // 8 KPI karet — 4 sloupce
   const kpiData=[
-    {lbl:"Tržby celkem",      val:kc(a.trzby_celkem),         delta:prevP?deltaHtml(a.trzby_celkem,prevP.trzby_celkem):""},
-    {lbl:"VH za období",      val:kc(a.vh_za_obdobi),         delta:prevP?deltaHtml(a.vh_za_obdobi,prevP.vh_za_obdobi):""},
-    {lbl:"EBITDA",            val:kc(a.ebitda),               delta:prevP?deltaHtml(a.ebitda,prevP.ebitda):""},
-    {lbl:"Aktiva celkem",     val:kc(a.aktiva_netto),         delta:prevP?deltaHtml(a.aktiva_netto,prevP.aktiva_netto):""},
-    {lbl:"Peněžní prostředky",val:kc(a.pp),                  sub:"CF provozní: "+kc(a.cf_provozni)},
-    {lbl:"Altman Z-skóre",   val:a.altman_z,                 extra:altmanBadge(a.altman_pasmo),cls:"navy"},
-    {lbl:"Celk. zadluženost", val:pct(a.celkova_zadluzenost),sub:"Benchmark: "+pct(s.celkova_zadluzenost)},
-    {lbl:"Běžná likvidita",   val:num(a.bezna_likvidita),     sub:"Benchmark: "+num(s.bezna_likvidita)},
+    {lbl:"Tržby celkem",      val:kc(a.trzby_celkem),          delta:prevP?deltaHtml(a.trzby_celkem,prevP.trzby_celkem):"",       cls:""},
+    {lbl:"VH za období",      val:kc(a.vh_za_obdobi),          delta:prevP?deltaHtml(a.vh_za_obdobi,prevP.vh_za_obdobi):"",       cls:""},
+    {lbl:"EBITDA",            val:kc(a.ebitda),                delta:prevP?deltaHtml(a.ebitda,prevP.ebitda):"",                   cls:""},
+    {lbl:"Aktiva celkem",     val:kc(a.aktiva_netto),          delta:prevP?deltaHtml(a.aktiva_netto,prevP.aktiva_netto):"",       cls:""},
+    {lbl:"Peněžní prostředky",val:kc(a.pp),                   sub:"CF provozní: "+kc(a.cf_provozni),                             cls:"navy"},
+    {lbl:"Altman Z-skóre",    val:a.altman_z,                  extra:altmanBadge(a.altman_pasmo),                                 cls:"navy"},
+    {lbl:"Celk. zadluženost", val:pct(a.celkova_zadluzenost),  sub:"Benchmark: "+pct(s.celkova_zadluzenost),                     cls:"teal"},
+    {lbl:"Běžná likvidita",   val:num(a.bezna_likvidita),      sub:"Benchmark: "+num(s.bezna_likvidita),                         cls:"teal"},
   ];
   document.getElementById("kpi-grid").innerHTML=kpiData.map(k=>`
     <div class="kpi ${k.cls||''}">
       <div class="lbl">${k.lbl}</div>
-      <div class="val">${k.val} ${k.extra||""}</div>
+      <div class="val">${k.val||""} ${k.extra||""}</div>
       ${k.delta?`<div>${k.delta}</div>`:""}
       ${k.sub?`<div class="sub">${k.sub}</div>`:""}
     </div>`).join("");
+
   const allP=getModeAllP(d),labels=allP.map(p=>p.label||p.period_label);
+
+  // 2 grafy vedle sebe
   document.getElementById("charts").innerHTML=`
-    <div class="chart-box"><h3>Tržby a VH (tis. Kč)</h3><div id="ch1" style="height:260px"></div></div>
-    <div class="chart-box"><h3>Aktiva a ROA (%)</h3><div id="ch2" style="height:260px"></div></div>`;
-  // Barevnější sloupce
-  const barClr1=allP.map(()=>"#3b82f6");
-  const barClr2=allP.map(()=>"#f59e0b");
+    <div class="chart-box"><h3>Tržby a VH (tis. Kč)</h3><div id="ch1" style="height:220px"></div></div>
+    <div class="chart-box"><h3>Aktiva a ROA (%)</h3><div id="ch2" style="height:220px"></div></div>`;
+
   Plotly.newPlot("ch1",[
     {name:"Tržby",x:labels,y:allP.map(p=>Math.round((p.trzby_celkem||0)/1000)),type:"bar",
-     marker:{color:barClr1,line:{width:0}},
-     text:allP.map(p=>Math.round((p.trzby_celkem||0)/1000)+" tis."),textposition:"outside",textfont:{size:9,color:"#374151"}},
+     marker:{color:"#3b82f6",line:{width:0}},
+     text:allP.map(p=>Math.round((p.trzby_celkem||0)/1000)+" tis."),textposition:"outside",textfont:{size:8,color:"#374151"}},
     {name:"VH",x:labels,y:allP.map(p=>Math.round((p.vh_za_obdobi||0)/1000)),type:"bar",
-     marker:{color:barClr2,line:{width:0}},
-     text:allP.map(p=>Math.round((p.vh_za_obdobi||0)/1000)+" tis."),textposition:"outside",textfont:{size:9,color:"#374151"}}
-  ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:9}}}},{responsive:true,displayModeBar:false});
+     marker:{color:"#f59e0b",line:{width:0}},
+     text:allP.map(p=>Math.round((p.vh_za_obdobi||0)/1000)+" tis."),textposition:"outside",textfont:{size:8,color:"#374151"}}
+  ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:8}}}},{responsive:true,displayModeBar:false});
+
   Plotly.newPlot("ch2",[
     {name:"Aktiva",x:labels,y:allP.map(p=>Math.round((p.aktiva_netto||0)/1000)),type:"bar",
      marker:{color:"rgba(99,102,241,.75)"},yaxis:"y"},
     {name:"ROA %",x:labels,y:allP.map(p=>p.roa||0),type:"scatter",mode:"lines+markers",
-     line:{color:"#f59e0b",width:2.5},marker:{size:7,color:"#f59e0b"},yaxis:"y2"}
-  ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:9}}},
+     line:{color:"#f59e0b",width:2.5},marker:{size:6,color:"#f59e0b"},yaxis:"y2"}
+  ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:8}}},
      yaxis2:{overlaying:"y",side:"right",gridcolor:"rgba(0,0,0,0)",ticksuffix:"%",tickfont:{size:9,color:"#374151"}}},
   {responsive:true,displayModeBar:false});
-
 });
 </script>
 <script>
@@ -429,7 +477,6 @@ const n2=v=>(v==null)?"—":parseFloat(v).toFixed(2);
 const p1=v=>(v==null)?"—":parseFloat(v).toFixed(1)+" %";
 const tis=v=>(v==null)?0:Math.round(v/1000);
 
-// Formát labelu: plné roky zobrazit jako "Rok 2023"
 const fmtLabel=p=>{
   if(p.je_plny_rok&&p.rok)return`Rok ${p.rok}`;
   if(p.rok)return`${p.rok} (průběžný)`;
@@ -502,13 +549,12 @@ function buildUk(periody,el){
   el.innerHTML=s+`</tbody>`;
 }
 
-// Plotly layout pro BÍLÉ chart-box v historické sekci
 const HP={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
-  font:{color:"#374151",size:10,family:"DM Sans,system-ui"},
-  margin:{t:6,r:10,b:36,l:50},showlegend:true,
-  legend:{bgcolor:"rgba(0,0,0,0)",orientation:"h",y:-0.3,font:{size:10,color:"#374151"}},
-  xaxis:{gridcolor:"rgba(0,0,0,.07)",tickfont:{size:10,color:"#374151"}},
-  yaxis:{gridcolor:"rgba(0,0,0,.07)",tickfont:{size:10,color:"#374151"}}};
+  font:{color:"#374151",size:9,family:"DM Sans,system-ui"},
+  margin:{t:6,r:10,b:32,l:46},showlegend:true,
+  legend:{bgcolor:"rgba(0,0,0,0)",orientation:"h",y:-0.3,font:{size:9,color:"#374151"}},
+  xaxis:{gridcolor:"rgba(0,0,0,.06)",tickfont:{size:9,color:"#374151"}},
+  yaxis:{gridcolor:"rgba(0,0,0,.06)",tickfont:{size:9,color:"#374151"}}};
 const CFG={responsive:true,displayModeBar:false};
 
 (async()=>{
@@ -517,13 +563,11 @@ const CFG={responsive:true,displayModeBar:false};
     if(!r.ok)throw new Error("HTTP "+r.status);
     const h=await r.json();
     const vsechny=h.periody||[];
-    const periody=vsechny; // zobrazit všechna dostupná období
-
+    const periody=vsechny;
     if(!periody.length)throw new Error("Žádná historická data");
 
     document.getElementById("hist-loading").style.display="none";
     document.getElementById("hist-content").style.display="block";
-
     const labels=periody.map(p=>fmtLabel(p));
 
     buildHoriz(periody,[
@@ -554,7 +598,6 @@ const CFG={responsive:true,displayModeBar:false};
 
     buildUk(periody,document.getElementById("ukazatele-table"));
 
-    // Altman Z breakdown table
     (function(){
       const el=document.getElementById("altman-table");
       if(!el)return;
@@ -574,30 +617,24 @@ const CFG={responsive:true,displayModeBar:false};
         {xk:"x4",lbl:"X4 — VK / Cizí zdroje",w:0.6,note:"VK / Cizí zdroje"},
         {xk:"x5",lbl:"X5 — Tržby / Aktiva",w:1.0,note:"Tržby celkem / A"},
       ];
-      let html=`<thead><tr><th style="text-align:left;min-width:220px">Komponenta</th><th style="text-align:left;font-size:10px">Vzorec</th><th>Váha</th>`;
+      let html=`<thead><tr><th style="text-align:left;min-width:200px">Komponenta</th><th style="text-align:left;font-size:9px">Vzorec</th><th>Váha</th>`;
       lbl.forEach(l=>html+=`<th>${l}<br><small style="font-weight:400">raw</small></th><th>${l}<br><small style="font-weight:400">×váha</small></th>`);
       html+=`</tr></thead><tbody>`;
       rows.forEach(r=>{
-        html+=`<tr><td style="font-weight:600">${r.lbl}</td><td style="text-align:left;font-size:11px;color:var(--text-dim)">${r.note}</td><td style="text-align:center">${r.w}</td>`;
+        html+=`<tr><td style="font-weight:600">${r.lbl}</td><td style="text-align:left;font-size:10px;color:var(--text-dim)">${r.note}</td><td style="text-align:center">${r.w}</td>`;
         periody.forEach(p=>{
-          const xs=getXs(p);
-          const raw=xs[r.xk];
-          const weighted=!isNaN(raw)?raw*r.w:null;
+          const xs=getXs(p);const raw=xs[r.xk];const weighted=!isNaN(raw)?raw*r.w:null;
           html+=`<td>${n3(raw)}</td><td style="font-weight:700;color:#374151">${n3(weighted)}</td>`;
         });
         html+=`</tr>`;
       });
-      // Total row
       html+=`<tr class="total"><td colspan="3" style="text-align:left">Altman Z-skóre (součet)</td>`;
       periody.forEach(p=>{
-        const z=p.altman_z??null;
-        const isNan=z==null||isNaN(z);
+        const z=p.altman_z??null;const isNan=z==null||isNaN(z);
         const cls=isNan?"":z>=3?"pos":z>=1.81?"":"neg";
-        html+=`<td colspan="2" class="${cls}" style="font-size:15px;font-weight:800">${isNan?"—":parseFloat(z).toFixed(2)}</td>`;
+        html+=`<td colspan="2" class="${cls}" style="font-size:14px;font-weight:800">${isNan?"—":parseFloat(z).toFixed(2)}</td>`;
       });
-      html+=`</tr>`;
-      // Hodnocení
-      html+=`<tr><td colspan="3" style="font-size:11px;color:var(--text-dim);text-align:left">Hodnocení (pásmo)</td>`;
+      html+=`</tr><tr><td colspan="3" style="font-size:10px;color:var(--text-dim);text-align:left">Hodnocení (pásmo)</td>`;
       periody.forEach(p=>{
         const z=p.altman_z??null,pas=p.altman_pasmo||"—";
         const cls=pas==="zdraví"?"pos":pas==="šedá zóna"?"":"neg";
@@ -607,54 +644,28 @@ const CFG={responsive:true,displayModeBar:false};
       el.innerHTML=html;
     })();
 
-    // Grafy — barevnější paleta
     const CL=["#3b82f6","#6366f1","#0ea5e9","#8b5cf6","#06b6d4"];
     Plotly.newPlot("hch-trzby",[
-      {name:"Tržby",x:labels,y:periody.map(p=>tis(p.trzby_celkem)),type:"bar",marker:{color:CL[0]},text:periody.map(p=>tis(p.trzby_celkem)+" tis."),textposition:"outside",textfont:{size:9,color:"#374151"}},
-      {name:"VH",x:labels,y:periody.map(p=>tis(p.vh_za_obdobi)),type:"bar",marker:{color:CL[1]},text:periody.map(p=>tis(p.vh_za_obdobi)+" tis."),textposition:"outside",textfont:{size:9,color:"#374151"}}
+      {name:"Tržby",x:labels,y:periody.map(p=>tis(p.trzby_celkem)),type:"bar",marker:{color:CL[0]},text:periody.map(p=>tis(p.trzby_celkem)+" tis."),textposition:"outside",textfont:{size:8,color:"#374151"}},
+      {name:"VH",x:labels,y:periody.map(p=>tis(p.vh_za_obdobi)),type:"bar",marker:{color:CL[1]},text:periody.map(p=>tis(p.vh_za_obdobi)+" tis."),textposition:"outside",textfont:{size:8,color:"#374151"}}
     ],{...HP,yaxis:{...HP.yaxis,ticksuffix:" tis."}},CFG);
-
     Plotly.newPlot("hch-naklady",[
       {name:"Výk. spotřeba",x:labels,y:periody.map(p=>tis(p.vyk_spotreba)),type:"bar",marker:{color:CL[0]},stackgroup:"n"},
       {name:"Osobní nákl.",x:labels,y:periody.map(p=>tis(p.osobni_naklady)),type:"bar",marker:{color:CL[1]},stackgroup:"n"},
       {name:"Odpisy",x:labels,y:periody.map(p=>tis(p.odpisy)),type:"bar",marker:{color:CL[2]},stackgroup:"n"}
     ],{...HP,barmode:"stack",yaxis:{...HP.yaxis,ticksuffix:" tis."}},CFG);
-
     Plotly.newPlot("hch-rent",[
-      {name:"ROA %",x:labels,y:periody.map(p=>p.roa||0),type:"scatter",mode:"lines+markers",line:{color:CL[0],width:2.5},marker:{size:7,color:CL[0]},fill:"tozeroy",fillcolor:"rgba(59,130,246,.08)"},
-      {name:"ROE %",x:labels,y:periody.map(p=>p.roe||0),type:"scatter",mode:"lines+markers",line:{color:CL[1],width:2.5},marker:{size:7,color:CL[1]},fill:"tozeroy",fillcolor:"rgba(245,158,11,.08)"},
-      {name:"ROS %",x:labels,y:periody.map(p=>p.ros||0),type:"scatter",mode:"lines+markers",line:{color:CL[2],width:2},marker:{size:6,color:CL[2]}}
+      {name:"ROA %",x:labels,y:periody.map(p=>p.roa||0),type:"scatter",mode:"lines+markers",line:{color:CL[0],width:2.5},marker:{size:6,color:CL[0]},fill:"tozeroy",fillcolor:"rgba(59,130,246,.08)"},
+      {name:"ROE %",x:labels,y:periody.map(p=>p.roe||0),type:"scatter",mode:"lines+markers",line:{color:CL[1],width:2.5},marker:{size:6,color:CL[1]},fill:"tozeroy",fillcolor:"rgba(245,158,11,.08)"},
+      {name:"ROS %",x:labels,y:periody.map(p=>p.ros||0),type:"scatter",mode:"lines+markers",line:{color:CL[2],width:2},marker:{size:5,color:CL[2]}}
     ],{...HP,yaxis:{...HP.yaxis,ticksuffix:" %"}},CFG);
-
     Plotly.newPlot("hch-lik",[
       {name:"Běžná likvidita",x:labels,y:periody.map(p=>p.bezna_likvidita||0),type:"bar",marker:{color:CL[0]}},
-      {name:"Zadluženost %",x:labels,y:periody.map(p=>p.celkova_zadluzenost||0),type:"scatter",mode:"lines+markers",yaxis:"y2",line:{color:CL[4],width:2.5},marker:{size:7,color:CL[4]}}
-    ],{...HP,yaxis:{...HP.yaxis,title:{text:"Likvidita",font:{size:9}}},yaxis2:{overlaying:"y",side:"right",gridcolor:"rgba(0,0,0,0)",ticksuffix:"%",tickfont:{size:9,color:"#374151"}}},CFG);
-
+      {name:"Zadluženost %",x:labels,y:periody.map(p=>p.celkova_zadluzenost||0),type:"scatter",mode:"lines+markers",yaxis:"y2",line:{color:CL[4],width:2.5},marker:{size:6,color:CL[4]}}
+    ],{...HP,yaxis:{...HP.yaxis,title:{text:"Likvidita",font:{size:8}}},yaxis2:{overlaying:"y",side:"right",gridcolor:"rgba(0,0,0,0)",ticksuffix:"%",tickfont:{size:9,color:"#374151"}}},CFG);
     Plotly.newPlot("hch-aktiva",[
       {name:"Stálá aktiva",x:labels,y:periody.map(p=>tis(p.stala_netto)),type:"bar",marker:{color:CL[1]},stackgroup:"a"},
       {name:"Oběžná aktiva",x:labels,y:periody.map(p=>tis(p.obezna_netto)),type:"bar",marker:{color:CL[0]},stackgroup:"a"}
     ],{...HP,barmode:"stack",yaxis:{...HP.yaxis,ticksuffix:" tis."}},CFG);
-
     Plotly.newPlot("hch-altman",[
-      {name:"Altman Z",x:labels,y:periody.map(p=>p.altman_z||0),type:"scatter",mode:"lines+markers+text",
-       line:{color:CL[1],width:2.5},marker:{size:8,color:CL[1]},
-       text:periody.map(p=>(p.altman_z||0).toFixed(2)),textposition:"top center",textfont:{size:9,color:"#374151"}},
-      {name:"Zdraví (2.9)",x:labels,y:Array(labels.length).fill(2.9),type:"scatter",mode:"lines",line:{color:CL[2],width:1,dash:"dot"}},
-      {name:"Riziko (1.23)",x:labels,y:Array(labels.length).fill(1.23),type:"scatter",mode:"lines",line:{color:"#ef4444",width:1,dash:"dot"}}
-    ],{...HP,yaxis:{...HP.yaxis,range:[0,Math.max(3.5,...periody.map(p=>p.altman_z||0))+.5]}},CFG);
-
-    const proj=h.projekce||{};
-    if(proj.trzby_celkem){
-      const items=[{lbl:"Proj. tržby",val:proj.trzby_celkem},{lbl:"Proj. provoz. VH",val:proj.provozni_vh},{lbl:"Proj. VH čistý",val:proj.vh_za_obdobi},{lbl:"Proj. EBITDA",val:proj.provozni_vh&&proj.odpisy?proj.provozni_vh+proj.odpisy:null}].filter(i=>i.val!=null);
-      document.getElementById("proj-section").innerHTML=`<div class="sec-div gold" style="margin-top:8px"><h2>Projekce na 12 měsíců</h2><div class="sec-div-line"></div></div><div class="proj-banner"><h3>Extrapolace z ${proj._mesice} měsíců (×${proj._koef})</h3><div class="proj-grid">${items.map(i=>`<div class="proj-item"><div class="pv">${Math.round(i.val).toLocaleString("cs-CZ")} Kč</div><div class="pl">${i.lbl}</div></div>`).join("")}</div><p style="font-size:11px;color:var(--text-dim);margin:10px 0 0">Projekce předpokládá lineární vývoj.</p></div>`;
-    }
-  }catch(e){
-    document.getElementById("hist-loading").style.display="none";
-    document.getElementById("hist-err").innerHTML=`<div class="section" style="font-size:13px"><strong>Historická data nejsou dostupná.</strong> ${e.message}<br><small style="color:var(--text-dim)">Spusťte ZPRACUJ_HISTORII.bat a PUSH_GITHUB.bat.</small></div>`;
-    document.getElementById("hist-err").style.display="block";
-  }
-})();
-</script>
-</body>
-</html>
+      {name:"Altman Z",
