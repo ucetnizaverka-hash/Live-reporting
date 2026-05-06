@@ -115,18 +115,25 @@ function renderNav(d) {
     {href:"cashflow.html",  label:"Cash Flow"},
     {href:"ukazatele.html", label:"Ukazatele"},
   ];
-  const mk = p => `<a href="${p.href}${location.hash}" class="nav-lnk${p.href===cur?' active':''}">${p.label}</a>`;
+  // Live = bez hashe, Hist = #rocni (kromě historika.html a predikce.html)
+  const NO_HASH_HIST = ['historika.html', 'predikce.html'];
+  const mkLive = p => `<a href="${p.href}" class="nav-lnk${p.href===cur&&getMode()==='live'?' active':''}">${p.label}</a>`;
+  const mkHist = p => {
+    const href = NO_HASH_HIST.includes(p.href) ? p.href : `${p.href}#rocni`;
+    const active = p.href===cur && (NO_HASH_HIST.includes(p.href) ? true : getMode()==='rocni');
+    return `<a href="${href}" class="nav-lnk${active?' active':''}">${p.label}</a>`;
+  };
 
   const navEl = document.getElementById("nav-links");
   if(navEl) navEl.innerHTML = `
     <div class="nav-group">
       <span class="nav-glbl">Průběžné výkaznictví${period ? `<span class="nav-gdate"> · k ${period}</span>` : ""}</span>
-      <div class="nav-glinks">${livePages.map(mk).join("")}</div>
+      <div class="nav-glinks">${livePages.map(mkLive).join("")}</div>
     </div>
     <div class="nav-divider"></div>
     <div class="nav-group">
       <span class="nav-glbl">Historické výkaznictví</span>
-      <div class="nav-glinks">${histPages.map(mk).join("")}</div>
+      <div class="nav-glinks">${histPages.map(mkHist).join("")}</div>
     </div>`;
   _updateModeToggle(d);
 }
