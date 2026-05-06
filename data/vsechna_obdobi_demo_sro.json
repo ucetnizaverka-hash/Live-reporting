@@ -4,7 +4,7 @@
   "ico": "123456789",
   "nace": "62.01",
   "nace_nazev": "Vyvoj pocitacoveho software",
-  "updated": "2026-05-06T18:54:49",
+  "updated": "2026-05-06T18:57:04",
   "aktualni": {
     "label": "1.1.2024–30.4.2024",
     "rok": 2024,
@@ -136,7 +136,7 @@
       "cf_financni": null,
       "pp_zacatek": null,
       "pp_konec_cf": 0,
-      "cf_zmena_cr_pas": 0,
+      "cf_zmena_cr_pas": null,
       "cf_zmeny_pk_celkem": null,
       "cf_pred_zdanenim": null,
       "ebitda": 352000,
