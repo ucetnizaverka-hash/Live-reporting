@@ -77,6 +77,14 @@ table.mt td.pos{color:#16a34a}
     <div class="kpi-grid" id="pred-kpi"></div>
 
     <!-- Scénář tabs -->
+    <!-- DuPont rozklad + SGR (Kislingerová) -->
+    <div class="section">
+      <h2>DuPont rozklad ROE <span style="font-weight:400;color:var(--text-m);font-size:10px">Kislingerová — Manažerské finance (VŠE Praha)</span></h2>
+      <p class="tis-note">ROE = Čistá marže (ROS) × Obratovost aktiv × Finanční páka — rozklad ukazuje, čím je výnosnost vlastního kapitálu podmíněna</p>
+      <div id="dupont-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0"></div>
+      <table class="pt" style="margin-top:8px"><thead id="dupont-hd"></thead><tbody id="dupont-bd"></tbody></table>
+    </div>
+
     <div class="section">
       <h2>Predikce ke konci roku — scénáře</h2>
       <p class="tis-note" id="metoda-note"></p>
@@ -201,6 +209,70 @@ loadData(d => {
     Zbývá: <strong>${zbyva}</strong> měsíců &nbsp;·&nbsp; Rok <strong>${rok}</strong>.
     &nbsp; Pes = ×0,9 · Baz = ×1,0 · Opt = ×1,1.`;
 
+  // ── DuPont rozklad (Kislingerová, Manažerské finance — VŠE Praha) ────────
+  // ROE = ROS × Obratovost aktiv × Finanční páka
+  // = (EAT/Tržby) × (Tržby/Aktiva) × (Aktiva/VK)
+  // Kislingerová: rozklad odhaluje ZDROJ výnosnosti — je firma zisková díky marži,
+  // obrátce aktiv nebo pákovému efektu financování?
+  const dp_ros   = a.trzby_celkem ? parseFloat(a.vh_za_obdobi||0)/parseFloat(a.trzby_celkem)*100 : null;
+  const dp_obrAt = a.aktiva_netto  ? parseFloat(a.trzby_celkem||0)/parseFloat(a.aktiva_netto)     : null;
+  const dp_paka  = a.vk            ? parseFloat(a.aktiva_netto||0)/parseFloat(a.vk)               : null;
+  const dp_roe   = (dp_ros!==null&&dp_obrAt!==null&&dp_paka!==null)
+                   ? dp_ros/100 * dp_obrAt * dp_paka * 100 : null;
+  // EBIT pro ROA (Knápková: EBIT = VH před zdaněním + nákl. úroky)
+  const dp_ebit  = parseFloat(a.vh_pred_zdanenim||0)+parseFloat(a.nak_uroky||0);
+  const dp_roa   = a.aktiva_netto ? dp_ebit/parseFloat(a.aktiva_netto)*100 : null;
+
+  // SGR — Sustainable Growth Rate (Higgins, citován Kislingerová)
+  // SGR = ROE × b, kde b = reinvestiční poměr (1 − dividendový podíl)
+  // Pro s.r.o. bez výplaty dividend: b = 1, SGR ≈ ROE
+  // Interpretace: max. tempo růstu tržeb bez potřeby externího financování
+  const dp_sgr   = dp_roe;  // b = 1 (bez dividend)
+
+  // Zobrazení DuPont karet
+  const dpCards = [
+    {lbl:"Čistá marže (ROS)",   val:dp_ros,   unit:"%",  note:"EAT / Tržby",          clr:"rgba(45,74,158,.85)"},
+    {lbl:"Obratovost aktiv",    val:dp_obrAt, unit:"×",  note:"Tržby / Aktiva",        clr:"rgba(212,149,42,.85)"},
+    {lbl:"Finanční páka",       val:dp_paka,  unit:"×",  note:"Aktiva / VK",           clr:"rgba(52,211,153,.85)"},
+    {lbl:"= ROE (rozklad)",     val:dp_roe,   unit:"%",  note:"ROS × Obrátka × Páka",  clr:"rgba(255,255,255,.15)"},
+    {lbl:"ROA (EBIT/Aktiva)",   val:dp_roa,   unit:"%",  note:"Knápková s. 98",        clr:"rgba(255,255,255,.10)"},
+    {lbl:"SGR — max. org. růst",val:dp_sgr,   unit:"%",  note:"ROE × 1 (bez dividend)", clr:"rgba(255,255,255,.10)"},
+  ];
+  document.getElementById("dupont-grid").innerHTML = dpCards.map(c=>
+    `<div style="background:${c.clr};border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px 16px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(240,244,255,.7);margin-bottom:4px">${c.lbl}</div>
+      <div style="font-size:22px;font-weight:800;color:#fff">${c.val!==null?parseFloat(c.val).toFixed(1)+c.unit:"—"}</div>
+      <div style="font-size:10px;color:rgba(240,244,255,.5);margin-top:2px">${c.note}</div>
+    </div>`
+  ).join("");
+
+  // DuPont tabulka pro více období (rocni mode)
+  const dpAllP = getModeAllP(d);
+  document.getElementById("dupont-hd").innerHTML =
+    `<tr><th style="text-align:left">Komponenta (${mesice}M → annualizováno)</th>
+    ${dpAllP.map(p=>`<th>${p.label||p.period_label}</th>`).join("")}</tr>`;
+  const dpRows = [
+    {lbl:"EAT (VH za obd.)", key:"vh_za_obdobi"},
+    {lbl:"Tržby",            key:"trzby_celkem"},
+    {lbl:"Aktiva celkem",    key:"aktiva_netto"},
+    {lbl:"Vlastní kapitál",  key:"vk"},
+  ];
+  const dpCalc = [
+    {lbl:"ROS — čistá marže (%)", fn:p=>p.trzby_celkem?parseFloat(p.vh_za_obdobi||0)/parseFloat(p.trzby_celkem)*100:null, fmt:v=>v===null?"—":v.toFixed(1)+" %"},
+    {lbl:"Obratovost aktiv (×)", fn:p=>p.aktiva_netto?parseFloat(p.trzby_celkem||0)/parseFloat(p.aktiva_netto):null, fmt:v=>v===null?"—":v.toFixed(2)+"×"},
+    {lbl:"Finanční páka (×)",    fn:p=>p.vk?parseFloat(p.aktiva_netto||0)/parseFloat(p.vk):null, fmt:v=>v===null?"—":v.toFixed(2)+"×"},
+    {lbl:"ROE = ROS × Obrátka × Páka (%)", fn:p=>{const r=p.trzby_celkem?parseFloat(p.vh_za_obdobi||0)/parseFloat(p.trzby_celkem):null; const o=p.aktiva_netto?parseFloat(p.trzby_celkem||0)/parseFloat(p.aktiva_netto):null; const pk=p.vk?parseFloat(p.aktiva_netto||0)/parseFloat(p.vk):null; return(r!==null&&o!==null&&pk!==null)?r*o*pk*100:null;}, fmt:v=>v===null?"—":`<strong>${v.toFixed(1)} %</strong>`},
+    {lbl:"SGR — max. org. růst (%)", fn:p=>{const r=p.trzby_celkem?parseFloat(p.vh_za_obdobi||0)/parseFloat(p.trzby_celkem):null; const o=p.aktiva_netto?parseFloat(p.trzby_celkem||0)/parseFloat(p.aktiva_netto):null; const pk=p.vk?parseFloat(p.aktiva_netto||0)/parseFloat(p.vk):null; return(r!==null&&o!==null&&pk!==null)?r*o*pk*100:null;}, fmt:v=>v===null?"—":`<strong style="color:var(--gold)">${v.toFixed(1)} %</strong>`},
+  ];
+  document.getElementById("dupont-bd").innerHTML = [
+    ...dpRows.map(r=>`<tr><td>${r.lbl}</td>${dpAllP.map(p=>`<td>${kc(p[r.key])}</td>`).join("")}</tr>`),
+    `<tr class="sep"><td colspan="${dpAllP.length+1}"></td></tr>`,
+    ...dpCalc.map(r=>`<tr class="bold"><td>${r.lbl}</td>${dpAllP.map(p=>`<td>${r.fmt(r.fn(p))}</td>`).join("")}</tr>`),
+  ].join("");
+
+  // ── KPI ──────────────────────────────────────────────────────────────
+  // KPI
+  const trzBaz
   // KPI
   const trzBaz = ann("trzby_celkem");
   const vhBaz  = ann("vh_za_obdobi");
