@@ -276,28 +276,42 @@ loadData(d => {
   }).join("");
 
   // ── Rozvaha tabulka (snapshot + odhad ke konci roku) ─────────
-  const rozDef = [
-    {lbl:"Aktiva celkem",         key:"aktiva_netto",  bold:true},
-    {lbl:"  Stálá aktiva",        key:"stala_netto",   sub:true},
-    {lbl:"  Oběžná aktiva",       key:"obezna_netto",  sub:true},
-    {lbl:"    Zásoby",            key:"zasoby",        sub2:true},
-    {lbl:"    Peněžní prostředky",key:"pp",            sub2:true,
-      est:(f)=>Math.round(v("pp_zacatek")+(v("cf_provozni")+v("cf_investicni")+v("cf_financni"))*koef*f)},
-    {lbl:"Pasiva celkem",         key:"pasiva_celkem", bold:true},
-    {lbl:"  Vlastní kapitál",     key:"vk",            sub:true,
-      est:(f)=>Math.round(v("vk")+ann("vh_za_obdobi")*f)},
-    {lbl:"  Cizí zdroje",         key:"cizi_zdroje",   sub:true},
-    {lbl:"    Závazky kr.",       key:"zav_kr",        sub2:true},
-  ];
-
   const rozHead = () => `<tr><th style="text-align:left">Položka</th><th>Aktuální</th><th>Ke konci roku</th></tr>`;
-  const rozBody = (f) => rozDef.map(r=>{
-    const cur = v(r.key);
-    const est = r.est ? r.est(f) : Math.round(cur * (1 + (koef-1)/koef * 0.02));
-    const neg = est < 0;
-    const cls = r.bold?'bold':r.sub2?'sub2':r.sub?'sub':'';
-    return `<tr class="${cls}"><td>${r.lbl}</td><td>${kc(cur)}</td><td class="${neg?'neg':''}">${kc(est)}</td></tr>`;
-  }).join("");
+  const rozBody = (f) => {
+    // Provozní CF fallback (pokud není zaúčtováno)
+    const cfP = v("cf_provozni") || (v("vh_pred_zdanenim") + v("odpisy") - v("dan"));
+    const cfI = v("cf_investicni");
+    const cfF = v("cf_financni");
+    // Poměr tržeb scénáře vůči skutečnosti (pro škálování pohledávek)
+    const trhR = v("trzby_celkem") > 0 ? ann("trzby_celkem")*f / v("trzby_celkem") : 1;
+    // Odhady konec roku
+    const sta_est = Math.max(0, Math.round(v("stala_netto") - ann("odpisy")*(koef-1)/koef));
+    const pp_est  = Math.round(v("pp_zacatek") + (cfP + cfI + cfF) * koef * f);
+    const zas_est = v("zasoby");
+    const poh_est = Math.round((v("obezna_netto") - v("pp") - v("zasoby")) * (1 + (trhR-1)*0.5));
+    const ob_est  = zas_est + pp_est + poh_est;
+    const akt_est = sta_est + ob_est;
+    const vk_est  = Math.round(v("vk") + ann("vh_za_obdobi")*f);
+    const cizi_est= akt_est - vk_est;  // bilanční rovnost
+    const zav_est = Math.round(v("zav_kr") * (1 + (trhR-1)*0.3));
+
+    return [
+      {lbl:"Aktiva celkem",          key:"aktiva_netto",  bold:true,  est:akt_est},
+      {lbl:"  Stálá aktiva",         key:"stala_netto",   sub:true,   est:sta_est},
+      {lbl:"  Oběžná aktiva",        key:"obezna_netto",  sub:true,   est:ob_est},
+      {lbl:"    Zásoby",             key:"zasoby",        sub2:true,  est:zas_est},
+      {lbl:"    Peněžní prostředky", key:"pp",            sub2:true,  est:pp_est},
+      {lbl:"Pasiva celkem",          key:"pasiva_celkem", bold:true,  est:akt_est},
+      {lbl:"  Vlastní kapitál",      key:"vk",            sub:true,   est:vk_est},
+      {lbl:"  Cizí zdroje",          key:"cizi_zdroje",   sub:true,   est:cizi_est},
+      {lbl:"    Závazky kr.",        key:"zav_kr",        sub2:true,  est:zav_est},
+    ].map(r => {
+      const cur = v(r.key);
+      const neg = r.est < 0;
+      const cls = r.bold?'bold':r.sub2?'sub2':r.sub?'sub':'';
+      return `<tr class="${cls}"><td>${r.lbl}</td><td>${kc(cur)}</td><td class="${neg?'neg':''}">${kc(r.est)}</td></tr>`;
+    }).join("");
+  };
 
   // Naplnit všechny 3 scénáře
   ["pes","baz","opt"].forEach(scId=>{
@@ -334,7 +348,21 @@ loadData(d => {
     const dash  = {pes:"dot", baz:"solid", opt:"dot"};
 
     const project = (baseVal, tempo) =>
-      [baseVal, baseVal*(1+tempo), baseVal*(1+tempo)**2, baseVal*(1+tempo)**3].map(v=>Math.round(v/1000));
+      [baseVal, baseVal*(1+tempo), baseVal*(1+tempo)**2, baseVal*(1+tempo)**3].map(x=>Math.round(x/1000));
+
+    // Fallback: pokud klíč v base chybí, dopočti ze složek
+    const getBaseVal = (key) => {
+      const raw = base[key];
+      if(raw != null && raw !== 0) return parseFloat(raw);
+      if(key === "cf_provozni") {
+        const vh  = parseFloat(base.vh_pred_zdanenim||0);
+        const dep = parseFloat(base.odpisy||0);
+        const tax = parseFloat(base.dan||0);
+        return vh + dep - tax;
+      }
+      if(key === "ebitda") return parseFloat(base.provozni_vh||0) + parseFloat(base.odpisy||0);
+      return 0;
+    };
 
     const keys = ["trzby_celkem","vh_za_obdobi","cf_provozni","ebitda"];
     const charts = ["ch-vicel-trzby","ch-vicel-vh","ch-vicel-cf","ch-vicel-ebitda"];
@@ -342,7 +370,7 @@ loadData(d => {
     const scNames = {pes:"Pesimistický (−5 %/rok)", baz:"Bazový (+7 %/rok)", opt:"Optimistický (+18 %/rok)"};
 
     keys.forEach((key, ki) => {
-      const baseVal = parseFloat(base[key]||0);
+      const baseVal = getBaseVal(key);
       const traces = Object.entries(TEMPA).map(([sc,t]) => ({
         name: scNames[sc],
         x: labels,
