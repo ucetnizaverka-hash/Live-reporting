@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 64" fill="none">
+  <!-- Icon: labyrinth/maze square -->
+  <rect x="2" y="2" width="58" height="58" rx="8" fill="white"/>
+  <!-- Outer ring blue -->
+  <rect x="5" y="5" width="52" height="52" rx="6" fill="#1B2469"/>
+  <!-- Gold top-left quarter accent -->
+  <path d="M5 11 C5 7.686 7.686 5 11 5 L31 5 L31 13 L13 13 L13 31 L5 31 Z" fill="#D4952A"/>
+  <!-- Inner white ring -->
+  <rect x="13" y="13" width="36" height="36" rx="4" fill="white"/>
+  <!-- Inner blue fill -->
+  <rect x="17" y="17" width="28" height="28" rx="3" fill="#1B2469"/>
+  <!-- Gold small inner accent -->
+  <path d="M17 21 C17 18.791 18.791 17 21 17 L29 17 L29 22 L22 22 L22 29 L17 29 Z" fill="#D4952A"/>
+  <!-- Center white square -->
+  <rect x="22" y="22" width="19" height="19" rx="2" fill="white"/>
+  <!-- Center blue dot -->
+  <rect x="26" y="26" width="11" height="11" rx="2" fill="#1B2469"/>
+
+  <!-- Text: 22HLAV -->
+  <text x="72" y="42" font-family="'DM Sans','Segoe UI',Arial,sans-serif"
+        font-size="26" font-weight="700" letter-spacing="1" fill="#1B2469">22HLAV</text>
+</svg>
