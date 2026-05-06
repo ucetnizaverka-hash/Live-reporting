@@ -39,8 +39,8 @@ html,body{font-family:var(--font);color:var(--text-d);background:#010a2a;min-hei
 .page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
 
 /* ─── NAV ─── */
-.nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;
-  gap:20px;padding:10px 28px;
+.nav{display:grid;grid-template-columns:auto 1fr minmax(0,auto);align-items:center;
+  gap:12px;padding:8px 20px;
   border-bottom:1px solid rgba(255,255,255,.12);
   backdrop-filter:blur(24px) saturate(180%);background:rgba(1,10,42,.72);
   position:sticky;top:0;z-index:200}
@@ -198,6 +198,20 @@ td.gray{color:var(--text-dim);font-size:11px}td.note{color:var(--text-dim);font-
 .footer{padding:11px 24px;border-top:1px solid rgba(255,255,255,.08);
   font-size:10px;color:var(--bg-text-dim);text-align:center;letter-spacing:.3px}
 
+/* ─── NAV GROUPS (renderNav z common.js) ─── */
+#nav-links{display:flex;align-items:center;gap:0}
+.nav-group{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 14px;gap:3px}
+.nav-glbl{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold-lt);white-space:nowrap}
+.nav-gdate{font-weight:500;color:#fbbf24;font-size:9px;letter-spacing:.3px}
+.nav-glinks{display:flex;gap:2px;align-items:center;flex-wrap:wrap}
+.nav-lnk{color:rgba(240,244,255,.85);text-decoration:none;font-size:11px;font-weight:500;
+  padding:4px 9px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s;border:1px solid transparent}
+.nav-lnk:hover{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.12)}
+.nav-lnk.active{background:rgba(212,149,42,.2);color:#fbbf24;font-weight:700;border-color:rgba(212,149,42,.35)}
+.nav-divider{width:1px;align-self:stretch;
+  background:linear-gradient(180deg,transparent 0%,rgba(212,149,42,.7) 20%,rgba(212,149,42,.9) 50%,rgba(212,149,42,.7) 80%,transparent 100%);
+  margin:0 6px;flex-shrink:0;min-height:38px}
+
 /* ─── LOADING / ERROR ─── */
 #loading{text-align:center;padding:80px;color:var(--bg-text);font-size:14px}
 #err{background:rgba(220,38,38,.10);border:1px solid rgba(220,38,38,.25);color:#fca5a5;border-radius:12px;padding:12px;margin:20px;display:none}
@@ -275,7 +289,7 @@ td.gray{color:var(--text-dim);font-size:11px}td.note{color:var(--text-dim);font-
     <span class="nav-sep">·</span>
     <span class="nav-ico-txt">IČO: <span id="hdr-ico">—</span></span>
   </div>
-  <div class="nav-right"><span style="margin-right:5px;opacity:.55;font-size:10px">Výkazy:</span><span id="nav-links" style="display:contents"></span></div>
+  <div class="nav-right" style="overflow:hidden"><span id="nav-links" style="display:flex;align-items:center;gap:0"></span></div>
   <span id="mode-badge" style="display:none"></span>
   <div id="mode-toggle" style="display:none"></div>
 </nav>
@@ -462,8 +476,9 @@ loadData(d=>{
   Plotly.newPlot("ch2",[
     {name:"Aktiva",x:labels,y:allP.map(p=>Math.round((p.aktiva_netto||0)/1000)),type:"bar",
      marker:{color:"rgba(99,102,241,.75)"},yaxis:"y"},
-    {name:"ROA %",x:labels,y:allP.map(p=>p.roa||0),type:"scatter",mode:"lines+markers",
-     line:{color:"#f59e0b",width:2.5},marker:{size:6,color:"#f59e0b"},yaxis:"y2"}
+    {name:"ROA %",x:labels,y:allP.map(p=>p.roa||0),type:"scatter",mode:"lines+markers+text",
+     line:{color:"#f59e0b",width:2.5},marker:{size:6,color:"#f59e0b"},yaxis:"y2",
+     text:allP.map(p=>num(p.roa||0,1)+"%"),textposition:"top center",textfont:{size:8,color:"#d97706"}}
   ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:8}}},
      yaxis2:{overlaying:"y",side:"right",gridcolor:"rgba(0,0,0,0)",ticksuffix:"%",tickfont:{size:9,color:"#374151"}}},
   {responsive:true,displayModeBar:false});
@@ -656,16 +671,4 @@ const CFG={responsive:true,displayModeBar:false};
     ],{...HP,barmode:"stack",yaxis:{...HP.yaxis,ticksuffix:" tis."}},CFG);
     Plotly.newPlot("hch-rent",[
       {name:"ROA %",x:labels,y:periody.map(p=>p.roa||0),type:"scatter",mode:"lines+markers",line:{color:CL[0],width:2.5},marker:{size:6,color:CL[0]},fill:"tozeroy",fillcolor:"rgba(59,130,246,.08)"},
-      {name:"ROE %",x:labels,y:periody.map(p=>p.roe||0),type:"scatter",mode:"lines+markers",line:{color:CL[1],width:2.5},marker:{size:6,color:CL[1]},fill:"tozeroy",fillcolor:"rgba(245,158,11,.08)"},
-      {name:"ROS %",x:labels,y:periody.map(p=>p.ros||0),type:"scatter",mode:"lines+markers",line:{color:CL[2],width:2},marker:{size:5,color:CL[2]}}
-    ],{...HP,yaxis:{...HP.yaxis,ticksuffix:" %"}},CFG);
-    Plotly.newPlot("hch-lik",[
-      {name:"Běžná likvidita",x:labels,y:periody.map(p=>p.bezna_likvidita||0),type:"bar",marker:{color:CL[0]}},
-      {name:"Zadluženost %",x:labels,y:periody.map(p=>p.celkova_zadluzenost||0),type:"scatter",mode:"lines+markers",yaxis:"y2",line:{color:CL[4],width:2.5},marker:{size:6,color:CL[4]}}
-    ],{...HP,yaxis:{...HP.yaxis,title:{text:"Likvidita",font:{size:8}}},yaxis2:{overlaying:"y",side:"right",gridcolor:"rgba(0,0,0,0)",ticksuffix:"%",tickfont:{size:9,color:"#374151"}}},CFG);
-    Plotly.newPlot("hch-aktiva",[
-      {name:"Stálá aktiva",x:labels,y:periody.map(p=>tis(p.stala_netto)),type:"bar",marker:{color:CL[1]},stackgroup:"a"},
-      {name:"Oběžná aktiva",x:labels,y:periody.map(p=>tis(p.obezna_netto)),type:"bar",marker:{color:CL[0]},stackgroup:"a"}
-    ],{...HP,barmode:"stack",yaxis:{...HP.yaxis,ticksuffix:" tis."}},CFG);
-    Plotly.newPlot("hch-altman",[
-      {name:"Altman Z",
+      {name:"ROE %",x:labels,y:periody.map(p=>p.roe||0),type:"scatter",mode:"lines+markers",line:{color:

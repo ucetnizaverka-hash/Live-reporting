@@ -36,7 +36,6 @@
       <p class="tis-note">Hodnoty v Kč</p>
       <div style="overflow-x:auto"><table><thead id="pas-head"></thead><tbody id="pas-body"></tbody></table></div>
     </div>
-    <div class="section" id="bilance-row" style="padding:12px 20px;font-size:13px"></div>
   </div>
 </main>
 <footer>Data jsou generována automatizovaným účetním procesem · 22HLAV · Průběžné výkaznictví v2.0</footer>
@@ -194,75 +193,7 @@ loadData(d => {
     RA("D.",    "Časové rozlišení pasiv",                  "66","cr_pasiv"),
   ].join("");
 
-  // Bilanční rovnost
-  const bil = Math.abs((a.aktiva_netto||0) - (a.pasiva_celkem||0)) < 100;
-  document.getElementById("bilance-row").innerHTML =
-    `Bilanční rovnost: <strong style="color:${bil?'var(--green)':'var(--red)'}">
-    ${bil ? ' OK' : ' NEROVNOST ' + kc((a.aktiva_netto||0)-(a.pasiva_celkem||0))}</strong>
-    &nbsp;·&nbsp; Aktiva: <strong>${kc(a.aktiva_netto)}</strong>
-    &nbsp;=&nbsp; Pasiva: <strong>${kc(a.pasiva_celkem)}</strong>`;
-
-  // ── HORIZONTÁLNÍ + VERTIKÁLNÍ (roční mód) ────────────────────
-  const horizEl = document.getElementById("roz-horiz-section");
-  const vertEl  = document.getElementById("roz-vert-section");
-  if(showDelta && n >= 2) {
-    if(horizEl) horizEl.style.display = "block";
-    if(vertEl)  vertEl.style.display  = "block";
-    const hItems = [
-      {lbl:"Aktiva celkem",           key:"aktiva_netto",  bold:true},
-      {lbl:"  Stálá aktiva",          key:"stala_netto",   sub:true},
-      {lbl:"    DNM netto",           key:"dnm_netto",     sub2:true},
-      {lbl:"    DHM netto",           key:"dhm_netto",     sub2:true},
-      {lbl:"  Oběžná aktiva",         key:"obezna_netto",  sub:true},
-      {lbl:"    Zásoby",              key:"zasoby",        sub2:true},
-      {lbl:"    Pohledávky kr.",      key:"pohledavky_kr", sub2:true},
-      {lbl:"    Peněžní prostředky",  key:"pp",            sub2:true},
-      {lbl:"Pasiva celkem",           key:"pasiva_celkem", bold:true},
-      {lbl:"  Vlastní kapitál",       key:"vk",            sub:true},
-      {lbl:"    VH za období",        key:"vh_za_obdobi",  sub2:true},
-      {lbl:"  Cizí zdroje",           key:"cizi_zdroje",   sub:true},
-      {lbl:"    Závazky kr.",         key:"zav_kr",        sub2:true},
-      {lbl:"    Závazky dl.",         key:"zav_dl",        sub2:true},
-    ];
-    // Horizontální
-    document.getElementById("roz-horiz-head").innerHTML =
-      `<tr><th style="text-align:left;width:35%">Položka</th>${labels.map(l=>`<th>${l}</th>`).join("")}<th>Δ abs.</th><th>Δ %</th></tr>`;
-    document.getElementById("roz-horiz-body").innerHTML = hItems.map(r=>{
-      const vals = allP.map(p=>v0(p,r.key));
-      const dAbs = vals[n-1]-vals[n-2];
-      const dPct = vals[n-2]!==0 ? (dAbs/Math.abs(vals[n-2])*100) : null;
-      const neg=dAbs<0, pos=dAbs>0;
-      const cls = r.bold?'bold':r.sub2?'sub2':r.sub?'sub':'';
-      return `<tr class="${cls}">
-        <td>${r.lbl}</td>
-        ${vals.map(v=>`<td style="text-align:right">${kc(v,'0 Kč')}</td>`).join("")}
-        <td style="text-align:right" class="${neg?'neg':pos?'pos':''}">${dAbs>=0?'+':''}${Math.round(dAbs).toLocaleString("cs-CZ")} Kč</td>
-        <td style="text-align:right" class="${neg?'neg':pos?'pos':''}">${dPct!==null?(dPct>=0?'+':'')+dPct.toFixed(1)+' %':'—'}</td>
-      </tr>`;
-    }).join("");
-    // Vertikální — % z bilanční sumy
-    const suma = allP.map(p=>v0(p,"aktiva_netto")||1);
-    document.getElementById("roz-vert-head").innerHTML =
-      `<tr><th style="text-align:left;width:35%">Položka</th>${labels.map(l=>`<th>% z bilanční sumy — ${l}</th>`).join("")}</tr>`;
-    document.getElementById("roz-vert-body").innerHTML = hItems.map(r=>{
-      const pcts = allP.map((p,i)=>(v0(p,r.key)/suma[i]*100).toFixed(1)+" %");
-      const cls = r.bold?'bold':r.sub2?'sub2':r.sub?'sub':'';
-      return `<tr class="${cls}"><td>${r.lbl}</td>${pcts.map(p=>`<td style="text-align:right">${p}</td>`).join("")}</tr>`;
-    }).join("");
-  } else {
-    if(horizEl) horizEl.style.display = "none";
-    if(vertEl)  vertEl.style.display  = "none";
-  }
 });
 </script>
-  <div class="section" id="roz-horiz-section" style="display:none">
-    <h2>Horizontální analýza rozvahy — meziroční změny</h2>
-    <p class="tis-note">Absolutní a procentní změna položek rozvahy mezi obdobími</p>
-    <div style="overflow-x:auto"><table><thead id="roz-horiz-head"></thead><tbody id="roz-horiz-body"></tbody></table></div>
-  </div>
-  <div class="section" id="roz-vert-section" style="display:none">
-    <h2>Vertikální analýza rozvahy — % z bilanční sumy</h2>
-    <p class="tis-note">Každá položka jako procento z celkové bilanční sumy</p>
-    <div style="overflow-x:auto"><table><thead id="roz-vert-head"></thead><tbody id="roz-vert-body"></tbody></table></div>
-  </div>
 </body></html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
