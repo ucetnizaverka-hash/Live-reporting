@@ -138,15 +138,19 @@ table.mt td.pos{color:#16a34a}
       </div>
     </div><!-- /section scénáře -->
 
-    <!-- Měsíční výhled -->
+    <!-- Víceletý výhled -->
     <div class="section">
-      <h2>Měsíční výhled tržeb a VH <span style="font-weight:400;color:var(--text-m);font-size:10px">(bazový scénář)</span></h2>
-      <p class="tis-note">Průměr z uplynulých měsíců. Minulé měsíce = skutečnost (průměr za celé období). Zbývající = predikce.</p>
+      <h2>Víceletý výhled 2024–2026 <span style="font-weight:400;color:var(--text-m);font-size:10px">ze základu Rok 2023</span></h2>
+      <p class="tis-note" id="vicel-note"></p>
       <div class="charts-2" style="margin-bottom:16px">
-        <div class="chart-box"><h3>Tržby — měsíční výhled (tis. Kč)</h3><div id="ch-mesice" style="height:200px"></div></div>
-        <div class="chart-box"><h3>VH za měsíc — výhled (tis. Kč)</h3><div id="ch-vh-mes" style="height:200px"></div></div>
+        <div class="chart-box"><h3>Tržby celkem — výhled (tis. Kč)</h3><div id="ch-vicel-trzby" style="height:220px"></div></div>
+        <div class="chart-box"><h3>VH za období — výhled (tis. Kč)</h3><div id="ch-vicel-vh" style="height:220px"></div></div>
       </div>
-      <table class="mt"><thead id="mes-hd"></thead><tbody id="mes-bd"></tbody></table>
+      <div class="charts-2" style="margin-bottom:16px">
+        <div class="chart-box"><h3>CF provozní — výhled (tis. Kč)</h3><div id="ch-vicel-cf" style="height:200px"></div></div>
+        <div class="chart-box"><h3>EBITDA — výhled (tis. Kč)</h3><div id="ch-vicel-ebitda" style="height:200px"></div></div>
+      </div>
+      <table class="pt"><thead id="vicel-hd"></thead><tbody id="vicel-bd"></tbody></table>
     </div>
 
     <!-- Graf scénářů -->
@@ -306,110 +310,116 @@ loadData(d => {
     document.getElementById(`roz-bd-${scId}`).innerHTML = rozBody(f);
   });
 
-  // ── MĚSÍČNÍ VÝHLED ────────────────────────────────────────────
-  const mesAvgTrzby = v("trzby_celkem") / mesice;
-  const mesAvgVH    = v("vh_za_obdobi") / mesice;
-  const mesAvgCF    = v("cf_provozni") / mesice;
+  // ── VÍCELETÝ VÝHLED (ze základu Rok 2023) ───────────────────
+  const base = (d.periody && d.periody.length > 0) ? d.periody[d.periody.length-1] : null;
+  const rocni2024 = (d.rocni && Object.keys(d.rocni).length > 0) ? d.rocni : null;
 
-  const mesNames = [];
-  const mesTrzbySkut = [], mesTrzbyPred = [];
-  const mesVHSkut = [],    mesVHPred = [];
-  let cumTrzby = 0, cumVH = 0;
-
-  for(let m=1; m<=12; m++){
-    const mesName = `${MESICE_CZ[m-1]} ${rok}`;
-    mesNames.push(mesName);
-    if(m <= mesice){
-      // Minulé měsíce — průměr za uplynulé období
-      mesTrzbySkut.push(Math.round(mesAvgTrzby/1000));
-      mesTrzbyPred.push(null);
-      mesVHSkut.push(Math.round(mesAvgVH/1000));
-      mesVHPred.push(null);
-      cumTrzby += mesAvgTrzby;
-      cumVH    += mesAvgVH;
-    } else {
-      // Zbývající měsíce — predikce
-      mesTrzbySkut.push(null);
-      mesTrzbyPred.push(Math.round(mesAvgTrzby/1000));
-      mesVHSkut.push(null);
-      mesVHPred.push(Math.round(mesAvgVH/1000));
-      cumTrzby += mesAvgTrzby;
-      cumVH    += mesAvgVH;
-    }
-  }
-
-  // Plotly layout base
   const PL = {paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
     font:{color:'#6b7280',size:10,family:'DM Sans,Segoe UI,system-ui'},
-    margin:{t:6,r:10,b:60,l:50},showlegend:true,
-    legend:{bgcolor:'rgba(0,0,0,0)',orientation:'h',y:-0.35,font:{size:10}},
-    xaxis:{gridcolor:'rgba(0,0,0,.06)',tickfont:{size:9},tickangle:-45},
-    yaxis:{gridcolor:'rgba(0,0,0,.06)',tickfont:{size:10}},
-    shapes:[{type:'line',x0:mesice-0.5,x1:mesice-0.5,y0:0,y1:1,xref:'x',yref:'paper',
-      line:{color:'rgba(212,149,42,.5)',width:1.5,dash:'dot'}}],
-    annotations:[{x:mesice-0.5,y:1,xref:'x',yref:'paper',text:'dnes',showarrow:false,
-      font:{size:9,color:'var(--gold)'},xanchor:'right',yanchor:'top'}]
+    margin:{t:6,r:10,b:50,l:60},showlegend:true,
+    legend:{bgcolor:'rgba(0,0,0,0)',orientation:'h',y:-0.3,font:{size:10}},
+    xaxis:{gridcolor:'rgba(0,0,0,.06)',tickfont:{size:10}},
+    yaxis:{gridcolor:'rgba(0,0,0,.06)',tickfont:{size:10},ticksuffix:" tis."},
   };
   const CFG = {responsive:true,displayModeBar:false};
 
-  // Kumulativni data pro grafy
-  let cumTr = 0, cumVh = 0;
-  const cumTrzbySkut = [], cumTrzbyPred = [], cumVHSkut = [], cumVHPred = [];
-  for(let m=0; m<12; m++){
-    cumTr += mesAvgTrzby;
-    cumVh += mesAvgVH;
-    if(m+1 <= mesice){
-      cumTrzbySkut.push(Math.round(cumTr/1000)); cumTrzbyPred.push(null);
-      cumVHSkut.push(Math.round(cumVh/1000));    cumVHPred.push(null);
-    } else {
-      cumTrzbySkut.push(null); cumTrzbyPred.push(Math.round(cumTr/1000));
-      cumVHSkut.push(null);    cumVHPred.push(Math.round(cumVh/1000));
-    }
-  }
-  const PLline = {...PL, xaxis:{...PL.xaxis,tickangle:-45}, yaxis:{...PL.yaxis,ticksuffix:" tis."}};
+  if(base) {
+    const baseRok = base.rok || 2023;
+    const roky = [baseRok, baseRok+1, baseRok+2, baseRok+3];
+    const labels = roky.map(r => `${r}`);
 
-  Plotly.newPlot("ch-mesice",[
-    {name:"Kumulativní tržby — skutečnost", x:mesNames, y:cumTrzbySkut, type:"scatter", mode:"lines+markers",
-     line:{color:"rgba(42,92,255,.85)",width:2}, marker:{size:6,color:"rgba(42,92,255,.9)"}},
-    {name:"Kumulativní tržby — predikce",   x:mesNames, y:cumTrzbyPred, type:"scatter", mode:"lines+markers",
-     line:{color:"rgba(212,149,42,.8)",width:2,dash:"dot"}, marker:{size:5,symbol:"circle-open",color:"rgba(212,149,42,.9)"}},
-  ], PLline, CFG);
+    // Tempa růstu: pes=-5%, baz=+7%, opt=+18%
+    const TEMPA = {pes:-0.05, baz:0.07, opt:0.18};
+    const clrs  = {pes:"rgba(220,38,38,.75)", baz:"rgba(212,149,42,.85)", opt:"rgba(22,163,74,.75)"};
+    const dash  = {pes:"dot", baz:"solid", opt:"dot"};
 
-  Plotly.newPlot("ch-vh-mes",[
-    {name:"Kumulativní VH — skutečnost", x:mesNames, y:cumVHSkut, type:"scatter", mode:"lines+markers",
-     line:{color:"rgba(22,163,74,.85)",width:2}, marker:{size:6,color:"rgba(22,163,74,.9)"}},
-    {name:"Kumulativní VH — predikce",   x:mesNames, y:cumVHPred, type:"scatter", mode:"lines+markers",
-     line:{color:"rgba(212,149,42,.8)",width:2,dash:"dot"}, marker:{size:5,symbol:"circle-open",color:"rgba(212,149,42,.9)"}},
-  ], PLline, CFG);
+    const project = (baseVal, tempo) =>
+      [baseVal, baseVal*(1+tempo), baseVal*(1+tempo)**2, baseVal*(1+tempo)**3].map(v=>Math.round(v/1000));
 
-  // Měsíční tabulka
-  const mesColspan = 4;
-  document.getElementById("mes-hd").innerHTML =
-    `<tr><th>Měsíc</th><th>Tržby / měs.</th><th>VH / měs.</th><th>CF provozní / měs.</th><th>Status</th></tr>`;
-  let cumT2=0, cumVH2=0;
-  document.getElementById("mes-bd").innerHTML =
-    Array.from({length:12},(_,i)=>{
-      const isPast = i+1 <= mesice;
-      const t = Math.round(mesAvgTrzby); cumT2 += t;
-      const vh = Math.round(mesAvgVH); cumVH2 += vh;
-      const cf = Math.round(mesAvgCF);
-      return `<tr class="${isPast?'past':''}">
-        <td>${MESICE_CZ[i]} ${rok}</td>
-        <td>${kc(t)}</td>
-        <td class="${vh<0?'neg':'pos'}">${kc(vh)}</td>
-        <td class="${cf<0?'neg':''}">${kc(cf)}</td>
-        <td><span class="badge ${isPast?'green':'yellow'}">${isPast?'Uplynulo':'Predikce'}</span></td>
+    const keys = ["trzby_celkem","vh_za_obdobi","cf_provozni","ebitda"];
+    const charts = ["ch-vicel-trzby","ch-vicel-vh","ch-vicel-cf","ch-vicel-ebitda"];
+    const titles = ["Tržby","VH","CF provozní","EBITDA"];
+    const scNames = {pes:"Pesimistický (−5 %/rok)", baz:"Bazový (+7 %/rok)", opt:"Optimistický (+18 %/rok)"};
+
+    keys.forEach((key, ki) => {
+      const baseVal = parseFloat(base[key]||0);
+      const traces = Object.entries(TEMPA).map(([sc,t]) => ({
+        name: scNames[sc],
+        x: labels,
+        y: project(baseVal, t),
+        type:"scatter", mode:"lines+markers",
+        line:{color:clrs[sc], width:2, dash:dash[sc]},
+        marker:{size:7, color:clrs[sc]},
+      }));
+      // Skutečnost 2024 pokud existuje
+      if(rocni2024 && rocni2024[key] != null) {
+        traces.push({
+          name:`Skutečnost ${baseRok+1}`,
+          x:[String(baseRok+1)],
+          y:[Math.round(rocni2024[key]/1000)],
+          type:"scatter", mode:"markers",
+          marker:{size:12, color:"#2a5cff", symbol:"star"},
+        });
+      }
+      Plotly.newPlot(charts[ki], traces, {...PL}, CFG);
+    });
+
+    // Souhrnná tabulka
+    const viceItems = [
+      {lbl:"Tržby celkem",    key:"trzby_celkem"},
+      {lbl:"Výkonová spotřeba",key:"vyk_spotreba"},
+      {lbl:"Osobní náklady",  key:"osobni_naklady"},
+      {lbl:"Odpisy",          key:"odpisy"},
+      {lbl:"Provozní VH",     key:"provozni_vh"},
+      {lbl:"Finanční VH",     key:"financni_vh"},
+      {lbl:"VH před zdaněním",key:"vh_pred_zdanenim"},
+      {lbl:"Daň z příjmů",    key:"dan"},
+      {lbl:"VH za období",    key:"vh_za_obdobi"},
+      {lbl:"EBITDA",          key:"ebitda"},
+      {lbl:"CF provozní",     key:"cf_provozni"},
+    ];
+
+    // Hlavička — základní rok + 3 roky projekce × 3 scénáře (jen baz pro přehlednost + pes/opt)
+    document.getElementById("vicel-hd").innerHTML =
+      `<tr>
+        <th style="text-align:left;width:28%">Položka</th>
+        <th>Základ<br>${baseRok}</th>
+        ${rocni2024?`<th style="color:#2a5cff">Skuteč.<br>${baseRok+1}</th>`:''}
+        <th style="color:#dc2626">Pes. ${baseRok+1}</th><th style="color:#d97706">Baz. ${baseRok+1}</th><th style="color:#16a34a">Opt. ${baseRok+1}</th>
+        <th style="color:#d97706">Baz. ${baseRok+2}</th>
+        <th style="color:#d97706">Baz. ${baseRok+3}</th>
       </tr>`;
-    }).join("") +
-    `<tr class="total">
-      <td>Celý rok ${rok}</td>
-      <td>${kc(cumT2)}</td>
-      <td class="${cumVH2<0?'neg':'pos'}">${kc(cumVH2)}</td>
-      <td>${kc(Math.round(mesAvgCF*12))}</td>
-      <td><span class="badge yellow">Prognóza</span></td>
-    </tr>`;
 
-  // Graf srovnání scénářů
+    document.getElementById("vicel-bd").innerHTML = viceItems.map(r=>{
+      const b = parseFloat(base[r.key]||0);
+      const real24 = rocni2024 ? parseFloat(rocni2024[r.key]||0) : null;
+      const pes1 = Math.round(b*(1+TEMPA.pes));
+      const baz1 = Math.round(b*(1+TEMPA.baz));
+      const opt1 = Math.round(b*(1+TEMPA.opt));
+      const baz2 = Math.round(b*(1+TEMPA.baz)**2);
+      const baz3 = Math.round(b*(1+TEMPA.baz)**3);
+      const neg = v => v<0;
+      return `<tr>
+        <td>${r.lbl}</td>
+        <td>${kc(b)}</td>
+        ${real24!==null?`<td style="color:#2a5cff;font-weight:600">${kc(real24)}</td>`:''}
+        <td class="${neg(pes1)?'neg':''}">${kc(pes1)}</td>
+        <td class="${neg(baz1)?'neg':''}" style="font-weight:600">${kc(baz1)}</td>
+        <td class="${neg(opt1)?'neg':''}">${kc(opt1)}</td>
+        <td class="${neg(baz2)?'neg':''}">${kc(baz2)}</td>
+        <td class="${neg(baz3)?'neg':''}">${kc(baz3)}</td>
+      </tr>`;
+    }).join("");
+
+    document.getElementById("vicel-note").innerHTML =
+      `Základní rok: <strong>Rok ${baseRok}</strong> (reálná data). ` +
+      `Scénáře: Pesimistický <strong>−5 %/rok</strong> · Bazový <strong>+7 %/rok</strong> · Optimistický <strong>+18 %/rok</strong>. ` +
+      `${rocni2024?`<span style="color:#2a5cff">★ Skutečnost ${baseRok+1} dostupná — srovnej s projekcemi.</span>`:''}`;
+  } else {
+    document.getElementById("vicel-note").textContent = "Data roku 2023 nejsou k dispozici.";
+  }
+
+  // Graf srovnání scénářů  // Graf srovnání scénářů
   const scLabels = ["Pesimistický\n(×0,9)","Bazový\n(×1,0)","Optimistický\n(×1,1)"];
   const scColors = ["rgba(220,38,38,.7)","rgba(212,149,42,.8)","rgba(22,163,74,.7)"];
 
