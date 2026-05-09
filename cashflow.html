@@ -173,63 +173,6 @@ loadData(d => {
       ? "Změny PK (Č.ř. 12–14) vypočteny z rozdílu aktuálního a minulého období. "
       : "<strong> Chybí data minulého období</strong> — změny pracovního kapitálu (Č.ř. 11–15) nelze vypočítat, zobrazeny jako 0. ") +
     `Investiční CF (B.1.–B.3.) a finanční CF (C.1.–C.2.6.) vyplňte ručně ze smluv, výpisů z bank a kapitálových operací.`;
-
-  // ── HORIZONTÁLNÍ + VERTIKÁLNÍ (roční mód) ────────────────────
-  const cfHorizEl = document.getElementById("cf-horiz-section");
-  const cfVertEl  = document.getElementById("cf-vert-section");
-  if(showDelta && n >= 2) {
-    if(cfHorizEl) cfHorizEl.style.display = "block";
-    if(cfVertEl)  cfVertEl.style.display  = "block";
-    const cfItems = [
-      {lbl:"CF provozní",              key:"cf_provozni",         bold:true},
-      {lbl:"  VH před zdaněním",       key:"cf_vh_pred_zdanenim", sub:true},
-      {lbl:"  + Odpisy",               key:"cf_odpisy",           sub:true},
-      {lbl:"  Zaplacená daň",          key:"cf_dan",              sub:true},
-      {lbl:"CF investiční",            key:"cf_investicni",       bold:true},
-      {lbl:"CF finanční",              key:"cf_financni",         bold:true},
-      {lbl:"Čistá změna PP",           key:"cf_cista_zmena",      bold:true},
-      {lbl:"PP na začátku roku",       key:"pp_zacatek"},
-      {lbl:"PP na konci roku",         key:"pp_konec_cf",         bold:true},
-    ];
-    // Horizontální
-    document.getElementById("cf-horiz-head").innerHTML =
-      `<tr><th style="text-align:left;width:35%">Položka</th>${labels.map(l=>`<th>${l}</th>`).join("")}<th>Δ abs.</th><th>Δ %</th></tr>`;
-    document.getElementById("cf-horiz-body").innerHTML = cfItems.map(r=>{
-      const vals = allP.map(p=>v0(p,r.key));
-      const dAbs = vals[n-1]-vals[n-2];
-      const dPct = vals[n-2]!==0 ? (dAbs/Math.abs(vals[n-2])*100) : null;
-      const neg=dAbs<0, pos=dAbs>0;
-      const cls = r.bold?'bold':r.sub?'sub':'';
-      return `<tr class="${cls}">
-        <td>${r.lbl}</td>
-        ${vals.map(v=>`<td style="text-align:right">${kc(v,'0 Kč')}</td>`).join("")}
-        <td style="text-align:right" class="${neg?'neg':pos?'pos':''}">${dAbs>=0?'+':''}${Math.round(dAbs).toLocaleString("cs-CZ")} Kč</td>
-        <td style="text-align:right" class="${neg?'neg':pos?'pos':''}">${dPct!==null?(dPct>=0?'+':'')+dPct.toFixed(1)+' %':'—'}</td>
-      </tr>`;
-    }).join("");
-    // Vertikální — % z CF provozního
-    const cfProv = allP.map(p=>Math.abs(v0(p,"cf_provozni"))||1);
-    document.getElementById("cf-vert-head").innerHTML =
-      `<tr><th style="text-align:left;width:35%">Položka</th>${labels.map(l=>`<th>% z CF prov. — ${l}</th>`).join("")}</tr>`;
-    document.getElementById("cf-vert-body").innerHTML = cfItems.slice(0,7).map(r=>{
-      const pcts = allP.map((p,i)=>(v0(p,r.key)/cfProv[i]*100).toFixed(1)+" %");
-      const cls = r.bold?'bold':r.sub?'sub':'';
-      return `<tr class="${cls}"><td>${r.lbl}</td>${pcts.map(p=>`<td style="text-align:right">${p}</td>`).join("")}</tr>`;
-    }).join("");
-  } else {
-    if(cfHorizEl) cfHorizEl.style.display = "none";
-    if(cfVertEl)  cfVertEl.style.display  = "none";
-  }
 });
 </script>
-  <div class="section" id="cf-horiz-section" style="display:none">
-    <h2>Horizontální analýza Cash Flow — meziroční změny</h2>
-    <p class="tis-note">Absolutní a procentní změna složek CF mezi obdobími</p>
-    <div style="overflow-x:auto"><table><thead id="cf-horiz-head"></thead><tbody id="cf-horiz-body"></tbody></table></div>
-  </div>
-  <div class="section" id="cf-vert-section" style="display:none">
-    <h2>Vertikální analýza Cash Flow — % z CF provozního</h2>
-    <p class="tis-note">Složky CF jako procento z provozního Cash Flow</p>
-    <div style="overflow-x:auto"><table><thead id="cf-vert-head"></thead><tbody id="cf-vert-body"></tbody></table></div>
-  </div>
 </body></html>

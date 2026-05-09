@@ -161,68 +161,6 @@ loadData(d => {
     SEP(),
     R("",      "Čistý obrat za účetní období",                   "",               "49", "cisty_obrat"),
   ].join("");
-
-  // ── HORIZONTÁLNÍ + VERTIKÁLNÍ (roční mód) ────────────────────
-  const horizEl = document.getElementById("vzz-horiz-section");
-  const vertEl  = document.getElementById("vzz-vert-section");
-  if(showDelta && n >= 2) {
-    if(horizEl) horizEl.style.display = "block";
-    if(vertEl)  vertEl.style.display  = "block";
-    const hItems = [
-      {lbl:"Tržby celkem",             key:"trzby_celkem",       bold:true},
-      {lbl:"Výkonová spotřeba",         key:"vyk_spotreba",       bold:true},
-      {lbl:"  Spotřeba mat. a energie", key:"spotreba_mat_energie",sub:true},
-      {lbl:"  Služby",                  key:"sluzby",             sub:true},
-      {lbl:"Osobní náklady",            key:"osobni_naklady",     bold:true},
-      {lbl:"  Mzdové náklady",          key:"mzdy",               sub:true},
-      {lbl:"Odpisy",                    key:"odpisy"},
-      {lbl:"Ostatní provozní náklady",  key:"ost_prov_nak"},
-      {lbl:"Provozní VH",               key:"provozni_vh",        bold:true},
-      {lbl:"Finanční VH",               key:"financni_vh",        bold:true},
-      {lbl:"VH před zdaněním",          key:"vh_pred_zdanenim",   bold:true},
-      {lbl:"Daň z příjmů",              key:"dan"},
-      {lbl:"VH za účetní období",       key:"vh_za_obdobi",       bold:true},
-      {lbl:"EBITDA",                    key:"ebitda"},
-    ];
-    // Horizontální
-    document.getElementById("vzz-horiz-head").innerHTML =
-      `<tr><th style="text-align:left;width:35%">Položka</th>${labels.map(l=>`<th>${l}</th>`).join("")}<th>Δ abs.</th><th>Δ %</th></tr>`;
-    document.getElementById("vzz-horiz-body").innerHTML = hItems.map(r=>{
-      const vals = allP.map(p=>v0(p,r.key));
-      const dAbs = vals[n-1]-vals[n-2];
-      const dPct = vals[n-2]!==0 ? (dAbs/Math.abs(vals[n-2])*100) : null;
-      const neg=dAbs<0, pos=dAbs>0;
-      const cls = r.bold?'bold':r.sub?'sub':'';
-      return `<tr class="${cls}">
-        <td>${r.lbl}</td>
-        ${vals.map(v=>`<td style="text-align:right">${kc(v,'0 Kč')}</td>`).join("")}
-        <td style="text-align:right" class="${neg?'neg':pos?'pos':''}">${dAbs>=0?'+':''}${Math.round(dAbs).toLocaleString("cs-CZ")} Kč</td>
-        <td style="text-align:right" class="${neg?'neg':pos?'pos':''}">${dPct!==null?(dPct>=0?'+':'')+dPct.toFixed(1)+' %':'—'}</td>
-      </tr>`;
-    }).join("");
-    // Vertikální
-    const trzby = allP.map(p=>v0(p,"trzby_celkem")||1);
-    document.getElementById("vzz-vert-head").innerHTML =
-      `<tr><th style="text-align:left;width:35%">Položka</th>${labels.map(l=>`<th>% z tržeb — ${l}</th>`).join("")}</tr>`;
-    document.getElementById("vzz-vert-body").innerHTML = hItems.map(r=>{
-      const pcts = allP.map((p,i)=>(v0(p,r.key)/trzby[i]*100).toFixed(1)+" %");
-      const cls = r.bold?'bold':r.sub?'sub':'';
-      return `<tr class="${cls}"><td>${r.lbl}</td>${pcts.map(p=>`<td style="text-align:right">${p}</td>`).join("")}</tr>`;
-    }).join("");
-  } else {
-    if(horizEl) horizEl.style.display = "none";
-    if(vertEl)  vertEl.style.display  = "none";
-  }
 });
 </script>
-  <div class="section" id="vzz-horiz-section" style="display:none">
-    <h2>Horizontální analýza VZZ — meziroční změny</h2>
-    <p class="tis-note">Absolutní a procentní změna klíčových položek VZZ mezi obdobími</p>
-    <div style="overflow-x:auto"><table><thead id="vzz-horiz-head"></thead><tbody id="vzz-horiz-body"></tbody></table></div>
-  </div>
-  <div class="section" id="vzz-vert-section" style="display:none">
-    <h2>Vertikální analýza VZZ — % podíl na tržbách</h2>
-    <p class="tis-note">Každá položka jako procento z tržeb celkem</p>
-    <div style="overflow-x:auto"><table><thead id="vzz-vert-head"></thead><tbody id="vzz-vert-body"></tbody></table></div>
-  </div>
 </body></html>
