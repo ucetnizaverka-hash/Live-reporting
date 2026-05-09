@@ -56,6 +56,12 @@
       <button class="page-tab live inactive" onclick="location.href='index.html'">Průběžné výkaznictví</button>
     </div>
 
+    <!-- ========== PŘEHLED: ROKY JAKO ŘÁDKY ========== -->
+    <div class="sec-header hist">Přehled — roky &amp; porovnání</div>
+    <div class="section">
+      <div style="overflow-x:auto"><table class="ana-table" id="prehled-table"></table></div>
+    </div>
+
     <!-- ========== ČÁST 1: HORIZONTÁLNÍ ANALÝZA ========== -->
     <div class="sec-header hist">Horizontální analýza — meziroční změny</div>
     <div class="section">
@@ -254,6 +260,51 @@ async function main() {
 
     const periody = h.periody || [];
     if(!periody.length) return;
+
+    // ── Přehledová tabulka: roky jako řádky ──────────────────────────────
+    (function buildPrehled(periody, el) {
+      if(!el || periody.length < 2) return;
+      const cols = [
+        {label:"Tržby celkem (Kč)",    key:"trzby_celkem",        fmt:n0},
+        {label:"VH za období (Kč)",    key:"vh_za_obdobi",        fmt:n0},
+        {label:"Aktiva celkem (Kč)",   key:"aktiva_netto",        fmt:n0},
+        {label:"Vlastní kapitál (Kč)", key:"vk",                  fmt:n0},
+        {label:"ROA (%)",              key:"roa",                 fmt:p1},
+        {label:"Běžná likvidita",      key:"bezna_likvidita",     fmt:n2},
+        {label:"Celk. zadluženost (%)",key:"celkova_zadluzenost", fmt:p1},
+      ];
+      let head = "<thead><tr><th>Rok</th>";
+      cols.forEach(c => head += `<th>${c.label}</th>`);
+      head += "</tr></thead>";
+
+      let body = "<tbody>";
+      periody.forEach(p => {
+        body += `<tr><td><strong>${p.label||p.rok}</strong></td>`;
+        cols.forEach(c => {
+          const v = p[c.key];
+          body += `<td>${v==null||v===undefined||v===""?"—":c.fmt(v)}</td>`;
+        });
+        body += "</tr>";
+      });
+
+      // řádek porovnání Δ
+      if(periody.length >= 2) {
+        const a = periody[periody.length-2], b = periody[periody.length-1];
+        body += `<tr style="background:rgba(212,149,42,.08);font-weight:600"><td>Změna Δ</td>`;
+        cols.forEach(c => {
+          const va = a[c.key], vb = b[c.key];
+          if(va==null||vb==null||va===0) { body += "<td>—</td>"; return; }
+          const diff = vb - va;
+          const pct  = (diff/Math.abs(va)*100).toFixed(1);
+          const cls  = diff >= 0 ? "pos" : "neg";
+          const sign = diff >= 0 ? "+" : "";
+          body += `<td class="${cls}">${sign}${pct} %</td>`;
+        });
+        body += "</tr>";
+      }
+      body += "</tbody>";
+      el.innerHTML = head + body;
+    })(periody, document.getElementById("prehled-table"));
 
     // Horizontální analýza – VZZ
     buildHoriz(periody, [

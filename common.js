@@ -225,4 +225,3 @@ function injectBgCanvas() {
   document.body.insertBefore(div, document.body.firstChild);
 }
 document.addEventListener('DOMContentLoaded', injectBgCanvas);
-                                                                                            
