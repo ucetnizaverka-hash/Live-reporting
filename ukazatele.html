@@ -12,10 +12,9 @@
   .nav-group { padding: 3px 16px 5px; gap: 3px; }
   .nav-lnk { padding: 3px 10px; font-size: 11px; }
   .nav-glbl { font-size: 8px; }
-  .kpi { padding: 12px 14px; border-radius: 12px; }
-  .kpi .val { font-size: 17px; }
-  .kpi-grid { gap: 10px; margin-bottom: 12px; }
   footer { padding: 8px; font-size: 11px; }
+  table { font-size: 12px; }
+  th, td { padding: 3px 8px; }
 </style>
 </head><body>
 <header>
@@ -30,63 +29,41 @@
   <div id="loading">Načítám…</div><div id="err"></div>
   <div id="app" style="display:none">
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
-    <div id="bench-note" style="display:none;background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:10px 16px;margin:12px 20px;font-size:12px;color:#92400e">
-      Srovnání s odvětvím (CZ-NACE 62, MPO ČR 2023) je dostupné pouze v režimu <strong>Roční výkazy</strong>.
-      Přepněte režim v horní liště, nebo zpracujte roční předvahu přes <code>python pipeline.py --rocni</code>.
-    </div>
-
     <div class="section">
       <h2>Rentabilita</h2>
       <table><thead id="rent-head"></thead><tbody id="rent-body"></tbody></table>
     </div>
     <div class="section">
-      <h2>Likvidita &amp; Pracovní kapitál</h2>
+      <h2>Likvidita</h2>
       <table><thead id="lik-head"></thead><tbody id="lik-body"></tbody></table>
     </div>
     <div class="section">
-      <h2>Zadluženost &amp; Kapitálová struktura</h2>
-      <table><thead id="zad-head"></thead><tbody id="zad-body"></tbody></table>
-    </div>
-    <div class="section">
-      <h2>Aktivita (obraty a doby obratu)</h2>
+      <h2>Aktivita</h2>
       <table><thead id="akt-head"></thead><tbody id="akt-body"></tbody></table>
     </div>
     <div class="section">
-      <h2>Aktivita — Cash Flow ukazatele</h2>
-      <table><thead id="cf-head"></thead><tbody id="cf-body"></tbody></table>
-    </div>
-    <div class="section">
-      <h2>Altman Z-skóre <span style="font-weight:400;color:var(--text-m);font-size:10px">(model pro soukromé firmy)</span></h2>
-      <table><thead id="altman-head"></thead><tbody id="altman-body"></tbody></table>
+      <h2>Zadluženost</h2>
+      <table><thead id="zad-head"></thead><tbody id="zad-body"></tbody></table>
     </div>
     <div class="section">
       <h2>Index IN05 <span style="font-weight:400;color:var(--text-m);font-size:10px">(Neumaierovi — pro české firmy)</span></h2>
       <table><thead id="in05-head"></thead><tbody id="in05-body"></tbody></table>
       <div style="font-size:11px;color:var(--text-dim);margin-top:8px;font-style:italic">
-        IN05 = 0.13×(A/CZ) + 0.04×(EBIT/ÚN, max 9) + 3.97×(EBIT/A) + 0.21×(Tržby/A) + 0.09×(OA/KZ) &nbsp;|&nbsp; Zdraví: ≥1.6 · Šedá zóna: 0.9–1.6 · Ohrožení: &lt;0.9
+        IN05 = 0,13×(A/CZ) + 0,04×(EBIT/ÚN, max 9) + 3,97×(EBIT/A) + 0,21×(Výnosy/A) + 0,09×(OA/(KZ+KB úvěry))
+        &nbsp;|&nbsp; Tvorba hodnoty: ≥1,6 · Šedá zóna: 0,9–1,6 · Finanční tíseň: &lt;0,9
       </div>
     </div>
-    <div class="section">
-      <h2>Tafflerův model <span style="font-weight:400;color:var(--text-m);font-size:10px">(bankrotní predikce)</span></h2>
-      <table><thead id="taff-head"></thead><tbody id="taff-body"></tbody></table>
-      <div style="font-size:11px;color:var(--text-dim);margin-top:8px;font-style:italic">
-        Z = 0.53×(EBT/KZ) + 0.13×(OA/CZ) + 0.18×(KZ/A) + 0.16×(Tržby/A) &nbsp;|&nbsp; Zdraví: &gt;0.3 · Šedá zóna: 0.2–0.3 · Ohrožení: &lt;0.2
-      </div>
+    <div class="charts-2" style="margin-top:10px">
+      <div class="chart-box"><h3>Rentabilita (%)</h3><div id="ch-rent" style="height:200px"></div></div>
+      <div class="chart-box"><h3>Likvidita</h3><div id="ch-lik" style="height:200px"></div></div>
     </div>
-    <div class="section">
-      <h2>Kralickův Quicktest <span style="font-weight:400;color:var(--text-m);font-size:10px">(Knápková, s. 132 — bonitní hodnocení)</span></h2>
-      <table><thead id="qt-head"></thead><tbody id="qt-body"></tbody></table>
-      <div style="font-size:11px;color:var(--text-dim);margin-top:8px;font-style:italic">
-        Bodování 1–5 pro každý ze 4 ukazatelů · Průměr &gt;3 = dobrá firma · 1–3 = šedá zóna · &lt;1 = špatná · Finanční stabilita (R1+R2)/2 · Výnosová situace (R3+R4)/2
-      </div>
-    </div>
-    <div class="charts-2" style="margin-top:20px">
-      <div class="chart-box"><h3>Rentabilita (%) — vývoj vs sektor</h3><div id="ch-rent" style="height:220px"></div></div>
-      <div class="chart-box"><h3>Likvidita — vývoj vs sektor</h3><div id="ch-lik" style="height:220px"></div></div>
+    <div class="charts-2">
+      <div class="chart-box"><h3>Doby obratu (dní)</h3><div id="ch-dob" style="height:200px"></div></div>
+      <div class="chart-box"><h3>Zadluženost (%)</h3><div id="ch-zad" style="height:200px"></div></div>
     </div>
   </div>
 </main>
-<footer><span>22HLAV</span> · Průběžné výkaznictví v2.0 · Benchmark: MPO ČR, CZ-NACE 62, 2023</footer>
+<footer><span>22HLAV</span> · Průběžné výkaznictví v2.0 · Metodika AVS</footer>
 <script src="common.js"></script>
 <script>
 (function(){
@@ -103,304 +80,230 @@
 <script>
 loadData(d => {
   const allP = getModeAllP(d);
-  const s = d.sektor;
+  const s = d.sektor || {};
   document.title = (d.nazev||"")+" | Ukazatele";
-  const labels = allP.map(p=>p.label||p.period_label);
+  const labels = allP.map(p => p.label || p.period_label);
   const a = getModeData(d);
-  const showBench = (getMode() === "rocni");
-  const benchNote = document.getElementById("bench-note");
-  if(benchNote) benchNote.style.display = showBench ? "none" : "block";
+  const showBench = (getMode() === "rocni") && s && s.rok;
 
   // ── Helpers ──────────────────────────────────────────────────────────
-  const headHtml = (withBench=true) =>
-    `<tr><th style="width:35%">Ukazatel</th>${labels.map(l=>`<th>${l}</th>`).join("")}
-    ${(withBench&&showBench)?`<th style="color:var(--gold)">Sektor ${s.rok}</th><th>Hodnocení</th>`:""}</tr>`;
+  const headHtml = () =>
+    `<tr><th style="width:42%">Ukazatel</th>${labels.map(l=>`<th>${l}</th>`).join("")}
+    ${showBench ? `<th style="color:var(--gold)">Sektor ${s.rok}</th><th>Hod.</th>` : ""}</tr>`;
 
-  const badge = (val, bench, higherBetter=true) => {
-    if(!showBench||val===null||val===undefined||bench===null) return "";
-    const vv=parseFloat(val), b=parseFloat(bench);
-    if(isNaN(vv)||isNaN(b)) return "";
-    const ratio = higherBetter ? vv/b : b/vv;
-    if(ratio>=0.85) return `<span class="badge green">OK</span>`;
-    if(ratio>=0.65) return `<span class="badge yellow">Pozor</span>`;
-    return `<span class="badge red">Pod bench.</span>`;
+  const bBadge = (val, bench, hi=true) => {
+    if (!showBench || val==null || bench==null) return "";
+    const r = hi ? parseFloat(val)/parseFloat(bench) : parseFloat(bench)/parseFloat(val);
+    if (isNaN(r)) return "";
+    return r>=0.85 ? `<span class="badge green">OK</span>`
+         : r>=0.65 ? `<span class="badge yellow">Pozor</span>`
+         : `<span class="badge red">Nízko</span>`;
   };
 
-  // R: čte klíč přímo z objektu periody
-  const R = (label, key, bench, fmtFn, higherBetter=true, note="") => {
+  // R: přímý klíč z objektu periody
+  const R = (label, key, bench, fmtFn, hi=true, note="") => {
     const cur = a[key];
-    let row = `<tr><td>${label}${note?`<br><small style="color:var(--gray)">${note}</small>`:""}</td>`;
-    allP.forEach((p,i)=>{
-      const bcls = (showBench&&i===allP.length-1) ? benchColor(p[key],bench,higherBetter) : "";
-      row += `<td class="${bcls}">${fmtFn(p[key])}</td>`;
-    });
-    if(showBench&&bench!==null){ row+=`<td class="gray">${fmtFn(bench)}</td><td>${badge(cur,bench,higherBetter)}</td>`; }
-    return row+`</tr>`;
+    let row = `<tr><td>${label}${note ? `<br><small style="color:var(--text-dim);font-size:10px">${note}</small>` : ""}</td>`;
+    allP.forEach(p => { row += `<td>${fmtFn(p[key])}</td>`; });
+    if (showBench && bench!=null) { row += `<td class="gray">${fmtFn(bench)}</td><td>${bBadge(cur,bench,hi)}</td>`; }
+    return row + `</tr>`;
   };
 
-  // RC: computed row — fn(p) → číslo
-  const RC = (label, fn, bench, fmtFn, higherBetter=true, note="") => {
+  // RC: computed — fn(p) → číslo
+  const RC = (label, fn, bench, fmtFn, hi=true, note="") => {
     const cur = fn(a);
-    let row = `<tr><td>${label}${note?`<br><small style="color:var(--gray)">${note}</small>`:""}</td>`;
-    allP.forEach((p,i)=>{
-      const vv = fn(p);
-      const bcls = (showBench&&i===allP.length-1) ? benchColor(cur,bench,higherBetter) : "";
-      row += `<td class="${bcls}">${fmtFn(vv)}</td>`;
-    });
-    if(showBench&&bench!==null){ row+=`<td class="gray">${fmtFn(bench)}</td><td>${badge(cur,bench,higherBetter)}</td>`; }
-    return row+`</tr>`;
+    let row = `<tr><td>${label}${note ? `<br><small style="color:var(--text-dim);font-size:10px">${note}</small>` : ""}</td>`;
+    allP.forEach(p => { row += `<td>${fmtFn(fn(p))}</td>`; });
+    if (showBench && bench!=null) { row += `<td class="gray">${fmtFn(bench)}</td><td>${bBadge(cur,bench,hi)}</td>`; }
+    return row + `</tr>`;
   };
 
-  // ── Knápková: výpočetní funkce ────────────────────────────────────────
-  // Zdroj: Knápková, Pavelková, Šteker — Finanční analýza: komplexní průvodce (2017)
-  // EBIT = VH před zdaněním + nákladové úroky  (Knápková s. 98)
-  // — eliminuje vliv zdanění i způsobu financování → srovnatelnost firem
-  const fEbit  = p => parseFloat(p.vh_pred_zdanenim||0)+parseFloat(p.nak_uroky||0);
-  // Provozní CF — fallback přes zjednodušenou nepřímou metodu (IAS 7)
+  // ── Výpočetní funkce (AVS metodika) ──────────────────────────────────
+  const fEbit  = p => parseFloat(p.vh_pred_zdanenim||0) + parseFloat(p.nak_uroky||0);
   const fCfOp  = p => p.cf_provozni!=null ? parseFloat(p.cf_provozni)
-                     : fEbit(p)+parseFloat(p.odpisy||0)-parseFloat(p.dan||0);
+                     : fEbit(p) + parseFloat(p.odpisy||0) - parseFloat(p.dan||0);
   const fT     = p => parseFloat(p.trzby_celkem||0);
   const fA     = p => parseFloat(p.aktiva_netto||0);
   const fVK    = p => parseFloat(p.vk||0);
   const fCZ    = p => parseFloat(p.cizi_zdroje||0);
-  const fZavDl = p => parseFloat(p.zav_dl||0);
+  const fDM    = p => parseFloat(p.stala_netto||0);
+  const fOA    = p => parseFloat(p.obezna_netto||0);
   const fZavKr = p => parseFloat(p.zav_kr||0);
   const fPP    = p => parseFloat(p.pp||0);
   const fZas   = p => parseFloat(p.zasoby||0);
   const fPohl  = p => parseFloat(p.pohledavky_kr||0);
-  // Doba obratu: jmenovatel Tržby/360 — Knápková používá 360 dní (ne 365)
-  const fDob   = (p, numFn) => fT(p)>0 ? Math.round(numFn(p)/(fT(p)/360)) : null;
-  const sP     = v => v===null||v===undefined||isNaN(v) ? "—" : pct(v);
-  const sN     = v => v===null||v===undefined||isNaN(v) ? "—" : num(v);
+  const fRez   = p => parseFloat(p.rezervy||0);
+  const fDob   = (p, fn) => fT(p)>0 ? Math.round(fn(p)/(fT(p)/360)) : null;
+  const sP     = v => (v==null||isNaN(parseFloat(v))) ? "—" : pct(parseFloat(v));
+  const sN2    = v => (v==null||isNaN(parseFloat(v))) ? "—" : num(parseFloat(v));
 
   // ── RENTABILITA ───────────────────────────────────────────────────────
-  // Knápková s. 95–101
-  // ROA přes EBIT: nezávislá na zdanění a financování — nejčistší měřítko výkonnosti aktiv
-  // ROCE: výnosnost permanentního kapitálu (VK + dl. závazky), ne krátkodobých zdrojů
   document.getElementById("rent-head").innerHTML = headHtml();
   document.getElementById("rent-body").innerHTML = [
-    RC("ROA — Rentabilita aktiv (EBIT)",
+    RC("Rentabilita celkového kapitálu (ROA)",
        p => fA(p) ? fEbit(p)/fA(p)*100 : null, s.roa, sP, true,
-       "EBIT / Aktiva × 100 · Knápková s. 98 · opt. > 8–10 % · nezávislá na zdanění a fin. struktuře"),
-    RC("ROE — Rentabilita vl. kapitálu",
+       "EBIT / Aktiva × 100"),
+    RC("Rentabilita vlastního kapitálu (ROE)",
        p => fVK(p) ? parseFloat(p.vh_za_obdobi||0)/fVK(p)*100 : null, s.roe, sP, true,
-       "EAT / Vlastní kapitál × 100 · Knápková s. 99 · platí ROE > ROA"),
-    RC("ROS — čistá marže (EAT)",
+       "Čistý zisk / Vlastní kapitál × 100"),
+    RC("Rentabilita tržeb (ROS)",
        p => fT(p) ? parseFloat(p.vh_za_obdobi||0)/fT(p)*100 : null, s.ros, sP, true,
-       "EAT / Tržby × 100 · čistá zisková marže"),
-    RC("ROS — provozní marže (EBIT)",
-       p => fT(p) ? fEbit(p)/fT(p)*100 : null, null, sP, true,
-       "EBIT / Tržby × 100 · provozní marže · nezávislá na financování a zdanění"),
-    RC("ROCE — Rentabilita perm. kapitálu",
-       p => (fVK(p)+fZavDl(p)) ? fEbit(p)/(fVK(p)+fZavDl(p))*100 : null, null, sP, true,
-       "EBIT / (VK + Dl. závazky) × 100 · Knápková s. 100 · opt. > 10–12 %"),
-    R("EBITDA marže","ebitda_marze",s.ebitda_marze,sP,true,
-      "(Provozní VH + Odpisy) / Tržby × 100"),
-    R("EBITDA (Kč)","ebitda",null,kc,true),
+       "Zisk / Tržby × 100"),
   ].join("");
 
   // ── LIKVIDITA ─────────────────────────────────────────────────────────
-  // Knápková s. 91–94: L3 opt. 1.5–2.5, L2 opt. 1.0–1.5, L1 opt. 0.2–0.5
   document.getElementById("lik-head").innerHTML = headHtml();
   document.getElementById("lik-body").innerHTML = [
-    R("L3 — Běžná likvidita","bezna_likvidita",s.bezna_likvidita,
-      v=>v==null?"—":num(v),true,"OA / Kr. závazky · Knápková: opt. 1,5–2,5"),
-    R("L2 — Pohotová likvidita","pohotova_likvidita",null,
-      v=>v==null?"—":num(v),true,"(OA − zásoby) / Kr. závazky · Knápková: opt. 1,0–1,5"),
-    R("L1 — Okamžitá likvidita","okamzita_likvidita",s.okamzita_likvidita,
-      v=>v==null?"—":num(v),true,"PP / Kr. závazky · Knápková: opt. 0,2–0,5"),
-    R("ČPK — Čistý pracovní kapitál","cpk",null,kc,true,"OA − Kr. závazky"),
-  ].join("");
-
-  // ── ZADLUŽENOST ───────────────────────────────────────────────────────
-  // Knápková s. 85–90: přidává míru zadluženosti (CZ/VK) a úrokové zatížení
-  // Míra zadluženosti: banky ji sledují jako podmínku úvěru (opt. < 100 %)
-  // Úrokové zatížení: inverzní k úrok. krytí — kolik % zisku spolknou úroky
-  document.getElementById("zad-head").innerHTML = headHtml();
-  document.getElementById("zad-body").innerHTML = [
-    R("Celková zadluženost","celkova_zadluzenost",s.celkova_zadluzenost,sP,false,
-      "CZ / Aktiva × 100 · Knápková s. 87: opt. < 50 %"),
-    R("Koeficient samofinancování","koef_samofinancovani",s.koef_samofinancovani,sP,true,
-      "VK / Aktiva × 100 · doplněk k celk. zadluženosti"),
-    RC("Míra zadluženosti",
-       p => fVK(p) ? fCZ(p)/fVK(p)*100 : null, null, sP, false,
-       "CZ / VK × 100 · Knápková s. 87: banky sledují · opt. < 100 % · krytí CZ vlastním kap."),
-    R("Finanční páka","fin_paka",s.fin_paka,v=>v==null?"—":num(v)+"×",false,
-      "Aktiva / VK"),
-    RC("Úrokové krytí",
-       p => parseFloat(p.nak_uroky||0)>100 ? fEbit(p)/parseFloat(p.nak_uroky) : null,
-       null, v=>v==null?"n/a":num(v)+"×", true,
-       "EBIT / Nákladové úroky · Knápková s. 88: opt. > 5× (ideálně > 8×)"),
-    RC("Úrokové zatížení",
-       p => fEbit(p)>0 && parseFloat(p.nak_uroky||0)>100
-            ? parseFloat(p.nak_uroky)/fEbit(p)*100 : null,
-       null, v=>v==null?"n/a":sP(v), false,
-       "Nákl. úroky / EBIT × 100 · Knápková s. 88: opt. < 40 % · inverzní k úrok. krytí"),
-    RC("Debt/Equity",
-       p => fVK(p) ? fCZ(p)/fVK(p) : null,
-       null, v=>v==null?"—":num(v)+"×", false, "CZ / VK"),
+    RC("Pohotová likvidita",
+       p => fZavKr(p) ? (fPohl(p)+fPP(p))/fZavKr(p) : null, null, sN2, true,
+       "(Krátkodobé pohledávky + Krátkodobý fin. majetek) / Krátkodobé cizí zdroje"),
+    RC("Ukazatel okamžité likvidity",
+       p => fZavKr(p) ? fPP(p)/fZavKr(p) : null, s.okamzita_likvidita, sN2, true,
+       "Krátkodobý finanční majetek / Krátkodobé cizí zdroje"),
+    RC("Běžná likvidita",
+       p => fZavKr(p) ? fOA(p)/fZavKr(p) : null, s.bezna_likvidita, sN2, true,
+       "Oběžná aktiva / Krátkodobé cizí zdroje"),
   ].join("");
 
   // ── AKTIVITA ──────────────────────────────────────────────────────────
-  // Knápková s. 103–109: 360 dní, OCP = DSO + DIO − DPO
-  // OCP (obratový cyklus peněz): kolik dní je kapitál vázán v provozním cyklu
   document.getElementById("akt-head").innerHTML = headHtml();
   document.getElementById("akt-body").innerHTML = [
-    RC("Obratovost aktiv",
-       p => fA(p) ? fT(p)/fA(p) : null, s.obratovost_aktiv, v=>v==null?"—":num(v)+"×", true,
-       "Tržby / Aktiva · Knápková: opt. > 1× · nízká hodnota = přebytek aktiv"),
-    RC("Doba obratu pohledávek (DSO)",
-       p => fDob(p,fPohl), s.doba_obratu_pohl, v=>v==null?"—":v+" dní", false,
-       "Pohledávky / (Tržby/360) · Knápková: 360 dní · méně = lepší · srovnej s DPO"),
-    RC("Doba obratu závazků (DPO)",
-       p => fDob(p,fZavKr), s.doba_obratu_zav, v=>v==null?"—":v+" dní", true,
-       "Kr. závazky / (Tržby/360) · delší = čerpání obchodního úvěru od dodavatelů"),
-    RC("Doba obratu zásob (DIO)",
-       p => fDob(p,fZas), null, v=>v==null?"—":v+" dní", false,
-       "Zásoby / (Tržby/360) · nižší = rychlejší přeměna zásob"),
-    RC("Obratový cyklus peněz (OCP)",
-       p => { const dso=fDob(p,fPohl),dio=fDob(p,fZas),dpo=fDob(p,fZavKr);
-              return (dso!==null&&dio!==null&&dpo!==null)?dso+dio-dpo:null; },
-       null, v=>v==null?"—":v+" dní", false,
-       "DSO + DIO − DPO · Knápková s. 107: kratší = méně vázaného kapitálu v provozu"),
+    RC("Obrat aktiv",
+       p => fA(p) ? fT(p)/fA(p) : null, s.obratovost_aktiv,
+       v => v==null ? "—" : sN2(v)+"×", true,
+       "Tržby / Aktiva"),
+    RC("Obrat dlouhodobého majetku",
+       p => fDM(p) ? fT(p)/fDM(p) : null, null,
+       v => v==null ? "—" : sN2(v)+"×", true,
+       "Tržby / Dlouhodobý majetek"),
+    RC("Doba obratu zásob",
+       p => fDob(p, fZas), null,
+       v => v==null ? "—" : v+" dní", false,
+       "Průměrný stav zásob / Tržby × 360"),
+    RC("Doba obratu pohledávek",
+       p => fDob(p, fPohl), s.doba_obratu_pohl,
+       v => v==null ? "—" : v+" dní", false,
+       "Průměrný stav pohledávek / Tržby × 360"),
+    RC("Doba obratu závazků",
+       p => fDob(p, fZavKr), s.doba_obratu_zav,
+       v => v==null ? "—" : v+" dní", true,
+       "Krátkodobé závazky / Tržby × 360"),
   ].join("");
 
-  // ── CF UKAZATELE ──────────────────────────────────────────────────────
-  document.getElementById("cf-head").innerHTML = headHtml();
-  document.getElementById("cf-body").innerHTML = [
-    RC("CF rentabilita tržeb",
-       p => fT(p) ? fCfOp(p)/fT(p)*100 : null, null, sP, true,"CF provozní / Tržby × 100"),
-    RC("CF / Cizí zdroje",
-       p => fCZ(p) ? fCfOp(p)/fCZ(p)*100 : null, null, sP, true,
-       "CF provozní / CZ × 100 · schopnost splácet dluh z CF"),
-    RC("CF na Kč tržeb",
-       p => fT(p) ? fCfOp(p)/fT(p) : null, null, v=>v==null?"—":num(v,3), true,
-       "CF provozní / Tržby"),
-  ].join("");
-
-  // ── KRALICKŮV QUICKTEST ───────────────────────────────────────────────
-  // Zdroj: Knápková s. 132 — rychlé bonitní hodnocení ze 4 ukazatelů
-  // Každý bodován 1–5, výsledek = průměr → > 3 dobrá, 1–3 šedá, < 1 špatná
-  // Finanční stabilita = (R1+R2)/2, Výnosová situace = (R3+R4)/2
-  const qtScore = (val, key) => {
-    if(val===null||val===undefined||isNaN(parseFloat(val))) return null;
-    const v=parseFloat(val);
-    if(key==="R1"){if(v>=.30)return 5;if(v>=.20)return 4;if(v>=.10)return 3;if(v>=0)return 2;return 1;}
-    if(key==="R2"){if(v<=3)return 5;if(v<=5)return 4;if(v<=12)return 3;if(v<=30)return 2;return 1;}
-    if(key==="R3"){if(v>=.10)return 5;if(v>=.08)return 4;if(v>=.05)return 3;if(v>=0)return 2;return 1;}
-    if(key==="R4"){if(v>=.15)return 5;if(v>=.12)return 4;if(v>=.08)return 3;if(v>=0)return 2;return 1;}
-    return null;
-  };
-  const qtClr  = s => s>=4?"#16a34a":s>=3?"#d97706":s>=2?"#9ca3af":"#dc2626";
-  const qtBadge= avg => {
-    if(avg===null) return "";
-    if(avg>=3) return `<span class="badge green">Dobrá (${avg.toFixed(1)})</span>`;
-    if(avg>=1) return `<span class="badge yellow">Šedá (${avg.toFixed(1)})</span>`;
-    return `<span class="badge red">Špatná (${avg.toFixed(1)})</span>`;
-  };
-
-  const qtItems = [
-    {key:"R1",lbl:"R1 — Koef. samofinancování",
-     fn:p=>fA(p)?fVK(p)/fA(p):null, fmt:v=>v==null?"—":pct(v*100,1),
-     note:"VK / Aktiva · ≥30 % → 5b · ≥20 % → 4b · ≥10 % → 3b · ≥0 → 2b · <0 → 1b"},
-    {key:"R2",lbl:"R2 — Doba splácení dluhu (roky)",
-     fn:p=>Math.abs(fCfOp(p))>10000?(fCZ(p)-fPP(p))/fCfOp(p):null, fmt:v=>v==null?"—":num(v,1)+" r.",
-     note:"(CZ − PP) / CF provozní · ≤3 r. → 5b · ≤5 → 4b · ≤12 → 3b · ≤30 → 2b · >30 → 1b"},
-    {key:"R3",lbl:"R3 — CF rentabilita aktiv",
-     fn:p=>fA(p)?fCfOp(p)/fA(p):null, fmt:v=>v==null?"—":pct(v*100,1),
-     note:"CF provozní / Aktiva · ≥10 % → 5b · ≥8 % → 4b · ≥5 % → 3b · ≥0 → 2b · <0 → 1b"},
-    {key:"R4",lbl:"R4 — ROA (EBIT/Aktiva)",
-     fn:p=>fA(p)?fEbit(p)/fA(p):null, fmt:v=>v==null?"—":pct(v*100,1),
-     note:"EBIT / Aktiva · ≥15 % → 5b · ≥12 % → 4b · ≥8 % → 3b · ≥0 → 2b · <0 → 1b"},
-  ];
-
-  if(document.getElementById("qt-head")) {
-    document.getElementById("qt-head").innerHTML =
-      `<tr><th style="text-align:left;min-width:260px">Ukazatel</th>
-      ${allP.map(p=>`<th>${p.label||p.period_label}<br><small style="color:var(--text-dim);font-weight:400">hodnota · body</small></th>`).join("")}</tr>`;
-
-    const qtRows = qtItems.map(item=>{
-      const cols=allP.map(p=>{
-        const vv=item.fn(p); const sc=qtScore(vv,item.key);
-        return `<td>${item.fmt(vv)}<br><strong style="font-size:13px;color:${sc?qtClr(sc):"#9ca3af"}">${sc??"—"} b</strong></td>`;
-      });
-      return `<tr><td>${item.lbl}<br><small style="color:var(--gray)">${item.note}</small></td>${cols.join("")}</tr>`;
-    });
-
-    const qtStab=allP.map(p=>{const r1=qtScore(qtItems[0].fn(p),"R1"),r2=qtScore(qtItems[1].fn(p),"R2");const avg=(r1!=null&&r2!=null)?(r1+r2)/2:null;return`<td>${avg!=null?avg.toFixed(1):"—"} ${qtBadge(avg)}</td>`;});
-    const qtVyn =allP.map(p=>{const r3=qtScore(qtItems[2].fn(p),"R3"),r4=qtScore(qtItems[3].fn(p),"R4");const avg=(r3!=null&&r4!=null)?(r3+r4)/2:null;return`<td>${avg!=null?avg.toFixed(1):"—"} ${qtBadge(avg)}</td>`;});
-    const qtCel =allP.map(p=>{const sc=qtItems.map(it=>qtScore(it.fn(p),it.key)).filter(x=>x!=null);const avg=sc.length?sc.reduce((a,b)=>a+b,0)/sc.length:null;return`<td style="font-size:15px;font-weight:800">${avg!=null?avg.toFixed(2):"—"} ${qtBadge(avg)}</td>`;});
-
-    document.getElementById("qt-body").innerHTML=[
-      ...qtRows,
-      `<tr class="total"><td>Finanční stabilita (R1+R2)/2</td>${qtStab.join("")}</tr>`,
-      `<tr class="total"><td>Výnosová situace (R3+R4)/2</td>${qtVyn.join("")}</tr>`,
-      `<tr class="total" style="background:rgba(212,149,42,.07)"><td>QUICKTEST celkem</td>${qtCel.join("")}</tr>`,
-    ].join("");
-  }
-
-  // ── ALTMAN ────────────────────────────────────────────────────────────
-  document.getElementById("altman-head").innerHTML=
-    `<tr><th>Složka</th><th>Váha</th>${labels.map(l=>`<th>${l}</th>`).join("")}<th>Interpretace</th></tr>`;
-  const xDef=[
-    ["X1","1.2","ČPK / Aktiva","Podíl čistého prac. kapitálu"],
-    ["X2","1.4","NZ min. let / Aktiva","Kumulovaný nerozdělený zisk"],
-    ["X3","3.3","EBIT / Aktiva","Výnosnost aktiv před úroky a daní"],
-    ["X4","0.6","Tržní hodnota VK / CZ","Poměr tržní hodnoty k cizím zdrojům"],
-    ["X5","1.0","Tržby / Aktiva","Produktivita aktiv"],
-  ];
-  document.getElementById("altman-body").innerHTML=[
-    ...xDef.map(([xk,w,form,desc])=>{
-      const vals=allP.map(p=>{ const ax=p.altman_x||{}; return num(ax[xk]); });
-      return `<tr><td><strong>${xk}</strong> (×${w})<br><small style="color:var(--gray)">${form}</small></td><td>${w}</td>${vals.map(v=>`<td>${v}</td>`).join("")}<td class="gray">${desc}</td></tr>`;
-    }),
-    `<tr class="bold"><td>Z-skóre celkem</td><td></td>${allP.map(p=>`<td><strong>${p.altman_z??"-"}</strong> ${altmanBadge(p.altman_pasmo)}</td>`).join("")}<td class="gray">>2,9 = zdravá · 1,2–2,9 = šedá · &lt;1,2 = riziko</td></tr>`,
+  // ── ZADLUŽENOST ───────────────────────────────────────────────────────
+  document.getElementById("zad-head").innerHTML = headHtml();
+  document.getElementById("zad-body").innerHTML = [
+    R("Celková zadluženost",
+      "celkova_zadluzenost", s.celkova_zadluzenost, sP, false,
+      "Cizí zdroje / Aktiva celkem × 100"),
+    RC("Míra zadluženosti",
+       p => fVK(p) ? fCZ(p)/fVK(p)*100 : null, null, sP, false,
+       "Cizí zdroje / Vlastní kapitál × 100"),
+    RC("Úrokové krytí",
+       p => parseFloat(p.nak_uroky||0)>100 ? fEbit(p)/parseFloat(p.nak_uroky) : null, null,
+       v => v==null ? "n/a" : sN2(v)+"×", true,
+       "EBIT / Nákladové úroky"),
+    RC("Doba splácení dluhů",
+       p => Math.abs(fCfOp(p))>10000 ? Math.round((fCZ(p)-fRez(p))/fCfOp(p)*10)/10 : null, null,
+       v => v==null ? "n/a" : v+" let", false,
+       "(Cizí zdroje − Rezervy) / Provozní peněžní toky"),
+    RC("Krytí DM vlastním kapitálem",
+       p => fDM(p) ? fVK(p)/fDM(p) : null, null,
+       v => v==null ? "—" : sN2(v)+"×", true,
+       "Vlastní kapitál / Dlouhodobý majetek"),
   ].join("");
 
   // ── IN05 ──────────────────────────────────────────────────────────────
-  const in05Def=[["x1","0.13","A / CZ","Aktiva / Cizí zdroje"],["x2","0.04","EBIT / ÚN","EBIT / Nákl. úroky (cap 9)"],["x3","3.97","EBIT / A","Provozní VH / Aktiva"],["x4","0.21","Tržby / A","Tržby / Aktiva"],["x5","0.09","OA / KZ","OA / Kr. závazky"]];
-  const in05B=p=>{if(!p)return "";const m={"zdraví":"green","šedá zóna":"yellow","ohrožení":"red"}[p]||"yellow";return`<span class="badge ${m}">${p}</span>`;};
-  document.getElementById("in05-head").innerHTML=`<tr><th style="text-align:left;min-width:200px">Komponenta</th><th style="text-align:left">Vzorec</th><th>Váha</th>${allP.map(p=>`<th>${p.label||p.period_label}</th>`).join("")}</tr>`;
-  document.getElementById("in05-body").innerHTML=[
-    ...in05Def.map(([xk,w,form,desc])=>`<tr><td>${desc}</td><td style="color:var(--text-dim);font-size:11px">${form}</td><td style="text-align:center">${w}</td>${allP.map(p=>{const vv=p["in05_"+xk];return`<td>${vv!=null?parseFloat(vv).toFixed(3):"—"}</td>`}).join("")}</tr>`),
-    `<tr class="total"><td colspan="3" style="text-align:left">IN05 celkem</td>${allP.map(p=>`<td style="font-size:15px;font-weight:800" class="${p.in05>=1.6?"pos":p.in05>=0.9?"":"neg"}">${p.in05!=null?parseFloat(p.in05).toFixed(3):"—"} ${in05B(p.in05_pasmo)}</td>`).join("")}</tr>`,
+  const in05Def = [
+    ["x1","0,13","A / CZ",       "Aktiva / Cizí zdroje"],
+    ["x2","0,04","EBIT / ÚN",    "EBIT / Nákl. úroky (max 9)"],
+    ["x3","3,97","EBIT / A",     "EBIT / Aktiva"],
+    ["x4","0,21","Výnosy / A",   "Výnosy / Aktiva"],
+    ["x5","0,09","OA / (KZ+KB)", "OA / (Kr. závazky + Kr. ban. úvěry)"],
+  ];
+  const in05B = p => {
+    if (!p) return "";
+    const m   = {zelene:"green", sede:"yellow", cervene:"red"}[p] || "yellow";
+    const lbl = {zelene:"TVORBA HODNOTY", sede:"ŠEDÁ ZÓNA", cervene:"FINANČNÍ TÍSEŇ"}[p] || p;
+    return `<span class="badge ${m}">${lbl}</span>`;
+  };
+  document.getElementById("in05-head").innerHTML =
+    `<tr><th style="min-width:200px">Komponenta</th><th>Vzorec</th><th>Váha</th>
+    ${allP.map(p=>`<th>${p.label||p.period_label}</th>`).join("")}</tr>`;
+  document.getElementById("in05-body").innerHTML = [
+    ...in05Def.map(([xk,w,form,desc]) =>
+      `<tr><td>${desc}</td>
+       <td style="color:var(--text-dim);font-size:11px">${form}</td>
+       <td style="text-align:center">${w}</td>
+       ${allP.map(p => { const vv=p["in05_"+xk]; return `<td>${vv!=null?parseFloat(vv).toFixed(3):"—"}</td>`; }).join("")}
+       </tr>`),
+    `<tr class="total"><td colspan="3" style="text-align:left">IN05 celkem</td>
+     ${allP.map(p =>
+       `<td style="font-size:14px;font-weight:800">
+         ${p.in05!=null?parseFloat(p.in05).toFixed(3):"—"} ${in05B(p.in05_pasmo)}
+       </td>`).join("")}</tr>`,
   ].join("");
 
-  // ── TAFFLER ───────────────────────────────────────────────────────────
-  const taffDef=[["x1","0.53","EBT / KZ","Zisk před daní / Kr. závazky"],["x2","0.13","OA / CZ","OA / Cizí zdroje"],["x3","0.18","KZ / A","Kr. závazky / Aktiva"],["x4","0.16","Tržby / A","Tržby / Aktiva"]];
-  const taffB=p=>{if(!p)return "";const m={"zdraví":"green","šedá zóna":"yellow","ohrožení":"red"}[p]||"yellow";return`<span class="badge ${m}">${p}</span>`;};
-  document.getElementById("taff-head").innerHTML=`<tr><th style="text-align:left;min-width:200px">Komponenta</th><th style="text-align:left">Vzorec</th><th>Váha</th>${allP.map(p=>`<th>${p.label||p.period_label}</th>`).join("")}</tr>`;
-  document.getElementById("taff-body").innerHTML=[
-    ...taffDef.map(([xk,w,form,desc])=>`<tr><td>${desc}</td><td style="color:var(--text-dim);font-size:11px">${form}</td><td style="text-align:center">${w}</td>${allP.map(p=>{const vv=p["taffler_"+xk];return`<td>${vv!=null?parseFloat(vv).toFixed(3):"—"}</td>`}).join("")}</tr>`),
-    `<tr class="total"><td colspan="3" style="text-align:left">Taffler Z celkem</td>${allP.map(p=>`<td style="font-size:15px;font-weight:800" class="${p.taffler>0.3?"pos":p.taffler>=0.2?"":"neg"}">${p.taffler!=null?parseFloat(p.taffler).toFixed(3):"—"} ${taffB(p.taffler_pasmo)}</td>`).join("")}</tr>`,
-  ].join("");
+  // ── GRAFY ─────────────────────────────────────────────────────────────
+  const _PL = {
+    paper_bgcolor:"rgba(0,0,0,0)", plot_bgcolor:"rgba(0,0,0,0)",
+    font:{color:"#f0f4ff", size:10, family:"DM Sans,system-ui"},
+    margin:{t:6, r:10, b:44, l:46}, showlegend:true,
+    legend:{bgcolor:"rgba(0,0,0,0)", orientation:"h", y:-0.38, font:{size:10}},
+    xaxis:{gridcolor:"rgba(255,255,255,.08)", tickfont:{size:10}},
+    yaxis:{gridcolor:"rgba(255,255,255,.08)", tickfont:{size:10}},
+  };
+  const _CFG = {responsive:true, displayModeBar:false};
+  const _c = (rgb, i) => `rgba(${rgb},${Math.min(0.95, 0.6+i*0.15)})`;
 
-  // ── CHARTS ────────────────────────────────────────────────────────────
-  const rentLabels=[...labels,`Sektor ${s.rok}`];
-  const _PL={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
-    font:{color:"#f0f4ff",size:10,family:"Segoe UI,system-ui"},
-    margin:{t:6,r:10,b:44,l:46},showlegend:true,
-    legend:{bgcolor:"rgba(0,0,0,0)",orientation:"h",y:-0.32,font:{size:10}},
-    xaxis:{gridcolor:"rgba(255,255,255,.08)",tickfont:{size:10},automargin:true},
-    yaxis:{gridcolor:"rgba(255,255,255,.08)",tickfont:{size:10}}};
-  const _CFG={responsive:true,displayModeBar:false};
+  // Rentabilita
+  Plotly.newPlot("ch-rent", [
+    {name:"ROA %", x:labels, type:"bar",
+     y:allP.map(p => fA(p) ? Math.round(fEbit(p)/fA(p)*10)/10 : 0),
+     marker:{color:allP.map((_,i) => _c("45,74,158",i))}},
+    {name:"ROE %", x:labels, type:"bar",
+     y:allP.map(p => fVK(p) ? Math.round(parseFloat(p.vh_za_obdobi||0)/fVK(p)*10)/10 : 0),
+     marker:{color:allP.map((_,i) => _c("52,211,153",i))}},
+    {name:"ROS %", x:labels, type:"bar",
+     y:allP.map(p => fT(p) ? Math.round(parseFloat(p.vh_za_obdobi||0)/fT(p)*10)/10 : 0),
+     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
+  ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
 
-  Plotly.newPlot("ch-rent",[
-    {name:"ROA % (EBIT/A)",x:rentLabels,
-     y:[...allP.map(p=>fA(p)?Math.round(fEbit(p)/fA(p)*1000)/10:0),s.roa||0],type:"bar",
-     marker:{color:[...allP.map((_,i)=>`rgba(45,74,158,${0.65+i*.1})`),`rgba(160,160,160,.55)`]}},
-    {name:"ROE %",x:rentLabels,y:[...allP.map(p=>p.roe||0),s.roe||0],type:"bar",
-     marker:{color:[...allP.map((_,i)=>`rgba(52,211,153,${0.55+i*.1})`),`rgba(160,160,160,.4)`]}},
-    {name:"ROS %",x:rentLabels,y:[...allP.map(p=>p.ros||0),s.ros||0],type:"bar",
-     marker:{color:[...allP.map((_,i)=>`rgba(212,149,42,${0.55+i*.1})`),`rgba(160,160,160,.35)`]}}
-  ],{..._PL,yaxis:{..._PL.yaxis,ticksuffix:" %"}},_CFG);
+  // Likvidita
+  Plotly.newPlot("ch-lik", [
+    {name:"Běžná (L3)", x:labels, type:"bar",
+     y:allP.map(p => fZavKr(p) ? Math.round(fOA(p)/fZavKr(p)*100)/100 : 0),
+     marker:{color:allP.map((_,i) => _c("45,74,158",i))}},
+    {name:"Pohotová",   x:labels, type:"bar",
+     y:allP.map(p => fZavKr(p) ? Math.round((fPohl(p)+fPP(p))/fZavKr(p)*100)/100 : 0),
+     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
+    {name:"Okamžitá",   x:labels, type:"bar",
+     y:allP.map(p => fZavKr(p) ? Math.round(fPP(p)/fZavKr(p)*100)/100 : 0),
+     marker:{color:allP.map((_,i) => _c("52,211,153",i))}},
+  ], _PL, _CFG);
 
-  Plotly.newPlot("ch-lik",[
-    {name:"Běžná likv. (L3)",x:rentLabels,y:[...allP.map(p=>p.bezna_likvidita||0),s.bezna_likvidita||0],type:"bar",
-     marker:{color:[...allP.map((_,i)=>`rgba(45,74,158,${0.65+i*.1})`),`rgba(160,160,160,.55)`]}},
-    {name:"Okamžitá (L1)",x:rentLabels,y:[...allP.map(p=>p.okamzita_likvidita||0),s.okamzita_likvidita||0],type:"bar",
-     marker:{color:[...allP.map((_,i)=>`rgba(212,149,42,${0.6+i*.1})`),`rgba(160,160,160,.4)`]}}
-  ],_PL,_CFG);
+  // Doby obratu
+  Plotly.newPlot("ch-dob", [
+    {name:"Pohledávky", x:labels, type:"bar",
+     y:allP.map(p => fDob(p,fPohl) ?? 0),
+     marker:{color:allP.map((_,i) => _c("45,74,158",i))}},
+    {name:"Závazky",    x:labels, type:"bar",
+     y:allP.map(p => fDob(p,fZavKr) ?? 0),
+     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
+    {name:"Zásoby",     x:labels, type:"bar",
+     y:allP.map(p => fDob(p,fZas) ?? 0),
+     marker:{color:allP.map((_,i) => _c("52,211,153",i))}},
+  ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" dní"}}, _CFG);
+
+  // Zadluženost
+  Plotly.newPlot("ch-zad", [
+    {name:"Celková zadluženost %", x:labels, type:"bar",
+     y:allP.map(p => Math.round(parseFloat(p.celkova_zadluzenost||0)*10)/10),
+     marker:{color:allP.map((_,i) => _c("220,38,38",i))}},
+    {name:"Míra zadluženosti %",   x:labels, type:"bar",
+     y:allP.map(p => fVK(p) ? Math.round(fCZ(p)/fVK(p)*100*10)/10 : 0),
+     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
+  ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
 });
 </script></body></html>
-    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
