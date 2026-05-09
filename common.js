@@ -1,9 +1,10 @@
 // ============================================================
 // common.js – sdilene funkce pro vsechny HTML stranky
 // ============================================================
-const KLIENT_ID = "demo_sro";
-const BASE_DATA = `https://raw.githubusercontent.com/ucetnizaverka-hash/Live-reporting/main/data/vsechna_obdobi_${KLIENT_ID}.json`;
-const PDF_URL   = `https://raw.githubusercontent.com/ucetnizaverka-hash/Live-reporting/main/data/vykazy_${KLIENT_ID}.pdf`;
+const KLIENT_ID   = "demo_sro";
+const PAGES_BASE  = "https://ucetnizaverka-hash.github.io/Live-reporting";
+const BASE_DATA   = `${PAGES_BASE}/data/vsechna_obdobi_${KLIENT_ID}.json`;
+const PDF_URL     = `${PAGES_BASE}/data/vykazy_${KLIENT_ID}.pdf`;
 
 // --- Formatovani ---
 const kc = (v, empty="—") => {
@@ -132,7 +133,10 @@ function renderNav(d) {
 async function loadData(renderFn) {
   window._renderFn = renderFn;
   try {
-    const r = await fetch(BASE_DATA + "?t=" + Date.now());
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 12000);
+    const r = await fetch(BASE_DATA + "?t=" + Date.now(), {signal: ctrl.signal});
+    clearTimeout(timer);
     if(!r.ok) throw new Error("HTTP "+r.status);
     const d = await r.json();
     window._lastData = d;
@@ -219,7 +223,4 @@ function trendArrow(cur, prev) {
 
 // --- Animated background helper ---
 function injectBgCanvas() {
-  if (document.querySelector('.bg-canvas')) return;
-  const div = document.createElement('div');
-  div.className = 'bg-canvas';
-  div.innerHTML = `
+  if (document.querySelector('.bg-canva
