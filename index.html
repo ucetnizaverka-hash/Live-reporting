@@ -375,7 +375,7 @@ loadData(d=>{
     const items=[
       {lbl:"Tržby",val:kc(a.trzby_celkem)},
       {lbl:"VH za období",val:kc(a.vh_za_obdobi)},
-      {lbl:"Altman Z",val:a.altman_z!=null?parseFloat(a.altman_z).toFixed(2):"—"},
+      {lbl:"Index IN05",val:a.in05!=null?parseFloat(a.in05).toFixed(2):"—"},
     ];
     hkr.innerHTML=items.map(i=>`<div class="hkp"><div class="hk-val">${i.val}</div><div class="hk-lbl">${i.lbl}</div></div>`).join("");
   }
@@ -389,7 +389,7 @@ loadData(d=>{
     {lbl:"EBITDA",            val:kc(a.ebitda),                delta:prevP?deltaHtml(a.ebitda,prevP.ebitda):"",                   cls:""},
     {lbl:"Aktiva celkem",     val:kc(a.aktiva_netto),          delta:prevP?deltaHtml(a.aktiva_netto,prevP.aktiva_netto):"",       cls:""},
     {lbl:"Peněžní prostředky",val:kc(a.pp),                   sub:"CF provozní: "+kc(a.cf_provozni),                             cls:"navy"},
-    {lbl:"Altman Z-skóre",    val:a.altman_z,                  extra:altmanBadge(a.altman_pasmo),                                 cls:"navy"},
+    {lbl:"Index IN05",         val:a.in05!=null?parseFloat(a.in05).toFixed(2):"—", extra:in05Badge(a.in05_pasmo),                cls:"navy"},
     {lbl:"Celk. zadluženost", val:pct(a.celkova_zadluzenost),  sub:"Benchmark: "+pct(s.celkova_zadluzenost),                     cls:"teal"},
     {lbl:"Běžná likvidita",   val:num(a.bezna_likvidita),      sub:"Benchmark: "+num(s.bezna_likvidita),                         cls:"teal"},
   ];
@@ -430,3 +430,4 @@ loadData(d=>{
 </script>
 </body>
 </html>
+      

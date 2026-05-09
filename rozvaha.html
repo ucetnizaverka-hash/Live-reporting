@@ -4,14 +4,24 @@
 <link rel="stylesheet" href="style.css">
 <style>
   table { font-size: 12px; }
-  th, td { padding: 4px 8px; }
+  th, td { padding: 3px 7px; }
   td.oz { width:5%; text-align:center; font-weight:600; color:var(--gold); }
   td.cr { width:4%; text-align:center; color:var(--text-dim); font-size:11px; }
   td.tx { }
   td.num { text-align:right; }
   tr.section-head td { background:rgba(0,0,0,.03) !important; font-weight:700; color:var(--gold); }
   tr.zero td.num { color:rgba(240,244,255,.25); }
-  .tis-note { font-size:11px; color:var(--text-m); margin-bottom:8px; }
+  .tis-note { font-size:11px; color:var(--text-m); margin-bottom:6px; }
+  /* Compact layout for výkazy pages */
+  main { padding: 6px 12px 14px; }
+  .section { padding: 12px 14px; margin-bottom: 8px; border-radius: 12px; }
+  .section h2 { font-size: 10px; margin-bottom: 7px; padding-bottom: 6px; }
+  .header-top { padding: 5px 0 2px; }
+  .nav-group { padding: 3px 16px 5px; gap: 3px; }
+  .nav-lnk { padding: 3px 10px; font-size: 11px; }
+  .nav-glbl { font-size: 8px; }
+  .disclaimer { padding: 6px 12px; margin-bottom: 8px; font-size: 11px; }
+  footer { padding: 8px; font-size: 11px; }
 </style>
 </head><body>
 <header>
@@ -185,14 +195,4 @@ loadData(d => {
     RA("C.II.7.","  Závazky – ostatní",                    "40","zav_ostatni",   {sub:true,note:true}),
     RA("C.II.8.","    Závazky ke společníkům",             "41","zav_spolecnici",{sub:true,note:true}),
     RA("C.II.9.","    Závazky k zaměstnancům",             "42","zav_mzdy",      {sub:true}),
-    RA("C.II.10.","   Závazky ze SZ a ZP",                "43","zav_sp_zp",     {sub:true,note:true}),
-    RA("C.II.11.","   Stát – daňové závazky a dotace",    "44","zav_stat_dan",  {sub:true}),
-    RA("C.II.12.","   Dohadné účty pasivní",               "45","zav_dohad_pas", {sub:true,note:true}),
-    RA("C.II.13.","   Jiné závazky",                       "46","zav_jine",      {sub:true,note:true}),
-    ASEP(),
-    RA("D.",    "Časové rozlišení pasiv",                  "66","cr_pasiv"),
-  ].join("");
-
-});
-</script>
-</body></html>
+    RA("C.II.10.","   Závazky ze SZ 

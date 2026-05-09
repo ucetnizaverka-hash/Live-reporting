@@ -28,12 +28,12 @@ const deltaHtml = (a,b,invert=false) => {
 };
 
 // ============================================================
-// REZIM: "live" (průběžné výkaznictví) nebo "rocni" (roční výkazy)
+// REZIM: průběžné stránky = vždy "live", historika = vždy "rocni"
 // ============================================================
-const getMode = () => location.hash.includes("rocni") ? "rocni" : "live";
+const _isHistPage = () => location.pathname.includes("historika");
+const getMode = () => _isHistPage() ? "rocni" : "live";
 const setMode = (m) => {
-  location.hash = (m === "rocni") ? "rocni" : "live";
-  // Znovu vykresli bez noveho fetche (re-render)
+  // ignorujeme – režim je určen stránkou, ne hashem
   if(window._renderFn && window._lastData) {
     window._renderFn(window._lastData);
     _updateModeToggle(window._lastData);
@@ -42,8 +42,7 @@ const setMode = (m) => {
 
 // Vrati data aktualni periody podle rezimu
 const getModeData = (d) => {
-  const mode = getMode();
-  if(mode === "rocni" && d.rocni && Object.keys(d.rocni).length > 0) return d.rocni;
+  if(_isHistPage() && d.rocni && Object.keys(d.rocni).length > 0) return d.rocni;
   return d.aktualni;
 };
 
@@ -185,9 +184,14 @@ async function loadData(renderFn) {
   }
 }
 
-// --- Altman pasmo badge ---
+// --- Altman / IN05 pasmo badge ---
 function altmanBadge(pasmo) {
   const m = {zelene:["green","ZDRAVÁ FIRMA"],sede:["yellow","ŠEDÁ ZÓNA"],cervene:["red","RIZIKO"]};
+  const [cls,lbl] = m[pasmo]||["yellow",pasmo||"?"];
+  return `<span class="badge ${cls}">${lbl}</span>`;
+}
+function in05Badge(pasmo) {
+  const m = {zelene:["green","TVORBA HODNOTY"],sede:["yellow","ŠEDÁ ZÓNA"],cervene:["red","FINANČNÍ TÍSEŇ"]};
   const [cls,lbl] = m[pasmo]||["yellow",pasmo||"?"];
   return `<span class="badge ${cls}">${lbl}</span>`;
 }
@@ -219,9 +223,3 @@ function injectBgCanvas() {
   const div = document.createElement('div');
   div.className = 'bg-canvas';
   div.innerHTML = `
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>`;
-  document.body.insertBefore(div, document.body.firstChild);
-}
-document.addEventListener('DOMContentLoaded', injectBgCanvas);
