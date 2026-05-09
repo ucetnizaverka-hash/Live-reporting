@@ -80,7 +80,6 @@ const pages = [
   {href:"rozvaha.html",   label:"Rozvaha"},
   {href:"cashflow.html",  label:"Cash Flow"},
   {href:"ukazatele.html", label:"Ukazatele"},
-  {href:"predikce.html",  label:"Predikce"},
   {href:"historika.html", label:"Historická analýza"},
 ];
 
@@ -106,7 +105,6 @@ function renderNav(d) {
     {href:"rozvaha.html",   label:"Rozvaha"},
     {href:"vzz.html",       label:"VZZ"},
     {href:"cashflow.html",  label:"Cash Flow"},
-    {href:"predikce.html",  label:"Predikce"},
   ];
   const livePages = [
     {href:"index.html",     label:"Úvodní stránka"},
@@ -227,3 +225,4 @@ function injectBgCanvas() {
   document.body.insertBefore(div, document.body.firstChild);
 }
 document.addEventListener('DOMContentLoaded', injectBgCanvas);
+                                                                                            
