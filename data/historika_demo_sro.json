@@ -3,7 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-10T07:38:15",
+    "updated": "2026-05-10T07:52:18",
     "roky": [
       2023,
       2024
@@ -72,9 +72,9 @@
     },
     {
       "rok": 2024,
-      "label": "1.1.2024–31.12.2024",
+      "label": "Rok 2024",
       "mesice": 12,
-      "period_label": "1.1.2024–31.12.2024",
+      "period_label": "Rok 2024",
       "je_plny_rok": true,
       "aktiva_netto": 265412.23,
       "stala_netto": -153588.5,
