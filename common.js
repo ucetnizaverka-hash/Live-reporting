@@ -66,8 +66,15 @@ const getModeAllP = (d) => {
       : [];
     return [...hist, ...rocni].filter(p => p && Object.keys(p).length > 0);
   }
-  // Live mode: pouze sledované (průběžné) období
-  return [d.aktualni].filter(p => p && Object.keys(p).length > 0);
+  // Live mode: plnoroční minulé periody (Rok 2023, Rok 2024…) + aktuální průběžné
+  const plneRoky = (d.periody || [])
+    .filter(p => p && (p.je_plny_rok === true || p.mesice === 12 || p.mesice_obdobi === 12))
+    .map(p => ({
+      ...p,
+      label:        `Rok ${p.rok || ""}`,
+      period_label: `Rok ${p.rok || ""}`,
+    }));
+  return [...plneRoky, d.aktualni].filter(p => p && Object.keys(p).length > 0);
 };
 
 // Zjisti jestli existuji rocni data
@@ -241,12 +248,4 @@ function trendArrow(cur, prev) {
 // --- Animated background helper ---
 function injectBgCanvas() {
   if (document.querySelector('.bg-canvas')) return;
-  const div = document.createElement('div');
-  div.className = 'bg-canvas';
-  div.innerHTML = `
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>`;
-  document.body.insertBefore(div, document.body.firstChild);
-}
-document.addEventListener('DOMContentLoaded', injectBgCanvas);
+  const div = document.
