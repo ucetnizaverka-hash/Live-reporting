@@ -449,7 +449,7 @@ async function main() {
       document.getElementById("proj-section").innerHTML = `
         <div class="sec-header live">Projekce — odhad na 12 měsíců</div>
         <div class="proj-banner">
-          <h3>Extrapolace z ${proj._měsíce} měsíců (×${proj._koef}) — orientační odhad</h3>
+          <h3>Extrapolace z ${proj._mesice} měsíců (×${proj._koef}) — orientační odhad</h3>
           <div class="proj-grid">
             ${items.map(i=>`<div class="proj-item"><div class="pv">${Math.round(i.val).toLocaleString("cs-CZ")} Kč</div><div class="pl">${i.lbl}</div></div>`).join("")}
           </div>
@@ -465,3 +465,4 @@ main();
 
 </script>
 </body></html>
+  
