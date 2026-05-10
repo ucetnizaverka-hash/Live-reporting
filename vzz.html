@@ -165,4 +165,12 @@ loadData(d => {
     R("L.",    "Daň z příjmů  *odhad",                          "(L.1+L.2)",      "43", "dan",            {sub:true}),
     R("L.1.",  "  Daň z příjmů splatná",                        "",               "44", "dan",            {sub:true}),
     R("L.2.",  "  Daň z příjmů odložená",                       "",               "45", "dan_odlozena",   {sub:true,note:true}),
-    R("**",    "VÝSLEDEK HOSPODAŘENÍ PO ZDANĚ
+    R("**",    "VÝSLEDEK HOSPODAŘENÍ PO ZDANĚNÍ",               "",               "46", "vh_za_obdobi",   {bold:true,negOk:true}),
+    R("M.",    "Převod podílu na VH společníkům",               "",               "47", "prevod_vh",      {note:true}),
+    R("***",   "VÝSLEDEK HOSPODAŘENÍ ZA ÚČETNÍ OBDOBÍ",         "(**−M.)",        "48", "vh_za_obdobi",   {bold:true,negOk:true}),
+    SEP(),
+    R("",      "Čistý obrat za účetní období",                   "",               "49", "cisty_obrat"),
+  ].join("");
+});
+</script>
+</body></html>

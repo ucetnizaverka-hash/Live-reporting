@@ -223,4 +223,13 @@ function trendArrow(cur, prev) {
 
 // --- Animated background helper ---
 function injectBgCanvas() {
-  if (document.querySelector('.bg-canva
+  if (document.querySelector('.bg-canvas')) return;
+  const div = document.createElement('div');
+  div.className = 'bg-canvas';
+  div.innerHTML = `
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>`;
+  document.body.insertBefore(div, document.body.firstChild);
+}
+document.addEventListener('DOMContentLoaded', injectBgCanvas);
