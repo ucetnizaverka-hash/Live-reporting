@@ -126,6 +126,8 @@
 <footer><span>22HLAV</span> · Historická analýza · Zpracováno jednou ročně z ověřených dat</footer>
 
 <script src="data/vsechna_obdobi_demo_sro.js"></script>
+<script src="data/historika_demo_sro.js"></script>
+
 <script src="common.js"></script>
 <script>
 (function(){
@@ -237,9 +239,19 @@ function buildUkazatele(periody, el) {
 
 // ---- Načtení historických dat ----
 async function loadHist() {
-  const r = await fetch(HIST_URL+"?t="+Date.now());
-  if(!r.ok) throw new Error("HTTP "+r.status);
-  return r.json();
+  if (window._HIST_DATA) return window._HIST_DATA;
+  // fallback: fetch (funguje mimo proxy)
+  const urls = [
+    HIST_URL.replace("raw.githubusercontent.com","ucetnizaverka-hash.github.io").replace("/main/","/").replace("ucetnizaverka-hash.github.io/Live-reporting","ucetnizaverka-hash.github.io/Live-reporting"),
+    HIST_URL
+  ];
+  for (const u of urls) {
+    try {
+      const r = await fetch(u+"?t="+Date.now());
+      if (r.ok) return r.json();
+    } catch(e) {}
+  }
+  throw new Error("Historická data nedostupná (proxy blokuje fetch)");
 }
 
 // ---- Hlavní render ----
