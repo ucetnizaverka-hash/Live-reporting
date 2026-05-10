@@ -130,15 +130,29 @@ function renderNav(d) {
 }
 
 // --- Nacti data + vykresli ---
+// Fallback URL — raw.githubusercontent.com kdyz Pages nedostupne
+const BASE_DATA_RAW = `https://raw.githubusercontent.com/ucetnizaverka-hash/Live-reporting/main/data/vsechna_obdobi_${KLIENT_ID}.json`;
+
+async function _fetchWithFallback(url, fallback) {
+  const urls = [url, fallback];
+  let lastErr;
+  for (const u of urls) {
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 12000);
+      const r = await fetch(u + "?t=" + Date.now(), {signal: ctrl.signal});
+      clearTimeout(timer);
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return await r.json();
+    } catch(e) { lastErr = e; }
+  }
+  throw lastErr;
+}
+
 async function loadData(renderFn) {
   window._renderFn = renderFn;
   try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 12000);
-    const r = await fetch(BASE_DATA + "?t=" + Date.now(), {signal: ctrl.signal});
-    clearTimeout(timer);
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    const d = await r.json();
+    const d = await _fetchWithFallback(BASE_DATA, BASE_DATA_RAW);
     window._lastData = d;
     renderNav(d);
     document.getElementById("loading").style.display="none";
