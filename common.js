@@ -152,7 +152,10 @@ async function _fetchWithFallback(url, fallback) {
 async function loadData(renderFn) {
   window._renderFn = renderFn;
   try {
-    const d = await _fetchWithFallback(BASE_DATA, BASE_DATA_RAW);
+    // Priorita: 1) script tag (proxy-safe), 2) fetch GitHub Pages, 3) fetch raw.githubusercontent
+    const d = window._LIVE_DATA
+      ? window._LIVE_DATA
+      : await _fetchWithFallback(BASE_DATA, BASE_DATA_RAW);
     window._lastData = d;
     renderNav(d);
     document.getElementById("loading").style.display="none";
