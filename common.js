@@ -52,12 +52,16 @@ const getModeData = (d) => {
 //   rocni mode → historické periody + roční (s labely "Rok XXXX")
 const getModeAllP = (d) => {
   const mode = getMode();
+  // Helper: je to plný rok?
+  const _plny = p => p && (p.je_plny_rok === true || p.mesice === 12 || p.mesice_obdobi === 12);
   if (mode === "rocni") {
-    const hist = (d.periody || []).map(p => ({
-      ...p,
-      label:        `Rok ${p.rok || p.period_label || ""}`,
-      period_label: `Rok ${p.rok || p.period_label || ""}`,
-    }));
+    const hist = (d.periody || [])
+      .filter(_plny)
+      .map(p => ({
+        ...p,
+        label:        `Rok ${p.rok || ""}`,
+        period_label: `Rok ${p.rok || ""}`,
+      }));
     const rocni = d.rocni && Object.keys(d.rocni).length > 0
       ? [{...d.rocni,
           label:        `Rok ${d.rocni.rok || ""}`,
@@ -68,7 +72,7 @@ const getModeAllP = (d) => {
   }
   // Live mode: plnoroční minulé periody (Rok 2023, Rok 2024…) + aktuální průběžné
   const plneRoky = (d.periody || [])
-    .filter(p => p && (p.je_plny_rok === true || p.mesice === 12 || p.mesice_obdobi === 12))
+    .filter(_plny)
     .map(p => ({
       ...p,
       label:        `Rok ${p.rok || ""}`,
@@ -248,4 +252,12 @@ function trendArrow(cur, prev) {
 // --- Animated background helper ---
 function injectBgCanvas() {
   if (document.querySelector('.bg-canvas')) return;
-  const div = document.
+  const div = document.createElement('div');
+  div.className = 'bg-canvas';
+  div.innerHTML = `
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>`;
+  document.body.insertBefore(div, document.body.firstChild);
+}
+document.a
