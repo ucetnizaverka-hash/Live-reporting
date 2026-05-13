@@ -117,18 +117,20 @@ function renderNav(d) {
     {href:"cashflow.html",  label:"Cash Flow"},
     {href:"ukazatele.html", label:"Ukazatele"},
   ];
-  const mk = p => `<a href="${p.href}${location.hash}" class="nav-lnk${p.href===cur?' active':''}">${p.label}</a>`;
+  // Hist stránky vždy s #rocni, live stránky bez hashe
+  const mkLive = p => `<a href="${p.href}" class="nav-lnk${p.href===cur&&!location.hash.includes('rocni')?' active':''}">${p.label}</a>`;
+  const mkHist = p => `<a href="${p.href}#rocni" class="nav-lnk${(p.href===cur&&location.hash.includes('rocni'))||(p.href===cur&&_isHistPage())?' active':''}">${p.label}</a>`;
 
   const navEl = document.getElementById("nav-links");
   if(navEl) navEl.innerHTML = `
     <div class="nav-group">
       <span class="nav-glbl">Průběžné výkaznictví${period ? `<span class="nav-gdate"> · k ${period}</span>` : ""}</span>
-      <div class="nav-glinks">${livePages.map(mk).join("")}</div>
+      <div class="nav-glinks">${livePages.map(mkLive).join("")}</div>
     </div>
     <div class="nav-divider"></div>
     <div class="nav-group">
       <span class="nav-glbl">Historické výkaznictví</span>
-      <div class="nav-glinks">${histPages.map(mk).join("")}</div>
+      <div class="nav-glinks">${histPages.map(mkHist).join("")}</div>
     </div>`;
   _updateModeToggle(d);
 }
@@ -246,11 +248,4 @@ function trendArrow(cur, prev) {
 function injectBgCanvas() {
   if (document.querySelector('.bg-canvas')) return;
   const div = document.createElement('div');
-  div.className = 'bg-canvas';
-  div.innerHTML = `
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>`;
-  document.body.insertBefore(div, document.body.firstChild);
-}
-document.addEventListener('DOMContentLoaded', injectBgCanvas);
+  div.className 
