@@ -97,7 +97,7 @@
 
     <!-- TREND-BARY -->
     <div class="h-sec"><div class="h-sec-dot"></div><span class="h-sec-label">Srovnání klíčových položek</span><div class="h-sec-line"></div></div>
-    <div class="tbl-wrap" style="padding:16px 20px"><div id="trend-bars"></div></div>
+    <div class="tbl-wrap" style="padding:16px 20px;background:rgba(10,20,60,.85);border-color:rgba(45,74,158,.35)"><div id="trend-bars"></div></div>
 
     <!-- GRAFY -->
     <div class="h-sec"><div class="h-sec-dot"></div><span class="h-sec-label">Trendy</span><div class="h-sec-line"></div></div>
@@ -271,7 +271,7 @@ function buildTrendBars(periody) {
     {lbl:"Peněžní prostř.", key:"pp",              higherBetter:true},
   ];
 
-  const COLORS_BAR = ["rgba(45,74,158,.75)","rgba(212,149,42,.85)","rgba(52,211,153,.75)"];
+  const COLORS_BAR = ["rgba(220,38,38,.85)","rgba(212,149,42,.85)","rgba(52,211,153,.75)"];
 
   let html = "";
   rows.forEach(row => {
@@ -513,23 +513,7 @@ async function main(){
        line:{color:"#f87171",width:1,dash:"dot"},showlegend:true}
     ],{..._PH,yaxis:{..._PH.yaxis,range:[0,Math.max(2.5,...periody.map(p=>p.in05||0))+0.3]}},_HC);
 
-    // Projekce
-    const proj=h.projekce||{};
-    if(proj.trzby_celkem){
-      const items=[
-        {lbl:"Proj. tržby",      val:proj.trzby_celkem},
-        {lbl:"Proj. provoz. VH", val:proj.provozni_vh},
-        {lbl:"Proj. VH čistý",   val:proj.vh_za_obdobi},
-        {lbl:"Proj. EBITDA",     val:proj.provozni_vh&&proj.odpisy?proj.provozni_vh+proj.odpisy:null},
-      ].filter(i=>i.val!=null);
-      document.getElementById("proj-section").innerHTML=`
-        <div class="h-sec"><div class="h-sec-dot"></div><span class="h-sec-label">Projekce na 12 měsíců</span><div class="h-sec-line"></div></div>
-        <div class="proj-banner">
-          <h3>Extrapolace z ${proj._mesice} měsíců (koeficient ×${proj._koef}) — orientační odhad</h3>
-          <div class="proj-grid">${items.map(i=>`<div class="proj-item"><div class="pv">${Math.round(i.val).toLocaleString("cs-CZ")} Kč</div><div class="pl">${i.lbl}</div></div>`).join("")}</div>
-          <p style="font-size:11px;color:rgba(212,149,42,.6);margin:12px 0 0">⚠ Projekce předpokládá lineární vývoj — nezohledňuje sezónnost ani mimořádné vlivy.</p>
-        </div>`;
-    }
+    // Projekce — odstraněna (zobrazujeme pouze uzavřená roční období)
 
     document.getElementById("loading").style.display="none";
     document.getElementById("app").style.display="block";
@@ -538,4 +522,4 @@ async function main(){
 main();
 </script>
 </body></html>
-                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
