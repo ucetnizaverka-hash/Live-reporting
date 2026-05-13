@@ -3,7 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-10T07:52:18",
+    "updated": "2026-05-13T21:46:24",
     "roky": [
       2023,
       2024
@@ -203,17 +203,5 @@
       }
     }
   ],
-  "projekce": {
-    "trzby_celkem": 2172191.0,
-    "vyk_spotreba": 1671641.0,
-    "osobni_naklady": 79200.0,
-    "odpisy": 122870.0,
-    "provozni_vh": 257321.0,
-    "vh_pred_zdanenim": 238965.0,
-    "vh_za_obdobi": 231909.0,
-    "cisty_obrat": 2172191.0,
-    "_koef": 2.4,
-    "_mesice": 5,
-    "_poznamka": "Extrapolace z 5 měsíců na 12 (×2.40)"
-  }
+  "projekce": {}
 }
