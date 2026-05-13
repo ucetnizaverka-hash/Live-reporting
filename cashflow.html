@@ -38,7 +38,7 @@
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
     <div class="section">
       <h2>Přehled o peněžních tocích — nepřímá metoda, plný rozsah</h2>
-      <p class="tis-note">Hodnoty v Kč &nbsp;·&nbsp; Dle přílohy č. 2 k vyhlášce č. 500/2002 Sb. &nbsp;·&nbsp; <em>Kurzíva = nelze zjistit z předvahy, zobrazeno jako 0</em></p>
+
       <div style="overflow-x:auto">
         <table id="cf-table"><thead id="cf-head"></thead><tbody id="cf-body"></tbody></table>
       </div>
@@ -180,7 +180,6 @@ loadData(d => {
 
   document.getElementById("cf-nota").innerHTML =
     `<strong>Poznámky:</strong> ` +
-    `Položky v kurzívě = nelze zjistit z předvahy (zobrazeny jako 0), doplňte dle pohybů na majetkových a kapitálových účtech. ` +
     (hasMin
       ? "Změny PK (Č.ř. 12–14) vypočteny z rozdílu aktuálního a minulého období. "
       : "<strong> Chybí data minulého období</strong> — změny pracovního kapitálu (Č.ř. 11–15) nelze vypočítat, zobrazeny jako 0. ") +
