@@ -43,7 +43,6 @@
         <table id="cf-table"><thead id="cf-head"></thead><tbody id="cf-body"></tbody></table>
       </div>
     </div>
-    <div id="cf-nota" style="font-size:11px;color:var(--text-dim);padding:12px 20px;border-top:1px solid #eee;margin-top:8px"></div>
   </div>
 </main>
 <footer>Data jsou generována automatizovaným účetním procesem · 22HLAV · Průběžné výkaznictví v2.0</footer>
@@ -178,12 +177,6 @@ loadData(d => {
     R("",        "Kontrola: PP z rozvahy (účty 211+221)",                                "",  p => v0(p,'penezni_prostredky') || v0(p,'pp_konec_rozvaha') || v0(p,'pp'), {note:false}),
   ].join("");
 
-  document.getElementById("cf-nota").innerHTML =
-    `<strong>Poznámky:</strong> ` +
-    (hasMin
-      ? "Změny PK (Č.ř. 12–14) vypočteny z rozdílu aktuálního a minulého období. "
-      : "<strong> Chybí data minulého období</strong> — změny pracovního kapitálu (Č.ř. 11–15) nelze vypočítat, zobrazeny jako 0. ") +
-    `Investiční CF (B.1.–B.3.) a finanční CF (C.1.–C.2.6.) vyplňte ručně ze smluv, výpisů z bank a kapitálových operací.`;
 });
 </script>
 </body></html>
