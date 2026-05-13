@@ -248,4 +248,11 @@ function trendArrow(cur, prev) {
 function injectBgCanvas() {
   if (document.querySelector('.bg-canvas')) return;
   const div = document.createElement('div');
-  div.className 
+  div.className = 'bg-canvas';
+  div.innerHTML = `
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>`;
+  document.body.insertBefore(div, document.body.firstChild);
+}
+document.addEventListener('DOMContentLoaded', injectBgCanvas);
