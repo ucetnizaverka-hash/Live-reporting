@@ -4,7 +4,7 @@
   "ico": "123456789",
   "nace": "33.20",
   "nace_nazev": "Instalace prumyslovych stroju a zarizeni",
-  "updated": "2026-05-13T23:00:14",
+  "updated": "2026-05-13T23:18:32",
   "aktualni": {
     "label": "1.1.2024–9.5.2024",
     "rok": 2024,
@@ -50,6 +50,7 @@
     "zav_jine": 2709000,
     "zav_spolecnici": 0,
     "trzby_celkem": 905000,
+    "cisty_obrat": 905000,
     "trzby_sluzby": 510000,
     "trzby_zbozi": 395000,
     "vyk_spotreba": 782000,
@@ -77,6 +78,7 @@
     "financni_vh": -8000,
     "vh_pred_zdanenim": 14000,
     "dan": 3000,
+    "vh_po_zdaneni": 11000,
     "roa": 0.47,
     "roe": 4.4,
     "ros": 1.55,
@@ -128,6 +130,9 @@
     "doba_obratu_pohl": 84.9,
     "doba_obratu_zav": 1099.7,
     "urokove_kryti": null,
+    "aktiva_celkem": 3017000,
+    "vlastni_kapital": 253000,
+    "obezna_aktiva": 2632000,
     "pocet_zamestnancu": 0
   },
   "periody": [
@@ -150,6 +155,7 @@
       "zav_kr": 2707000,
       "zav_dl": null,
       "trzby_celkem": 4502000,
+      "cisty_obrat": 4513000,
       "trzby_sluzby": 1523000,
       "trzby_zbozi": 2979000,
       "vyk_spotreba": 3625000,
@@ -222,6 +228,7 @@
       "zav_kr": 2730140.09,
       "zav_dl": null,
       "trzby_celkem": 890721.73,
+      "cisty_obrat": 890721.73,
       "trzby_sluzby": 509658.94,
       "trzby_zbozi": 381062.79,
       "vyk_spotreba": 761871.93,
@@ -337,6 +344,7 @@
     "zav_jine": 2488000,
     "zav_spolecnici": 0.0,
     "trzby_celkem": 3391000,
+    "cisty_obrat": 3391000,
     "trzby_sluzby": 1394000,
     "trzby_zbozi": 1997000,
     "vyk_spotreba": 2995000,
@@ -364,6 +372,7 @@
     "financni_vh": -25000,
     "vh_pred_zdanenim": 56000,
     "dan": 53000,
+    "vh_po_zdaneni": 3000,
     "roa": 1.83,
     "roe": 1.31,
     "ros": 1.65,
@@ -415,6 +424,9 @@
     "doba_obratu_pohl": 28.0,
     "doba_obratu_zav": 290.6,
     "urokove_kryti": null,
+    "aktiva_celkem": 3061000,
+    "vlastni_kapital": 245000,
+    "obezna_aktiva": 2806000,
     "pocet_zamestnancu": 0
   }
 }
