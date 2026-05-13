@@ -107,7 +107,7 @@
       <div class="ch-box"><h3>Rentabilita (%)</h3><div id="ch-rent" style="height:220px"></div></div>
       <div class="ch-box"><h3>Likvidita &amp; zadluženost</h3><div id="ch-lik" style="height:220px"></div></div>
       <div class="ch-box"><h3>Aktiva — struktura (tis. Kč)</h3><div id="ch-aktiva" style="height:220px"></div></div>
-      <div class="ch-box"><h3>Altman Z-skóre</h3><div id="ch-altman" style="height:220px"></div></div>
+      <div class="ch-box"><h3>Index IN05</h3><div id="ch-altman" style="height:220px"></div></div>
     </div>
 
     <!-- DETAILNÍ TABULKY (kolapsovatelné) -->
@@ -214,7 +214,7 @@ function buildYearCards(periody) {
     {lbl:"ROA",               key:"roa",                 fmt:p1,    higherBetter:true},
     {lbl:"Běžná likvidita",   key:"bezna_likvidita",     fmt:n2,    higherBetter:true},
     {lbl:"Celk. zadluženost", key:"celkova_zadluzenost", fmt:p1,    higherBetter:false},
-    {lbl:"Altman Z",          key:"altman_z",            fmt:n2,    higherBetter:true},
+    {lbl:"Index IN05",        key:"in05",                 fmt:n2,    higherBetter:true},
   ];
 
   periody.forEach((p, idx) => {
@@ -242,17 +242,17 @@ function buildYearCards(periody) {
       </div>`;
     });
 
-    const altmanPasmo = p.altman_z!=null
-      ? (p.altman_z >= 2.9 ? '<span style="color:var(--green);font-size:11px;font-weight:600">● Zelená zóna</span>'
-        : p.altman_z >= 1.23 ? '<span style="color:#fbbf24;font-size:11px;font-weight:600">● Šedá zóna</span>'
-        : '<span style="color:var(--red);font-size:11px;font-weight:600">● Červená zóna</span>') : "";
+    const in05Pasmo = p.in05_pasmo!=null
+      ? (p.in05_pasmo==="zelene" ? '<span style="color:var(--green);font-size:11px;font-weight:600">● Tvorba hodnoty</span>'
+        : p.in05_pasmo==="sede"  ? '<span style="color:#fbbf24;font-size:11px;font-weight:600">● Šedá zóna</span>'
+        : '<span style="color:var(--red);font-size:11px;font-weight:600">● Finanční tíseň</span>') : "";
 
     const card = document.createElement("div");
     card.className = "year-card" + (isLast?" primary":"");
     card.innerHTML = `
       <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
         <div class="year-label">${p.label||p.rok}</div>
-        <div>${altmanPasmo}</div>
+        <div>${in05Pasmo}</div>
       </div>
       <div class="year-kpis">${kpiHtml}</div>`;
     wrap.appendChild(card);
@@ -344,12 +344,10 @@ function buildUkazatele(periody, el) {
     {lbl:"ROA (rentabilita aktiv)",     key:"roa",                fmt:p1},
     {lbl:"ROE (rentabilita VK)",        key:"roe",                fmt:p1},
     {lbl:"ROS (rentabilita tržeb)",     key:"ros",                fmt:p1},
-    {lbl:"EBITDA",                      key:"ebitda",             fmt:n0},
-    {lbl:"EBITDA marže",                key:"ebitda_marze",       fmt:p1},
     {lbl:"Běžná likvidita",             key:"bezna_likvidita",    fmt:n2},
     {lbl:"Okamžitá likvidita",          key:"okamzita_likvidita", fmt:n2},
     {lbl:"Celková zadluženost",         key:"celkova_zadluzenost",fmt:p1},
-    {lbl:"Altman Z-skóre",             key:"altman_z",           fmt:n2},
+    {lbl:"Index IN05",                  key:"in05",               fmt:n2},
   ];
   let head=`<thead><tr><th>Ukazatel</th>`;
   periody.forEach(p=>head+=`<th>${p.label}</th>`);
@@ -506,14 +504,14 @@ async function main(){
     ],{..._PH,barmode:"stack",yaxis:{..._PH.yaxis,ticksuffix:" tis."}},_HC);
 
     Plotly.newPlot("ch-altman",[
-      {name:"Altman Z",x:labels,y:periody.map(p=>p.altman_z||0),type:"scatter",mode:"lines+markers+text",
+      {name:"IN05",x:labels,y:periody.map(p=>p.in05||0),type:"scatter",mode:"lines+markers+text",
        line:{color:"#fbbf24",width:2.5},marker:{size:10,color:"#fbbf24"},
-       text:periody.map(p=>(p.altman_z||0).toFixed(2)),textposition:"top center",textfont:{size:10,color:"#fbbf24"}},
-      {name:"Zdraví (2.9)",x:labels,y:labels.map(()=>2.9),type:"scatter",mode:"lines",
+       text:periody.map(p=>(p.in05||0).toFixed(2)),textposition:"top center",textfont:{size:10,color:"#fbbf24"}},
+      {name:"Tvorba hodnoty (1.6)",x:labels,y:labels.map(()=>1.6),type:"scatter",mode:"lines",
        line:{color:"#34d399",width:1,dash:"dot"},showlegend:true},
-      {name:"Riziko (1.23)",x:labels,y:labels.map(()=>1.23),type:"scatter",mode:"lines",
+      {name:"Finanční tíseň (0.9)",x:labels,y:labels.map(()=>0.9),type:"scatter",mode:"lines",
        line:{color:"#f87171",width:1,dash:"dot"},showlegend:true}
-    ],{..._PH,yaxis:{..._PH.yaxis,range:[0,Math.max(4,...periody.map(p=>p.altman_z||0))+0.5]}},_HC);
+    ],{..._PH,yaxis:{..._PH.yaxis,range:[0,Math.max(2.5,...periody.map(p=>p.in05||0))+0.3]}},_HC);
 
     // Projekce
     const proj=h.projekce||{};
@@ -540,3 +538,4 @@ async function main(){
 main();
 </script>
 </body></html>
+                                                                                                                                            

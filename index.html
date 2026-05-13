@@ -387,7 +387,7 @@ loadData(d=>{
   const kpiData=[
     {lbl:"Tržby celkem",      val:kc(a.trzby_celkem),          delta:prevP?deltaHtml(a.trzby_celkem,prevP.trzby_celkem):"",       cls:""},
     {lbl:"VH za období",      val:kc(a.vh_za_obdobi),          delta:prevP?deltaHtml(a.vh_za_obdobi,prevP.vh_za_obdobi):"",       cls:""},
-    {lbl:"EBITDA",            val:kc(a.ebitda),                delta:prevP?deltaHtml(a.ebitda,prevP.ebitda):"",                   cls:""},
+    {lbl:"Rentabilita tržeb (ROS)", val:a.ros!=null?parseFloat(a.ros).toFixed(1)+" %":"—", delta:prevP?deltaHtml(a.ros,prevP.ros):"",  cls:""},
     {lbl:"Aktiva celkem",     val:kc(a.aktiva_netto),          delta:prevP?deltaHtml(a.aktiva_netto,prevP.aktiva_netto):"",       cls:""},
     {lbl:"Peněžní prostředky",val:kc(a.pp),                   sub:"CF provozní: "+kc(a.cf_provozni),                             cls:"navy"},
     {lbl:"Index IN05",         val:a.in05!=null?parseFloat(a.in05).toFixed(2):"—", extra:in05Badge(a.in05_pasmo),                cls:"navy"},
@@ -430,4 +430,3 @@ loadData(d=>{
 });
 </script>
 </body>
-</html>
