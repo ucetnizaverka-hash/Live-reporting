@@ -29,12 +29,11 @@ const deltaHtml = (a,b,invert=false) => {
 };
 
 // ============================================================
-// REZIM: průběžné stránky = vždy "live", historika = vždy "rocni"
+// REZIM: prubezne stranky = vzdy "live", historika = vzdy "rocni"
 // ============================================================
 const _isHistPage = () => location.pathname.includes("historika");
-const getMode = () => _isHistPage() ? "rocni" : "live";
+const getMode = () => _isHistPage() ? "rocni" : (location.hash.includes("rocni") ? "rocni" : "live");
 const setMode = (m) => {
-  // ignorujeme – režim je určen stránkou, ne hashem
   if(window._renderFn && window._lastData) {
     window._renderFn(window._lastData);
     _updateModeToggle(window._lastData);
@@ -43,16 +42,13 @@ const setMode = (m) => {
 
 // Vrati data aktualni periody podle rezimu
 const getModeData = (d) => {
-  if(_isHistPage() && d.rocni && Object.keys(d.rocni).length > 0) return d.rocni;
+  if(getMode()==="rocni" && d.rocni && Object.keys(d.rocni).length > 0) return d.rocni;
   return d.aktualni;
 };
 
-// Vrati periody pro zobrazeni:
-//   live mode  → jen sledované období (d.aktualni)
-//   rocni mode → historické periody + roční (s labely "Rok XXXX")
+// Vrati periody pro zobrazeni
 const getModeAllP = (d) => {
   const mode = getMode();
-  // Helper: je to plný rok?
   const _plny = p => p && (p.je_plny_rok === true || p.mesice === 12 || p.mesice_obdobi === 12);
   if (mode === "rocni") {
     const hist = (d.periody || [])
@@ -70,7 +66,6 @@ const getModeAllP = (d) => {
       : [];
     return [...hist, ...rocni].filter(p => p && Object.keys(p).length > 0);
   }
-  // Live mode: pouze aktuální průběžné období
   return [d.aktualni].filter(p => p && Object.keys(p).length > 0);
 };
 
@@ -117,7 +112,8 @@ function renderNav(d) {
     {href:"cashflow.html",  label:"Cash Flow"},
     {href:"ukazatele.html", label:"Ukazatele"},
   ];
-  // Hist stránky vždy s #rocni, live stránky bez hashe
+
+  // Hist stranky vzdy s #rocni, live stranky bez hashe
   const mkLive = p => `<a href="${p.href}" class="nav-lnk${p.href===cur&&!location.hash.includes('rocni')?' active':''}">${p.label}</a>`;
   const mkHist = p => `<a href="${p.href}#rocni" class="nav-lnk${(p.href===cur&&location.hash.includes('rocni'))||(p.href===cur&&_isHistPage())?' active':''}">${p.label}</a>`;
 
@@ -136,7 +132,6 @@ function renderNav(d) {
 }
 
 // --- Nacti data + vykresli ---
-// Fallback URL — raw.githubusercontent.com kdyz Pages nedostupne
 const BASE_DATA_RAW = `https://raw.githubusercontent.com/ucetnizaverka-hash/Live-reporting/main/data/vsechna_obdobi_${KLIENT_ID}.json`;
 
 async function _fetchWithFallback(url, fallback) {
@@ -158,7 +153,6 @@ async function _fetchWithFallback(url, fallback) {
 async function loadData(renderFn) {
   window._renderFn = renderFn;
   try {
-    // Priorita: 1) script tag (proxy-safe), 2) fetch GitHub Pages, 3) fetch raw.githubusercontent
     const d = window._LIVE_DATA
       ? window._LIVE_DATA
       : await _fetchWithFallback(BASE_DATA, BASE_DATA_RAW);
@@ -167,14 +161,12 @@ async function loadData(renderFn) {
     document.getElementById("loading").style.display="none";
     document.getElementById("app").style.display="block";
 
-    // Disclaimer ze živých dat
     const cur = getModeData(d);
     if(cur && cur.upozorneni) {
       const disc = document.getElementById("disclaimer");
       if(disc) { disc.textContent = cur.upozorneni; disc.style.display="block"; }
     }
 
-    // Badge rezimu
     const modeBadge = document.getElementById("mode-badge");
     if(modeBadge) {
       const mode = getMode();
@@ -186,7 +178,6 @@ async function loadData(renderFn) {
 
     renderFn(d);
 
-    // Hashchange – prepnuti rezimu bez noveho fetche
     window.onhashchange = () => {
       renderNav(d);
       const disc = document.getElementById("disclaimer");
@@ -249,10 +240,7 @@ function injectBgCanvas() {
   if (document.querySelector('.bg-canvas')) return;
   const div = document.createElement('div');
   div.className = 'bg-canvas';
-  div.innerHTML = `
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>`;
+  div.innerHTML = '<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>';
   document.body.insertBefore(div, document.body.firstChild);
 }
 document.addEventListener('DOMContentLoaded', injectBgCanvas);
