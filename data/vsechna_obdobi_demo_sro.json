@@ -4,7 +4,7 @@
   "ico": "123456789",
   "nace": "33.20",
   "nace_nazev": "Instalace prumyslovych stroju a zarizeni",
-  "updated": "2026-05-13T22:58:38",
+  "updated": "2026-05-13T23:00:14",
   "aktualni": {
     "label": "1.1.2024–9.5.2024",
     "rok": 2024,
@@ -124,17 +124,10 @@
     "cf_pred_zdanenim": 158000,
     "cf_dan": -3000,
     "cf_minule_dostupne": true,
-    "ebitda": 72912.91,
-    "ebitda_marze": 8.06,
-    "cpk": -132854.60999999987,
     "obratovost_aktiv": 0.3,
-    "obratovost_pohl": 84.9,
     "doba_obratu_pohl": 84.9,
     "doba_obratu_zav": 1099.7,
-    "fin_paka": 11.94,
     "urokove_kryti": null,
-    "koef_samofinancovani": 8.37,
-    "produktivita_trzby": null,
     "pocet_zamestnancu": 0
   },
   "periody": [
@@ -204,17 +197,10 @@
       "cf_zmena_cr_pas": null,
       "cf_zmeny_pk_celkem": null,
       "cf_pred_zdanenim": null,
-      "ebitda": 352000,
-      "ebitda_marze": 7.82,
-      "cpk": -102000,
       "obratovost_aktiv": 1.49,
-      "obratovost_pohl": null,
       "doba_obratu_pohl": 0.0,
       "doba_obratu_zav": 216.5,
-      "fin_paka": 12.5,
       "urokove_kryti": null,
-      "koef_samofinancovani": 8.0,
-      "produktivita_trzby": null,
       "pocet_zamestnancu": null
     },
     {
@@ -283,17 +269,10 @@
       "cf_zmena_cr_pas": null,
       "cf_zmeny_pk_celkem": null,
       "cf_pred_zdanenim": null,
-      "ebitda": 78700.09,
-      "ebitda_marze": 8.84,
-      "cpk": -101353.87999999989,
       "obratovost_aktiv": 0.3,
-      "obratovost_pohl": null,
       "doba_obratu_pohl": 145.5,
       "doba_obratu_zav": 1103.4,
-      "fin_paka": 11.68,
       "urokove_kryti": null,
-      "koef_samofinancovani": 8.56,
-      "produktivita_trzby": null,
       "pocet_zamestnancu": null
     }
   ],
@@ -311,9 +290,6 @@
     "obratovost_aktiv": 0.78,
     "doba_obratu_pohl": 52.0,
     "doba_obratu_zav": 38.0,
-    "ebitda_marze": 9.8,
-    "fin_paka": 2.1,
-    "koef_samofinancovani": 54.8,
     "in05": 1.8
   },
   "rocni": {
@@ -435,17 +411,10 @@
     "cf_pred_zdanenim": 507000,
     "cf_dan": -53000,
     "cf_minule_dostupne": true,
-    "ebitda": null,
-    "ebitda_marze": null,
-    "cpk": null,
     "obratovost_aktiv": 1.11,
-    "obratovost_pohl": 28.0,
     "doba_obratu_pohl": 28.0,
     "doba_obratu_zav": 290.6,
-    "fin_paka": null,
     "urokove_kryti": null,
-    "koef_samofinancovani": null,
-    "produktivita_trzby": null,
     "pocet_zamestnancu": 0
   }
 }
