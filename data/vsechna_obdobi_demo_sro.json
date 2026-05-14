@@ -4,7 +4,7 @@
   "ico": "123456789",
   "nace": "33.20",
   "nace_nazev": "Instalace prumyslovych stroju a zarizeni",
-  "updated": "2026-05-13T23:18:32",
+  "updated": "2026-05-14T09:22:15",
   "aktualni": {
     "label": "1.1.2024–9.5.2024",
     "rok": 2024,
@@ -99,15 +99,16 @@
     "in05_x3": 0.0072,
     "in05_x4": 0.2999,
     "in05_x5": 0.9519,
-    "altman_z": 0.679,
+    "altman_z": 0.321,
     "altman_pasmo": "cervene",
     "altman_x": {
-      "X1": 1.0914,
-      "X2": 9.0,
-      "X3": 0.0072,
-      "X4": 0.2999,
-      "X5": 0.9519
+      "X1": -0.044,
+      "X2": 0.0,
+      "X3": 0.0047,
+      "X4": 0.0914,
+      "X5": 0.2999
     },
+    "pohotova_likvidita": 0.5,
     "cf_provozni": 155000,
     "cf_investicni": 0.0,
     "cf_financni": 0.0,
@@ -195,6 +196,7 @@
         "X4": 1.4942,
         "X5": 0.9623
       },
+      "pohotova_likvidita": null,
       "cf_provozni": null,
       "cf_investicni": null,
       "cf_financni": null,
@@ -268,6 +270,7 @@
         "X4": 0.2983,
         "X5": 0.9629
       },
+      "pohotova_likvidita": null,
       "cf_provozni": null,
       "cf_investicni": null,
       "cf_financni": null,
@@ -402,6 +405,7 @@
       "X4": 1.1075,
       "X5": 1.0254
     },
+    "pohotova_likvidita": 0.63,
     "cf_provozni": 454000,
     "cf_investicni": 0.0,
     "cf_financni": 0.0,
