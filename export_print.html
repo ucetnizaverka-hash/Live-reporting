@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<title>Print Export | 22HLAV</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+<script src="data/vsechna_obdobi_demo_sro.js"></script>
+<script src="data/historika_demo_sro.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'DM Sans', 'Segoe UI', sans-serif; margin: 0; padding: 0;
+         background: white; color: #111827; font-size: 11px; line-height: 1.4; }
+  .toolbar { position: sticky; top: 0; background: #1B2469; color: white; padding: 12px 20px;
+             display: flex; gap: 12px; align-items: center; z-index: 100; }
+  .toolbar button { background: #D4952A; color: #1B2469; padding: 9px 18px; border: 0;
+                    border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .toolbar button.alt { background: white; color: #1B2469; }
+  .toolbar .lbl { font-size: 12px; opacity: 0.85; }
+  .toolbar .status { background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 4px; font-size: 11px; }
+  .page { padding: 22px 26px; max-width: 1100px; margin: 0 auto;
+          page-break-after: always; page-break-inside: avoid; }
+  .page:last-of-type { page-break-after: auto; }
+  .page-hdr { border-bottom: 3px solid #D4952A; padding-bottom: 10px; margin-bottom: 14px; }
+  .page-hdr h1 { margin: 0; font-size: 18px; color: #1B2469; font-weight: 700; }
+  .page-hdr .meta { font-size: 11px; color: #6b7280; margin-top: 4px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi { background: #f8fafc; padding: 10px 14px; border-radius: 6px; border-left: 3px solid #D4952A; }
+  .kpi-lbl { font-size: 10px; color: #6b7280; text-transform: uppercase; }
+  .kpi-val { font-size: 16px; font-weight: 700; color: #1B2469; margin-top: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: 10.5px; margin-top: 8px; }
+  th { background: #1B2469; color: white; padding: 6px 8px; text-align: left; font-weight: 600; }
+  th.r, td.r { text-align: right; }
+  td { padding: 4px 8px; border-bottom: 1px solid #e5e7eb; }
+  tr.sec td { background: #f8fafc; font-weight: 700; color: #1B2469; }
+  tr.sub td { background: #fef3c7; font-weight: 700; }
+  tr.tot td { background: #1B2469; color: white; font-weight: 700; }
+  .chart-wrap { height: 220px; margin: 8px 0; }
+  .note { background: #fffbeb; border-left: 3px solid #D4952A; padding: 8px 12px;
+          font-size: 10px; margin: 8px 0; color: #1B2469; border-radius: 4px; }
+  @media print {
+    .toolbar { display: none; }
+    .page { page-break-after: always; padding: 14px 18px; }
+    body { font-size: 10px; }
+  }
+  @page { size: A4 landscape; margin: 10mm; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <strong>22HLAV — Tiskový export</strong>
+  <span class="lbl">Po načtení všech grafů klikni Tisk</span>
+  <span class="status" id="status">Načítám…</span>
+  <button onclick="window.print()" id="btn-print" disabled>🖨️ Tisk / Uložit jako PDF</button>
+  <button class="alt" onclick="window.location.href='index.html'">← Zpět do aplikace</button>
+</div>
+
+<div id="content"></div>
+
+<script>
+const kc = v => (v == null || isNaN(v)) ? "—" : Math.round(v).toLocaleString("cs-CZ") + " Kč";
+const pct = v => (v == null || isNaN(v)) ? "—" : parseFloat(v).toFixed(2) + " %";
+const num = v => (v == null || isNaN(v)) ? "—" : parseFloat(v).toFixed(2);
+
+const D = window._LIVE_DATA || {};
+const H = window._HIST_DATA || {periody:[]};
+const A = D.aktualni || {};
+const R = D.rocni || {};
+const S = D.sektor || {};
+const P23 = H.periody.find(p => p.rok === 2023) || {};
+const P24 = H.periody.find(p => p.rok === 2024) || {};
+
+const head = (titulek, podtitulek) => `
+  <div class="page-hdr">
+    <h1>${titulek}</h1>
+    <div class="meta">${D.nazev||""} · IČO ${D.ico||""} · ${podtitulek||""}</div>
+  </div>`;
+
+const tbl = (rows) => {
+  return `<table>${rows.map(r => {
+    const cls = r.cls || "";
+    return `<tr class="${cls}"><td style="width:50%">${r.label}</td>` +
+      r.cells.map(c => `<td class="r">${c}</td>`).join('') + `</tr>`;
+  }).join("")}</table>`;
+};
+
+let html = "";
+
+// === PAGE 1: Dashboard ===
+html += `
+<div class="page">
+  ${head("Dashboard — přehled výkazů", "Průběžné výkaznictví k " + (A.period_label||"—"))}
+  <div class="grid">
+    <div class="kpi"><div class="kpi-lbl">Aktiva celkem</div><div class="kpi-val">${kc(A.aktiva_netto||A.aktiva_celkem)}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Vlastní kapitál</div><div class="kpi-val">${kc(A.vk||A.vlastni_kapital)}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Cizí zdroje</div><div class="kpi-val">${kc(A.cizi_zdroje)}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Tržby celkem</div><div class="kpi-val">${kc(A.trzby_celkem)}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Provozní VH</div><div class="kpi-val">${kc(A.provozni_vh)}</div></div>
+    <div class="kpi"><div class="kpi-lbl">VH po zdanění</div><div class="kpi-val">${kc(A.vh_za_obdobi||A.vh_po_zdaneni)}</div></div>
+    <div class="kpi"><div class="kpi-lbl">ROA</div><div class="kpi-val">${pct(A.roa)}</div></div>
+    <div class="kpi"><div class="kpi-lbl">IN05</div><div class="kpi-val">${num(A.in05)} (${A.in05_pasmo||"—"})</div></div>
+  </div>
+  <div class="chart-wrap" id="chart-aktiva"></div>
+</div>`;
+
+// === PAGE 2: Rozvaha ===
+html += `
+<div class="page">
+  ${head("Rozvaha", "k " + (A.period_label||"—") + " · hodnoty v Kč")}
+  ${tbl([
+    {label:"<b>AKTIVA CELKEM</b>", cells:[`<b>${kc(A.aktiva_netto||A.aktiva_celkem)}</b>`], cls:"tot"},
+    {label:"A. Stálá aktiva", cells:[kc(A.stala_netto||A.stala_aktiva)], cls:"sec"},
+    {label:"  Dlouhodobý hmotný majetek", cells:[kc(A.dhm_netto)]},
+    {label:"  Dlouhodobý nehmotný majetek", cells:[kc(A.dnm_netto)]},
+    {label:"B. Oběžná aktiva", cells:[kc(A.obezna_netto||A.obezna_aktiva)], cls:"sec"},
+    {label:"  Zásoby", cells:[kc(A.zasoby)]},
+    {label:"  Pohledávky krátkodobé", cells:[kc(A.pohledavky_kr)]},
+    {label:"  Peněžní prostředky", cells:[kc(A.pp)]},
+    {label:"C. Časové rozlišení", cells:[kc(A.cr_aktiv)]},
+    {label:"<b>PASIVA CELKEM</b>", cells:[`<b>${kc(A.pasiva_celkem)}</b>`], cls:"tot"},
+    {label:"A. Vlastní kapitál", cells:[kc(A.vk||A.vlastni_kapital)], cls:"sec"},
+    {label:"  Základní kapitál", cells:[kc(A.zk)]},
+    {label:"  VH minulých let", cells:[kc(A.vh_min_let)]},
+    {label:"  VH běžného období", cells:[kc(A.vh_za_obdobi||A.vh_po_zdaneni)]},
+    {label:"B. Cizí zdroje", cells:[kc(A.cizi_zdroje)], cls:"sec"},
+    {label:"  Závazky krátkodobé", cells:[kc(A.zav_kr)]},
+    {label:"  Závazky dlouhodobé", cells:[kc(A.zav_dl)]},
+    {label:"  Rezervy", cells:[kc(A.rezervy)]},
+    {label:"C. Časové rozlišení pasiv", cells:[kc(A.cr_pasiv)]},
+  ])}
+</div>`;
+
+// === PAGE 3: VZZ druhový ===
+html += `
+<div class="page">
+  ${head("Výkaz zisku a ztráty — druhové členění", "Období " + (A.period_label||"—"))}
+  ${tbl([
+    {label:"Tržby z prodeje výrobků a služeb", cells:[kc(A.trzby_sluzby)]},
+    {label:"Tržby z prodeje zboží", cells:[kc(A.trzby_zbozi)]},
+    {label:"<b>Tržby celkem</b>", cells:[`<b>${kc(A.trzby_celkem)}</b>`], cls:"sec"},
+    {label:"Výkonová spotřeba", cells:[kc(-(A.vyk_spotreba||0))]},
+    {label:"  Náklady na zboží", cells:[kc(-(A.nak_zbozi||0))]},
+    {label:"  Spotřeba materiálu a energie", cells:[kc(-(A.spotreba_mat_energie||0))]},
+    {label:"  Služby", cells:[kc(-(A.sluzby||0))]},
+    {label:"Osobní náklady", cells:[kc(-(A.osobni_naklady||0))]},
+    {label:"Odpisy DHM/DNM", cells:[kc(-(A.odpisy||0))]},
+    {label:"Ostatní provozní výnosy", cells:[kc(A.ost_prov_vyn||0)]},
+    {label:"Ostatní provozní náklady", cells:[kc(-(A.ost_prov_nak||0))]},
+    {label:"<b>Provozní VH</b>", cells:[`<b>${kc(A.provozni_vh)}</b>`], cls:"sub"},
+    {label:"Výnosové úroky", cells:[kc(A.vyn_uroky||0)]},
+    {label:"Nákladové úroky", cells:[kc(-(A.nak_uroky||0))]},
+    {label:"Ostatní finanční výnosy", cells:[kc(A.ost_fin_vyn||0)]},
+    {label:"Ostatní finanční náklady", cells:[kc(-(A.ost_fin_nak||0))]},
+    {label:"<b>Finanční VH</b>", cells:[`<b>${kc(A.financni_vh)}</b>`], cls:"sub"},
+    {label:"<b>VH před zdaněním</b>", cells:[`<b>${kc(A.vh_pred_zdanenim)}</b>`], cls:"sub"},
+    {label:"Daň z příjmů", cells:[kc(-(A.dan||0))]},
+    {label:"<b>VH za období</b>", cells:[`<b>${kc(A.vh_za_obdobi||A.vh_po_zdaneni)}</b>`], cls:"tot"},
+  ])}
+</div>`;
+
+// === PAGE 4: VZZ účelový ===
+const U23 = P23.ucelovy_vzz || {};
+const U24 = P24.ucelovy_vzz || {};
+html += `
+<div class="page">
+  ${head("Výkaz zisku a ztráty — účelové členění", "Srovnání 2023 / 2024")}
+  <div class="note"><b>Způsob stanovení:</b> Účelové členění je rozpočteno standardním alokačním klíčem pro NACE 33 (504 → COGS; 501-503 → 90 / 10; 511-518 → 60 / 20 / 20; 521-528 → 60 / 20 / 20; 551-552 → 80 / 10 / 10). Pro přesné rozdělení je nutné vést účetnictví po střediscích (ČÚS 019).</div>
+  <table>
+    <thead><tr><th style="width:50%">Položka</th><th class="r">2023</th><th class="r">2024</th></tr></thead>
+    <tbody>
+      <tr><td>Tržby z prodeje výrobků a služeb</td><td class="r">${kc(U23.trzby_sluzby)}</td><td class="r">${kc(U24.trzby_sluzby)}</td></tr>
+      <tr><td>Tržby z prodeje zboží</td><td class="r">${kc(U23.trzby_zbozi)}</td><td class="r">${kc(U24.trzby_zbozi)}</td></tr>
+      <tr class="sec"><td><b>Tržby celkem</b></td><td class="r"><b>${kc(U23.trzby_celkem)}</b></td><td class="r"><b>${kc(U24.trzby_celkem)}</b></td></tr>
+      <tr><td>A. Náklady prodeje (COGS)</td><td class="r">${kc(-(U23.naklady_prodeje||0))}</td><td class="r">${kc(-(U24.naklady_prodeje||0))}</td></tr>
+      <tr class="sub"><td><b>* Hrubý zisk</b></td><td class="r"><b>${kc(U23.hruby_zisk)}</b></td><td class="r"><b>${kc(U24.hruby_zisk)}</b></td></tr>
+      <tr><td>B. Odbytové náklady</td><td class="r">${kc(-(U23.odbytove_naklady||0))}</td><td class="r">${kc(-(U24.odbytove_naklady||0))}</td></tr>
+      <tr><td>C. Správní režie</td><td class="r">${kc(-(U23.spravni_rezie||0))}</td><td class="r">${kc(-(U24.spravni_rezie||0))}</td></tr>
+      <tr><td>D. Ostatní provozní náklady</td><td class="r">${kc(-(U23.ost_prov_nak||0))}</td><td class="r">${kc(-(U24.ost_prov_nak||0))}</td></tr>
+      <tr class="sub"><td><b>* Provozní VH</b></td><td class="r"><b>${kc(U23.provozni_vh)}</b></td><td class="r"><b>${kc(U24.provozni_vh)}</b></td></tr>
+      <tr><td>Finanční VH</td><td class="r">${kc(U23.financni_vh)}</td><td class="r">${kc(U24.financni_vh)}</td></tr>
+      <tr class="sub"><td><b>** VH před zdaněním</b></td><td class="r"><b>${kc(U23.vh_pred_zdanenim)}</b></td><td class="r"><b>${kc(U24.vh_pred_zdanenim)}</b></td></tr>
+      <tr><td>L. Daň z příjmů</td><td class="r">${kc(-(U23.dan||0))}</td><td class="r">${kc(-(U24.dan||0))}</td></tr>
+      <tr class="tot"><td><b>*** VH za období</b></td><td class="r"><b>${kc(U23.vh_po_zdaneni)}</b></td><td class="r"><b>${kc(U24.vh_po_zdaneni)}</b></td></tr>
+    </tbody>
+  </table>
+</div>`;
+
+// === PAGE 5: Cash flow ===
+html += `
+<div class="page">
+  ${head("Výkaz cash flow", "Nepřímá metoda · " + (A.period_label||"—"))}
+  ${tbl([
+    {label:"VH před zdaněním", cells:[kc(A.cf_vh_pred_zdanenim||A.vh_pred_zdanenim)]},
+    {label:"Úpravy o nepeněžní operace (odpisy)", cells:[kc(A.cf_odpisy||A.odpisy||0)]},
+    {label:"Změna pohledávek", cells:[kc(A.cf_zmena_pohledavky||0)]},
+    {label:"Změna zásob", cells:[kc(A.cf_zmena_zasoby||0)]},
+    {label:"Změna závazků", cells:[kc(A.cf_zmena_zavazky||0)]},
+    {label:"Zaplacená daň", cells:[kc(A.cf_dan||0)]},
+    {label:"<b>Čistý peněžní tok z provozní činnosti</b>", cells:[`<b>${kc(A.cf_provozni)}</b>`], cls:"sub"},
+    {label:"Čistý peněžní tok z investiční činnosti", cells:[kc(A.cf_investicni||0)]},
+    {label:"Čistý peněžní tok z finanční činnosti", cells:[kc(A.cf_financni||0)]},
+    {label:"<b>Čistá změna peněžních prostředků</b>", cells:[`<b>${kc(A.cf_provozni + (A.cf_investicni||0) + (A.cf_financni||0))}</b>`], cls:"sub"},
+    {label:"PP na začátku období", cells:[kc(A.pp_zacatek)]},
+    {label:"<b>PP na konci období</b>", cells:[`<b>${kc(A.pp_konec_cf||A.pp)}</b>`], cls:"tot"},
+  ])}
+</div>`;
+
+// === PAGE 6: Finanční ukazatele ===
+html += `
+<div class="page">
+  ${head("Finanční ukazatele", "Srovnání s odvětvím NACE 33 (zdroj: MPO INFA)")}
+  <table>
+    <thead><tr><th>Ukazatel</th><th class="r">Firma</th><th class="r">Benchmark NACE 33</th></tr></thead>
+    <tbody>
+      <tr class="sec"><td colspan="3"><b>Rentabilita</b></td></tr>
+      <tr><td>ROA (rentabilita aktiv)</td><td class="r">${pct(A.roa)}</td><td class="r">${pct(S.roa)}</td></tr>
+      <tr><td>ROE (rentabilita vl. kapitálu)</td><td class="r">${pct(A.roe)}</td><td class="r">${pct(S.roe)}</td></tr>
+      <tr><td>ROS (rentabilita tržeb)</td><td class="r">${pct(A.ros)}</td><td class="r">${pct(S.ros)}</td></tr>
+      <tr class="sec"><td colspan="3"><b>Likvidita</b></td></tr>
+      <tr><td>Běžná likvidita</td><td class="r">${num(A.bezna_likvidita)}</td><td class="r">${num(S.bezna_likvidita)}</td></tr>
+      <tr><td>Okamžitá likvidita</td><td class="r">${num(A.okamzita_likvidita)}</td><td class="r">${num(S.okamzita_likvidita)}</td></tr>
+      <tr class="sec"><td colspan="3"><b>Zadluženost</b></td></tr>
+      <tr><td>Celková zadluženost</td><td class="r">${pct(A.celkova_zadluzenost)}</td><td class="r">${pct(S.celkova_zadluzenost)}</td></tr>
+      <tr class="sec"><td colspan="3"><b>Bonita</b></td></tr>
+      <tr class="tot"><td><b>IN05 (Neumaierovi)</b></td><td class="r"><b>${num(A.in05)} (${A.in05_pasmo||"—"})</b></td><td class="r"><b>${num(S.in05)}</b></td></tr>
+    </tbody>
+  </table>
+</div>`;
+
+// === PAGE 7: Historický vývoj ===
+html += `
+<div class="page">
+  ${head("Historický vývoj", "Meziroční srovnání 2023 / 2024")}
+  <table>
+    <thead><tr><th>Položka</th><th class="r">2023</th><th class="r">2024</th><th class="r">Δ %</th></tr></thead>
+    <tbody>
+      <tr class="sec"><td colspan="4"><b>ROZVAHA</b></td></tr>
+      <tr><td>Aktiva celkem</td><td class="r">${kc(P23.aktiva_netto)}</td><td class="r">${kc(P24.aktiva_netto)}</td><td class="r">${P24.horiz?.aktiva_netto?.pct?.toFixed(1)+'%'||"—"}</td></tr>
+      <tr><td>Vlastní kapitál</td><td class="r">${kc(P23.vk)}</td><td class="r">${kc(P24.vk)}</td><td class="r">${P24.horiz?.vk?.pct?.toFixed(1)+'%'||"—"}</td></tr>
+      <tr><td>Cizí zdroje</td><td class="r">${kc(P23.cizi_zdroje)}</td><td class="r">${kc(P24.cizi_zdroje)}</td><td class="r">${P24.horiz?.cizi_zdroje?.pct?.toFixed(1)+'%'||"—"}</td></tr>
+      <tr class="sec"><td colspan="4"><b>VZZ</b></td></tr>
+      <tr><td>Tržby celkem</td><td class="r">${kc(P23.trzby_celkem)}</td><td class="r">${kc(P24.trzby_celkem)}</td><td class="r">${P24.horiz?.trzby_celkem?.pct?.toFixed(1)+'%'||"—"}</td></tr>
+      <tr><td>Provozní VH</td><td class="r">${kc(P23.provozni_vh)}</td><td class="r">${kc(P24.provozni_vh)}</td><td class="r">${P24.horiz?.provozni_vh?.pct?.toFixed(1)+'%'||"—"}</td></tr>
+      <tr class="tot"><td><b>VH za období</b></td><td class="r"><b>${kc(P23.vh_za_obdobi)}</b></td><td class="r"><b>${kc(P24.vh_za_obdobi)}</b></td><td class="r"><b>${P24.horiz?.vh_za_obdobi?.pct?.toFixed(1)+'%'||"—"}</b></td></tr>
+      <tr class="sec"><td colspan="4"><b>UKAZATELE</b></td></tr>
+      <tr><td>ROA (%)</td><td class="r">${num(P23.roa)}</td><td class="r">${num(P24.roa)}</td><td class="r"></td></tr>
+      <tr><td>ROE (%)</td><td class="r">${num(P23.roe)}</td><td class="r">${num(P24.roe)}</td><td class="r"></td></tr>
+      <tr><td>Běžná likvidita</td><td class="r">${num(P23.bezna_likvidita)}</td><td class="r">${num(P24.bezna_likvidita)}</td><td class="r"></td></tr>
+      <tr><td>Celková zadluženost (%)</td><td class="r">${num(P23.celkova_zadluzenost)}</td><td class="r">${num(P24.celkova_zadluzenost)}</td><td class="r"></td></tr>
+    </tbody>
+  </table>
+</div>`;
+
+document.getElementById("content").innerHTML = html;
+
+// Aktiva donut graf
+if (A.stala_aktiva || A.stala_netto) {
+  Plotly.newPlot("chart-aktiva", [{
+    type:"pie", hole:0.45,
+    labels:["Stálá aktiva","Zásoby","Pohledávky","Peněžní prostředky"],
+    values:[A.stala_aktiva||A.stala_netto, A.zasoby, A.pohledavky_kr, A.pp],
+    marker:{colors:["#1B2469","#2d4a9e","#D4952A","#16a34a"], line:{color:"#fff",width:1.5}},
+    textinfo:"label+percent",
+  }], {
+    showlegend:false, margin:{l:5,r:5,t:5,b:5},
+    paper_bgcolor:"white", plot_bgcolor:"white",
+  }, {displayModeBar:false});
+}
+
+// Set status to ready
+setTimeout(() => {
+  document.getElementById("status").textContent = "✓ Připraveno k tisku";
+  document.getElementById("btn-print").disabled = false;
+  document.getElementById("btn-print").style.background = "#16a34a";
+  document.getElementById("btn-print").style.color = "white";
+}, 1500);
+</script>
+
+</body>
+</html>
