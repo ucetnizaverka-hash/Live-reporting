@@ -3,7 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-14T14:16:13",
+    "updated": "2026-05-14T14:53:57",
     "roky": [
       2023,
       2024
@@ -135,17 +135,17 @@
       "mesice": 12,
       "period_label": "Rok 2024",
       "je_plny_rok": true,
-      "aktiva_netto": 3061000,
+      "aktiva_netto": 3063000,
       "stala_netto": 254000,
-      "obezna_netto": 2806000,
+      "obezna_netto": 2807000,
       "zasoby": 1075000,
       "pohledavky_kr": 264000,
       "pp": 1468000,
       "cr_aktiv": 2000,
       "vk": 245000,
       "rezervy": 0,
-      "cizi_zdroje": 2737000,
-      "zav_kr": 2737000,
+      "cizi_zdroje": 2738000,
+      "zav_kr": 2738000,
       "zav_dl": 0,
       "cr_pasiv": 80000,
       "trzby_sluzby": 1394000,
@@ -166,12 +166,12 @@
       "ebitda_marze": 6.93,
       "bezna_likvidita": 1.03,
       "okamzita_likvidita": 0.54,
-      "celkova_zadluzenost": 89.42,
-      "altman_z": 1.399,
+      "celkova_zadluzenost": 89.39,
+      "altman_z": 1.398,
       "altman_pasmo": "sede",
       "horiz": {
         "aktiva_netto": {
-          "abs": 47477.0,
+          "abs": 49477.0,
           "pct": 1.6
         },
         "stala_netto": {
@@ -179,7 +179,7 @@
           "pct": -37.6
         },
         "obezna_netto": {
-          "abs": 200703.0,
+          "abs": 201703.0,
           "pct": 7.7
         },
         "zasoby": {
@@ -199,11 +199,11 @@
           "pct": 1.4
         },
         "cizi_zdroje": {
-          "abs": 29869.0,
+          "abs": 30869.0,
           "pct": 1.1
         },
         "zav_kr": {
-          "abs": 29869.0,
+          "abs": 30869.0,
           "pct": 1.1
         },
         "trzby_celkem": {
@@ -244,14 +244,14 @@
         }
       },
       "vert_rozvaha": {
-        "stala_netto": 8.3,
-        "obezna_netto": 91.67,
-        "zasoby": 35.12,
+        "stala_netto": 8.29,
+        "obezna_netto": 91.64,
+        "zasoby": 35.1,
         "pohledavky_kr": 8.62,
-        "pp": 47.96,
+        "pp": 47.93,
         "vk": 8.0,
-        "cizi_zdroje": 89.42,
-        "zav_kr": 89.42
+        "cizi_zdroje": 89.39,
+        "zav_kr": 89.39
       },
       "vert_vzz": {
         "trzby_sluzby": 41.11,
@@ -268,54 +268,72 @@
         "trzby_sluzby": 1394000,
         "trzby_zbozi": 1997000,
         "trzby_celkem": 3391000,
-        "naklady_prodeje": 2191500.0,
-        "hruby_zisk": 1199500.0,
-        "odbytove_naklady": 508900.0,
-        "spravni_rezie": 534600.0,
-        "ost_prov_vyn": 0,
-        "ost_prov_nak": 0,
-        "provozni_vh": 156000.0,
+        "naklady_prodeje": 2412000,
+        "hruby_zisk": 979000,
+        "odbytove_naklady": 394000,
+        "spravni_rezie": 430000,
+        "ost_prov_vyn": 33000,
+        "ost_prov_nak": 107000,
+        "provozni_vh": 81000,
         "vyn_uroky": 0,
         "nak_uroky": 0,
         "ost_fin_vyn": 0,
-        "ost_fin_nak": 0,
-        "financni_vh": 0,
+        "ost_fin_nak": 25000,
+        "financni_vh": -25000,
         "vh_pred_zdanenim": 56000,
         "dan": 53000,
         "vh_po_zdaneni": 3000,
-        "_metoda": "agregovany",
+        "_metoda": "detailni_z_uctu",
         "_alokacni_klic": "Standardní alokační klíč pro NACE 33 (bez středisek)",
         "_disclaimer": "Účelový VZZ je sestaven s pomocí standardního alokačního klíče, protože účetnictví nemá střediska. Pro přesné rozdělení do funkčních skupin je nutné vést účetnictví po střediscích.",
-        "_detail_kategorii": {
-          "nak_zbozi": {
-            "hodnota": 1150000,
-            "cogs": 1150000.0,
+        "_detail_uctu": {
+          "501": {
+            "hodnota": 134486.62,
+            "cogs": 121037.96,
+            "odbyt": 0.0,
+            "spravni": 13448.66
+          },
+          "502": {
+            "hodnota": 122864.78,
+            "cogs": 110578.3,
+            "odbyt": 0.0,
+            "spravni": 12286.48
+          },
+          "504": {
+            "hodnota": 1150432.66,
+            "cogs": 1150432.66,
             "odbyt": 0.0,
             "spravni": 0.0
           },
-          "spotreba_mat": {
-            "hodnota": 257000,
-            "cogs": 231300.0,
+          "511": {
+            "hodnota": 86594.16,
+            "cogs": 0.0,
             "odbyt": 0.0,
-            "spravni": 25700.0
+            "spravni": 86594.16
           },
-          "sluzby": {
-            "hodnota": 1587000,
-            "cogs": 634800.0,
-            "odbyt": 476100.0,
-            "spravni": 476100.0
+          "513": {
+            "hodnota": 75970.25,
+            "cogs": 0.0,
+            "odbyt": 75970.25,
+            "spravni": 0.0
           },
-          "osobni": {
-            "hodnota": 87000,
+          "518": {
+            "hodnota": 1424251.31,
+            "cogs": 854550.79,
+            "odbyt": 284850.26,
+            "spravni": 284850.26
+          },
+          "521": {
+            "hodnota": 87000.0,
             "cogs": 52200.0,
             "odbyt": 17400.0,
             "spravni": 17400.0
           },
-          "odpisy": {
-            "hodnota": 154000,
-            "cogs": 123200.0,
-            "odbyt": 15400.0,
-            "spravni": 15400.0
+          "551": {
+            "hodnota": 153588.0,
+            "cogs": 122870.4,
+            "odbyt": 15358.8,
+            "spravni": 15358.8
           }
         }
       }
