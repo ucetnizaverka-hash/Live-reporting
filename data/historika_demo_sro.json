@@ -3,7 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-13T21:46:24",
+    "updated": "2026-05-14T09:36:57",
     "roky": [
       2023,
       2024
@@ -76,122 +76,122 @@
       "mesice": 12,
       "period_label": "Rok 2024",
       "je_plny_rok": true,
-      "aktiva_netto": 265412.23,
-      "stala_netto": -153588.5,
-      "obezna_netto": 418218.76,
-      "zasoby": -175259.97,
-      "pohledavky_kr": 139160.0,
-      "pp": 454318.73,
-      "vk": 3209.8,
-      "cizi_zdroje": 246899.75,
-      "zav_kr": 246899.75,
-      "trzby_sluzby": 1393742.65,
-      "trzby_zbozi": 1996969.66,
-      "trzby_celkem": 3390712.31,
-      "vyk_spotreba": 2994599.78,
-      "osobni_naklady": 87000.0,
-      "odpisy": 153588.0,
-      "provozni_vh": 81172.64,
-      "financni_vh": -25252.84,
-      "vh_pred_zdanenim": 55919.8,
-      "vh_za_obdobi": 3209.8,
-      "cisty_obrat": 3423853.57,
-      "roa": 21.07,
-      "roe": 100.0,
+      "aktiva_netto": 3061499,
+      "stala_netto": 253638,
+      "obezna_netto": 2806079,
+      "zasoby": 1074697,
+      "pohledavky_kr": 263638,
+      "pp": 1467743,
+      "vk": 244757,
+      "cizi_zdroje": 2736594,
+      "zav_kr": 2736594,
+      "trzby_sluzby": 0,
+      "trzby_zbozi": 1996970,
+      "trzby_celkem": 3390712,
+      "vyk_spotreba": 2994600,
+      "osobni_naklady": 87000,
+      "odpisy": 153588,
+      "provozni_vh": 81173,
+      "financni_vh": -25253,
+      "vh_pred_zdanenim": 55920,
+      "vh_za_obdobi": 3210,
+      "cisty_obrat": 3423854,
+      "roa": 1.83,
+      "roe": 1.31,
       "ros": 1.65,
-      "ebitda": 234761.0,
+      "ebitda": 234761,
       "ebitda_marze": 6.92,
-      "bezna_likvidita": 1.69,
-      "okamzita_likvidita": 1.84,
-      "celkova_zadluzenost": 93.03,
-      "altman_z": 15.976,
-      "altman_pasmo": "zelene",
+      "bezna_likvidita": 1.03,
+      "okamzita_likvidita": 0.54,
+      "celkova_zadluzenost": 89.39,
+      "altman_z": 1.398,
+      "altman_pasmo": "sede",
       "horiz": {
         "aktiva_netto": {
-          "abs": -2747588.0,
-          "pct": -91.2
+          "abs": 48499,
+          "pct": 1.6
         },
         "stala_netto": {
-          "abs": -560588.0,
-          "pct": -137.7
+          "abs": -153362,
+          "pct": -37.7
         },
         "obezna_netto": {
-          "abs": -2186781.0,
-          "pct": -83.9
+          "abs": 201079,
+          "pct": 7.7
         },
         "zasoby": {
-          "abs": -175260.0,
+          "abs": 1074697,
           "pct": null
         },
         "pohledavky_kr": {
-          "abs": 139160.0,
+          "abs": 263638,
           "pct": null
         },
         "pp": {
-          "abs": 454319.0,
+          "abs": 1467743,
           "pct": null
         },
         "vk": {
-          "abs": -237790.0,
-          "pct": -98.7
+          "abs": 3757,
+          "pct": 1.6
         },
         "cizi_zdroje": {
-          "abs": -2460100.0,
-          "pct": -90.9
+          "abs": 29594,
+          "pct": 1.1
         },
         "zav_kr": {
-          "abs": -2460100.0,
-          "pct": -90.9
+          "abs": 29594,
+          "pct": 1.1
         },
         "trzby_celkem": {
-          "abs": -1111288.0,
+          "abs": -1111288,
           "pct": -24.7
         },
         "vyk_spotreba": {
-          "abs": -630400.0,
+          "abs": -630400,
           "pct": -17.4
         },
         "osobni_naklady": {
-          "abs": -363000.0,
+          "abs": -363000,
           "pct": -80.7
         },
         "odpisy": {
-          "abs": 588.0,
+          "abs": 588,
           "pct": 0.4
         },
         "provozni_vh": {
-          "abs": -117827.0,
+          "abs": -117827,
           "pct": -59.2
         },
         "financni_vh": {
-          "abs": 3747.0,
+          "abs": 3747,
           "pct": 12.9
         },
         "vh_pred_zdanenim": {
-          "abs": -114080.0,
+          "abs": -114080,
           "pct": -67.1
         },
         "vh_za_obdobi": {
-          "abs": -166790.0,
+          "abs": -166790,
           "pct": -98.1
         },
         "cisty_obrat": {
-          "abs": -1089146.0,
+          "abs": -1089146,
           "pct": -24.1
         }
       },
       "vert_rozvaha": {
-        "stala_netto": -57.87,
-        "obezna_netto": 157.57,
-        "zasoby": -66.03,
-        "pohledavky_kr": 52.43,
-        "pp": 171.17,
-        "vk": 1.21,
-        "cizi_zdroje": 93.03,
-        "zav_kr": 93.03
+        "stala_netto": 8.28,
+        "obezna_netto": 91.66,
+        "zasoby": 35.1,
+        "pohledavky_kr": 8.61,
+        "pp": 47.94,
+        "vk": 7.99,
+        "cizi_zdroje": 89.39,
+        "zav_kr": 89.39
       },
       "vert_vzz": {
-        "trzby_sluzby": 41.1,
+        "trzby_sluzby": 0.0,
         "trzby_zbozi": 58.9,
         "vyk_spotreba": 88.32,
         "osobni_naklady": 2.57,
