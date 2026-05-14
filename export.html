@@ -76,10 +76,11 @@ const PAGES = [
   {url: "historika.html", title: "Historická analýza"},
 ];
 
-const WAIT_LOAD    = 6000;   // ms čekání na render grafů
-const SCALE        = 2;      // device pixel ratio
-const FRAME_WIDTH  = 1400;
-const FRAME_HEIGHT = 2200;
+const WAIT_DATA_MAX = 25000; // ms max čekání na fetch dat z GitHubu
+const WAIT_RENDER   = 4000;  // ms čekání po načtení dat na render Plotly
+const SCALE         = 2;     // device pixel ratio
+const FRAME_WIDTH   = 1400;
+const FRAME_HEIGHT  = 2200;
 
 const btn = document.getElementById("btn-export");
 const progress = document.getElementById("progress");
@@ -113,6 +114,37 @@ async function loadIframe(url) {
     frame.src = url;
     setTimeout(() => { if(!done) { done = true; resolve(frame); } }, 30000);
   });
+}
+
+// Čeká, dokud iframe NEMÁ text "Načítám" / "Loading" + má zaplněnou hlavičku klienta
+async function waitForDataLoaded(frame, maxMs) {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < maxMs) {
+    try {
+      const doc = frame.contentDocument;
+      const bodyText = doc.body.innerText || "";
+      const isLoading = /Načítám|Loading|nactena data/i.test(bodyText);
+      // Hlavička klienta
+      const hdrNazev = doc.getElementById("hdr-nazev");
+      const hasName = hdrNazev && hdrNazev.textContent && hdrNazev.textContent !== "…";
+      // Plotly grafy
+      const hasPlotly = doc.querySelectorAll(".plotly").length > 0
+                     || doc.querySelectorAll(".js-plotly-plot").length > 0
+                     || doc.querySelectorAll("svg").length > 0;
+      // Pokud data jsou načtena: hlavička má jméno + nejsme v loading state
+      if (hasName && !isLoading) {
+        // Ještě doplňkové čekání na Plotly render
+        await sleep(WAIT_RENDER);
+        return true;
+      }
+    } catch(e) {
+      // cross-origin nebo iframe ještě neexistuje, opakuj
+    }
+    await sleep(400);
+  }
+  // Timeout - vrátíme co je
+  console.warn("waitForDataLoaded: timeout po " + maxMs + "ms");
+  return false;
 }
 
 async function captureFrame(frame, title) {
@@ -154,58 +186,17 @@ async function runExport() {
     setProgress((i / PAGES.length) * 90, `${i+1}/${PAGES.length}: ${title}`);
 
     try {
-      await loadIframe(url);
-      await sleep(WAIT_LOAD);   // počkat na Plotly + data fetch
+      const frame = await loadIframe(url);
+      stepEl.textContent = `[${i+1}/${PAGES.length}] ${title} – čekám na data…`;
+      const dataOk = await waitForDataLoaded(frame, WAIT_DATA_MAX);
+      if (!dataOk) {
+        stepEl.textContent = `⚠ [${i+1}/${PAGES.length}] ${title} – data se nenačetla v limitu, pokračuji`;
+      }
       stepEl.textContent = `[${i+1}/${PAGES.length}] ${title} – kreslím screenshot…`;
-      const canvas = await captureFrame(document.getElementById("render-frame"), title);
+      const canvas = await captureFrame(frame, title);
 
       // Vlož do PDF: zachovat aspect ratio, fit na A4 landscape
       const imgData = canvas.toDataURL("image/jpeg", 0.92);
       const imgW   = canvas.width;
       const imgH   = canvas.height;
-      const ratio  = Math.min(pageW / imgW, pageH / imgH) * 4;  // *4 protože canvas v px, page v mm
-      const finalW = imgW * ratio;
-      const finalH = imgH * ratio;
-      const x = (pageW - finalW) / 2;
-      const y = (pageH - finalH) / 2;
-
-      // Lépe: použij celou A4 landscape, scale tak aby šířka pasovala
-      const scaleByW = pageW / (imgW / SCALE / 3.78);   // px -> mm (96dpi)
-      let wMM = imgW / SCALE / 3.78;
-      let hMM = imgH / SCALE / 3.78;
-      if(wMM > pageW) { const sc = pageW / wMM; wMM *= sc; hMM *= sc; }
-      if(hMM > pageH) { const sc = pageH / hMM; wMM *= sc; hMM *= sc; }
-      const xx = (pageW - wMM) / 2;
-      const yy = (pageH - hMM) / 2;
-
-      if (i > 0) pdf.addPage();
-      pdf.addImage(imgData, "JPEG", xx, yy, wMM, hMM);
-
-      stepEl.textContent = `✓ [${i+1}/${PAGES.length}] ${title}`;
-      stepEl.classList.add("done");
-      success++;
-    } catch(e) {
-      stepEl.textContent = `✗ [${i+1}/${PAGES.length}] ${title} – chyba: ${e.message || e}`;
-      stepEl.classList.add("error");
-      console.error(e);
-    }
-  }
-
-  setProgress(95, "Vytvářím PDF…");
-
-  const ts = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 16);
-  const filename = `Zive_vykaznictvi_${ts}.pdf`;
-  pdf.save(filename);
-
-  setProgress(100, `Hotovo – staženo ${success}/${PAGES.length} stránek do ${filename}`);
-  addStep(`📥 Soubor stažen: ${filename}`, "done");
-
-  btn.disabled = false;
-  btn.textContent = "▶ Spustit znovu";
-}
-
-btn.addEventListener("click", runExport);
-</script>
-
-</body>
-</html>
+  
