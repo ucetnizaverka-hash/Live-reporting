@@ -76,7 +76,7 @@ loadData(d => {
       <th style="text-align:left" rowspan="2">TEXT</th>
       <th class="vz" rowspan="2" style="text-align:center">Vzorec</th>
       <th class="cr" rowspan="2">Č.ř.</th>
-      <th colspan="${n}" style="text-align:center">Skutečnost v účetním období</th>
+      <th colspan="${n}" style="text-align:center"></th>
       ${showDelta ? '<th rowspan="2">Δ %</th>' : ''}
     </tr>
     <tr>${labels.map((l,i) => `<th style="font-size:11px">${l}</th>`).join('')}</tr>
@@ -175,3 +175,4 @@ loadData(d => {
 });
 </script>
 </body></html>
+                                
