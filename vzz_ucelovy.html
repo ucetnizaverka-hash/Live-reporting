@@ -58,16 +58,7 @@
         <table id="vzz-table"><thead id="vzz-head"></thead><tbody id="vzz-body"></tbody></table>
       </div>
 
-      <div class="grid2">
-        <div>
-          <h3>Struktura nákladů 2023</h3>
-          <div id="chart-2023" style="height: 280px;"></div>
-        </div>
-        <div>
-          <h3>Struktura nákladů 2024</h3>
-          <div id="chart-2024" style="height: 280px;"></div>
-        </div>
-      </div>
+      <div class="grid2" id="charts-wrap"></div>
     </div>
   </div>
 </main>
@@ -91,14 +82,22 @@ loadData(d => {
   const p24 = (hist.periody||[]).find(p => p.rok === 2024);
   const u23 = p23 ? p23.ucelovy_vzz : null;
   const u24 = p24 ? p24.ucelovy_vzz : null;
+  // Aktuální období (průběžné) – přímo z vykazy_demo_sro.json přes konsolidaci
+  const ua  = (d.aktualni && d.aktualni.ucelovy_vzz) ? d.aktualni.ucelovy_vzz : null;
+  const uaLabel = (d.aktualni && d.aktualni.period_label) ? d.aktualni.period_label : "Aktuální";
 
-  if (!u23 && !u24) {
-    document.getElementById("vzz-body").innerHTML = `<tr><td colspan="6" style="text-align:center;color:#dc2626;padding:30px;">Účelový VZZ není dostupný v historických datech.</td></tr>`;
+  if (!u23 && !u24 && !ua) {
+    document.getElementById("vzz-body").innerHTML = `<tr><td colspan="6" style="text-align:center;color:#dc2626;padding:30px;">Účelový VZZ není dostupný v datech.</td></tr>`;
     return;
   }
 
-  const showDelta = u23 && u24;
-  const labels = ["2023", "2024"];
+  // Sloupce: 2023, 2024 (plný rok), Aktuální období
+  const cols = [];
+  if (u23) cols.push({label:"2023",        data:u23});
+  if (u24) cols.push({label:"2024",        data:u24});
+  if (ua)  cols.push({label:uaLabel,       data:ua, isLive:true});
+
+  const showDelta = cols.length >= 2;
 
   // Záhlaví
   document.getElementById("vzz-head").innerHTML = `
@@ -106,33 +105,34 @@ loadData(d => {
       <th class="oz" rowspan="2">Ozn.</th>
       <th style="text-align:left" rowspan="2">TEXT</th>
       <th class="cr" rowspan="2">Č.ř.</th>
-      <th colspan="2" style="text-align:center"></th>
-      ${showDelta ? '<th rowspan="2">Δ %</th>' : ''}
+      <th colspan="${cols.length}" style="text-align:center"></th>
+      ${showDelta ? '<th rowspan="2">Δ % (mezi 2 posledními)</th>' : ''}
     </tr>
-    <tr>${labels.map(l => `<th style="font-size:11px">${l}</th>`).join('')}</tr>
-    <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td class="cr">c</td><th>1</th><th>2</th>${showDelta?'<th></th>':''}</tr>`;
+    <tr>${cols.map(c => `<th style="font-size:11px">${c.label}${c.isLive?' <span style="color:#16a34a;font-size:9px">(průběžné)</span>':''}</th>`).join('')}</tr>
+    <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td class="cr">c</td>${cols.map((_,i)=>`<th>${i+1}</th>`).join('')}${showDelta?'<th></th>':''}</tr>`;
 
   const v0 = (u, k) => (u && u[k] != null) ? u[k] : 0;
 
   // Řádek tabulky
   let cr = 1;
   function R(oz, txt, key, opts={}) {
-    const val23 = v0(u23, key);
-    const val24 = v0(u24, key);
-    const sign  = opts.neg ? -1 : 1;
-    const v1    = sign * val23;
-    const v2    = sign * val24;
-    const dRel  = (val23 !== 0) ? ((val24 - val23) / Math.abs(val23) * 100) : null;
-    const isZero = val23 === 0 && val24 === 0;
-    const cls   = [
+    const sign = opts.neg ? -1 : 1;
+    const vals = cols.map(c => sign * v0(c.data, key));
+    // Δ mezi posledními dvěma sloupci (typicky 2024 vs aktuální období, nebo 2023 vs 2024)
+    const last = vals[vals.length - 1];
+    const prev = vals.length >= 2 ? vals[vals.length - 2] : null;
+    const dRel = (prev != null && prev !== 0) ? ((last - prev) / Math.abs(prev) * 100) : null;
+    const isZero = vals.every(v => v === 0);
+    const cls = [
       opts.sec ? "section-head" : "",
-      isZero  ? "zero"         : "",
+      isZero  ? "zero"          : "",
       opts.bold ? "bold" : "",
     ].filter(Boolean).join(" ");
     const lineNum = cr++;
     const ozCell  = oz ? `<td class="oz">${oz}</td>` : `<td class="oz"></td>`;
+    const valCells = vals.map(v => `<td class="num">${kc(v)}</td>`).join('');
     const dCell   = showDelta ? `<td class="num">${dRel == null ? "—" : (dRel >= 0 ? "+" : "") + dRel.toFixed(1) + "%"}</td>` : '';
-    return `<tr class="${cls}">${ozCell}<td class="tx">${txt}</td><td class="cr">${lineNum}</td><td class="num">${kc(v1)}</td><td class="num">${kc(v2)}</td>${dCell}</tr>`;
+    return `<tr class="${cls}">${ozCell}<td class="tx">${txt}</td><td class="cr">${lineNum}</td>${valCells}${dCell}</tr>`;
   }
 
   let html = "";
@@ -157,27 +157,15 @@ loadData(d => {
 
   document.getElementById("vzz-body").innerHTML = html;
 
-  // Donut grafy
-  function donut(divId, u, rok) {
-    if (!u) { document.getElementById(divId).innerHTML = `<div style="text-align:center;padding:30px;color:#6b7280;font-size:11px;">N/A pro ${rok}</div>`; return; }
+  // Donut grafy — pro každý sloupec
+  const chartsWrap = document.getElementById("charts-wrap");
+  chartsWrap.style.gridTemplateColumns = `repeat(${cols.length}, 1fr)`;
+  chartsWrap.innerHTML = cols.map((c, i) =>
+    `<div><h3>Struktura nákladů — ${c.label}${c.isLive?' <span style="color:#16a34a">(průběžné)</span>':''}</h3><div id="chart-${i}" style="height: 240px;"></div></div>`
+  ).join("");
+
+  function donut(divId, u, label) {
+    if (!u) { document.getElementById(divId).innerHTML = `<div style="text-align:center;padding:30px;color:#6b7280;font-size:11px;">N/A</div>`; return; }
     const data = [{
       type:"pie", hole:0.5,
-      labels:["Náklady prodeje","Odbytové","Správní","Ost. provozní"],
-      values:[u.naklady_prodeje, u.odbytove_naklady, u.spravni_rezie, u.ost_prov_nak],
-      marker:{colors:["#1B2469","#2d4a9e","#D4952A","#9ca3af"], line:{color:"#fff",width:1.5}},
-      textinfo:"label+percent", textposition:"outside",
-      hovertemplate:"%{label}<br>%{value:,.0f} Kč<br>%{percent}<extra></extra>",
-    }];
-    const layout = {
-      showlegend:false, margin:{l:5,r:5,t:5,b:5},
-      paper_bgcolor:"transparent", plot_bgcolor:"transparent",
-      annotations:[{text:`<b>${rok}</b>`,showarrow:false,font:{size:14,color:"#D4952A"}}],
-    };
-    Plotly.newPlot(divId, data, layout, {displayModeBar:false, responsive:true});
-  }
-  donut("chart-2023", u23, "2023");
-  donut("chart-2024", u24, "2024");
-});
-</script>
-</body></html>
-                                                                                                                                                                                    
+      labels:["Náklady prodeje","Odbytové","Správní","Ost. provo
