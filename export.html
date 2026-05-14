@@ -68,12 +68,13 @@
 
 <script>
 const PAGES = [
-  {url: "index.html",     title: "Dashboard"},
-  {url: "vzz.html",       title: "Výkaz zisku a ztráty"},
-  {url: "rozvaha.html",   title: "Rozvaha"},
-  {url: "cashflow.html",  title: "Cash flow"},
-  {url: "ukazatele.html", title: "Finanční ukazatele"},
-  {url: "historika.html", title: "Historická analýza"},
+  {url: "index.html",        title: "Dashboard"},
+  {url: "vzz.html",          title: "VZZ druhový"},
+  {url: "vzz_ucelovy.html",  title: "VZZ účelový"},
+  {url: "rozvaha.html",      title: "Rozvaha"},
+  {url: "cashflow.html",     title: "Cash flow"},
+  {url: "ukazatele.html",    title: "Finanční ukazatele"},
+  {url: "historika.html",    title: "Historická analýza"},
 ];
 
 const WAIT_DATA_MAX = 25000; // ms max čekání na fetch dat z GitHubu
@@ -116,34 +117,53 @@ async function loadIframe(url) {
   });
 }
 
-// Čeká, dokud iframe NEMÁ text "Načítám" / "Loading" + má zaplněnou hlavičku klienta
+// Robustní detekce: počká, dokud stránka má smysluplný obsah a není v loading state
 async function waitForDataLoaded(frame, maxMs) {
   const startedAt = Date.now();
+  let lastTextLength = 0;
+  let stableCount = 0;
   while (Date.now() - startedAt < maxMs) {
     try {
       const doc = frame.contentDocument;
-      const bodyText = doc.body.innerText || "";
-      const isLoading = /Načítám|Loading|nactena data/i.test(bodyText);
-      // Hlavička klienta
+      if (!doc || !doc.body) { await sleep(300); continue; }
+      const bodyText = (doc.body.innerText || "").trim();
+      const bodyLen  = bodyText.length;
+      const isLoading = /Načítám\.\.\.|^Načítám$|Loading\.\.\./i.test(bodyText);
+
+      // Zkus 3 různé indikátory dokončení
       const hdrNazev = doc.getElementById("hdr-nazev");
-      const hasName = hdrNazev && hdrNazev.textContent && hdrNazev.textContent !== "…";
-      // Plotly grafy
-      const hasPlotly = doc.querySelectorAll(".plotly").length > 0
-                     || doc.querySelectorAll(".js-plotly-plot").length > 0
-                     || doc.querySelectorAll("svg").length > 0;
-      // Pokud data jsou načtena: hlavička má jméno + nejsme v loading state
-      if (hasName && !isLoading) {
-        // Ještě doplňkové čekání na Plotly render
+      const hasName  = hdrNazev && hdrNazev.textContent && hdrNazev.textContent.trim() !== "…" && hdrNazev.textContent.trim() !== "";
+      // Tabulky
+      const hasTables  = doc.querySelectorAll("table tr").length > 3;
+      // Plotly
+      const hasPlotly  = doc.querySelectorAll(".js-plotly-plot").length > 0;
+      // Obsah > 500 znaků (orientačně)
+      const hasContent = bodyLen > 500;
+
+      // Hotovo, pokud: NENI v loading + máme aspoň 2 ze 4 indikátorů
+      const indicators = (hasName ? 1 : 0) + (hasTables ? 1 : 0) + (hasPlotly ? 1 : 0) + (hasContent ? 1 : 0);
+      if (!isLoading && indicators >= 2) {
         await sleep(WAIT_RENDER);
         return true;
       }
+
+      // Text stable detection - když se text 5x po sobě nezmění (1.5s), bereme jako hotovo
+      if (bodyLen === lastTextLength && bodyLen > 200 && !isLoading) {
+        stableCount++;
+        if (stableCount >= 5) {
+          await sleep(WAIT_RENDER);
+          return true;
+        }
+      } else {
+        stableCount = 0;
+        lastTextLength = bodyLen;
+      }
     } catch(e) {
-      // cross-origin nebo iframe ještě neexistuje, opakuj
+      // ignore
     }
-    await sleep(400);
+    await sleep(300);
   }
-  // Timeout - vrátíme co je
-  console.warn("waitForDataLoaded: timeout po " + maxMs + "ms");
+  console.warn("waitForDataLoaded: timeout po " + maxMs + "ms, pokracuji s tim co je");
   return false;
 }
 
@@ -183,20 +203,4 @@ async function runExport() {
   for (let i = 0; i < PAGES.length; i++) {
     const { url, title } = PAGES[i];
     const stepEl = addStep(`[${i+1}/${PAGES.length}] ${title} – načítám…`);
-    setProgress((i / PAGES.length) * 90, `${i+1}/${PAGES.length}: ${title}`);
-
-    try {
-      const frame = await loadIframe(url);
-      stepEl.textContent = `[${i+1}/${PAGES.length}] ${title} – čekám na data…`;
-      const dataOk = await waitForDataLoaded(frame, WAIT_DATA_MAX);
-      if (!dataOk) {
-        stepEl.textContent = `⚠ [${i+1}/${PAGES.length}] ${title} – data se nenačetla v limitu, pokračuji`;
-      }
-      stepEl.textContent = `[${i+1}/${PAGES.length}] ${title} – kreslím screenshot…`;
-      const canvas = await captureFrame(frame, title);
-
-      // Vlož do PDF: zachovat aspect ratio, fit na A4 landscape
-      const imgData = canvas.toDataURL("image/jpeg", 0.92);
-      const imgW   = canvas.width;
-      const imgH   = canvas.height;
-  
+    setProgress((i / PAGES.length) * 90, `${i+1}/${PAGES.length}: 
