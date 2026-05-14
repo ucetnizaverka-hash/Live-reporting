@@ -4,7 +4,7 @@
   "ico": "123456789",
   "nace": "33.20",
   "nace_nazev": "Instalace prumyslovych stroju a zarizeni",
-  "updated": "2026-05-14T16:25:52",
+  "updated": "2026-05-14T16:51:22",
   "aktualni": {
     "label": "1.1.2024–9.5.2024",
     "rok": 2024,
@@ -189,6 +189,11 @@
         "X4": 1.4939,
         "X5": 0.9624
       },
+      "in05_x1": 1.1132,
+      "in05_x2": 9.0,
+      "in05_x3": 0.066,
+      "in05_x4": 1.4939,
+      "in05_x5": 0.9624,
       "altman_z": 1.167,
       "altman_pasmo": "sede",
       "altman_x": {
