@@ -257,16 +257,22 @@ loadData(d => {
   const _CFG = {responsive:true, displayModeBar:false};
   const _c = (rgb, i) => `rgba(${rgb},${Math.min(0.95, 0.6+i*0.15)})`;
 
-  // Rentabilita
+  // Rentabilita — *100 pro procenta, /10 pro desetinu
   Plotly.newPlot("ch-rent", [
     {name:"ROA %", x:labels, type:"bar",
-     y:allP.map(p => fA(p) ? Math.round(fEbit(p)/fA(p)*10)/10 : 0),
+     y:allP.map(p => fA(p) ? Math.round(fEbit(p)/fA(p)*1000)/10 : 0),
+     text:allP.map(p => fA(p) ? (Math.round(fEbit(p)/fA(p)*1000)/10).toFixed(1)+"%" : ""),
+     textposition:"outside",
      marker:{color:allP.map((_,i) => _c("45,74,158",i))}},
     {name:"ROE %", x:labels, type:"bar",
-     y:allP.map(p => fVK(p) ? Math.round(parseFloat(p.vh_za_obdobi||0)/fVK(p)*10)/10 : 0),
+     y:allP.map(p => fVK(p) ? Math.round(parseFloat(p.vh_za_obdobi||0)/fVK(p)*1000)/10 : 0),
+     text:allP.map(p => fVK(p) ? (Math.round(parseFloat(p.vh_za_obdobi||0)/fVK(p)*1000)/10).toFixed(1)+"%" : ""),
+     textposition:"outside",
      marker:{color:allP.map((_,i) => _c("52,211,153",i))}},
     {name:"ROS %", x:labels, type:"bar",
-     y:allP.map(p => fT(p) ? Math.round(parseFloat(p.vh_za_obdobi||0)/fT(p)*10)/10 : 0),
+     y:allP.map(p => fT(p) ? Math.round(parseFloat(p.vh_za_obdobi||0)/fT(p)*1000)/10 : 0),
+     text:allP.map(p => fT(p) ? (Math.round(parseFloat(p.vh_za_obdobi||0)/fT(p)*1000)/10).toFixed(1)+"%" : ""),
+     textposition:"outside",
      marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
   ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
 
@@ -298,12 +304,4 @@ loadData(d => {
 
   // Zadluženost
   Plotly.newPlot("ch-zad", [
-    {name:"Celková zadluženost %", x:labels, type:"bar",
-     y:allP.map(p => Math.round(parseFloat(p.celkova_zadluzenost||0)*10)/10),
-     marker:{color:allP.map((_,i) => _c("220,38,38",i))}},
-    {name:"Míra zadluženosti %",   x:labels, type:"bar",
-     y:allP.map(p => fVK(p) ? Math.round(fCZ(p)/fVK(p)*100*10)/10 : 0),
-     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
-  ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
-});
-</script></body></html>
+    {name:"Celková zadlu�

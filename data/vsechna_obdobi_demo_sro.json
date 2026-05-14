@@ -4,7 +4,7 @@
   "ico": "123456789",
   "nace": "33.20",
   "nace_nazev": "Instalace prumyslovych stroju a zarizeni",
-  "updated": "2026-05-14T17:47:22",
+  "updated": "2026-05-14T18:38:58",
   "aktualni": {
     "label": "1.1.2024–9.5.2024",
     "rok": 2024,
@@ -136,7 +136,9 @@
     "vlastni_kapital": 228000,
     "obezna_aktiva": 2632000,
     "pocet_zamestnancu": 0,
-    "ucelovy_vzz": {}
+    "ucelovy_vzz": {},
+    "dfm": 0,
+    "kfm": 0
   },
   "periody": [
     {
@@ -148,15 +150,38 @@
       "stala_netto": 407226.64,
       "dnm_netto": 0.0,
       "dhm_netto": 407226.64,
+      "dfm": 0,
       "obezna_netto": 2605296.52,
       "zasoby": 1249957.06,
       "pohledavky_kr": 341914.74,
+      "kfm": 0,
       "pp": 1013424.72,
+      "cr_aktiv": 1000.0,
+      "cr_pasiv": 64844.83,
       "pasiva_celkem": 3013523.16,
       "vk": 241547.19,
+      "zk": 100000.0,
+      "kapitalove_fondy": 0,
+      "fondy_ze_zisku": 0,
+      "vh_min_let": -28453,
+      "vh_za_obdobi": 170000,
       "cizi_zdroje": 2707131.14,
+      "rezervy": 0,
       "zav_kr": 2707131.14,
       "zav_dl": 0,
+      "dhm_pozemky_stavby": null,
+      "dhm_movite": null,
+      "dhm_zalohy": null,
+      "zasoby_zbozi": null,
+      "zasoby_mat": null,
+      "zasoby_nv": null,
+      "pp_pokladna": 917182.0,
+      "pp_ucty": 96242.72,
+      "zav_dodavatele": null,
+      "zav_mzdy": null,
+      "zav_sp_zp": null,
+      "zav_stat_dan": null,
+      "zav_jine": null,
       "trzby_celkem": 4502000,
       "cisty_obrat": 4513000,
       "trzby_sluzby": 1523000,
@@ -164,7 +189,7 @@
       "vyk_spotreba": 3625000,
       "nak_zbozi": 1391903,
       "spotreba_mat_energie": 311060,
-      "sluzby": 1920826,
+      "sluzby": 1922037,
       "osobni_naklady": 450000,
       "mzdy": 450000,
       "odpisy": 153000,
@@ -176,13 +201,12 @@
       "financni_vh": -29000,
       "vh_pred_zdanenim": 170000,
       "dan": 0,
-      "vh_za_obdobi": 170000,
       "roa": 5.64,
       "roe": 70.38,
       "ros": 3.78,
       "bezna_likvidita": 0.96,
-      "okamzita_likvidita": null,
-      "celkova_zadluzenost": 91.98,
+      "okamzita_likvidita": 0.37,
+      "celkova_zadluzenost": 89.83,
       "in05": 1.167,
       "in05_pasmo": "sede",
       "in05_x": {
@@ -206,11 +230,11 @@
         "X4": 1.4939,
         "X5": 0.9624
       },
-      "pohotova_likvidita": null,
-      "cf_provozni": null,
-      "cf_investicni": null,
-      "cf_financni": null,
-      "pp_zacatek": null,
+      "pohotova_likvidita": 0.5,
+      "cf_provozni": 323000,
+      "cf_investicni": 0,
+      "cf_financni": 0,
+      "pp_zacatek": 690425,
       "pp_konec_cf": 1013424.72,
       "cf_zmena_cr_pas": null,
       "cf_zmeny_pk_celkem": null,
@@ -219,7 +243,8 @@
       "doba_obratu_pohl": 27.3,
       "doba_obratu_zav": 216.5,
       "urokove_kryti": null,
-      "pocet_zamestnancu": null
+      "pocet_zamestnancu": null,
+      "cf_cista_zmena": 323000
     }
   ],
   "sektor": {
@@ -289,7 +314,7 @@
     "vyk_spotreba": 2995000,
     "nak_zbozi": 1150000,
     "spotreba_mat_energie": 257000,
-    "sluzby": 1587000,
+    "sluzby": 1588000,
     "osobni_naklady": 87000,
     "mzdy": 87000,
     "odpisy": 154000,
@@ -441,6 +466,8 @@
           "spravni": 15358.8
         }
       }
-    }
+    },
+    "dfm": 0,
+    "kfm": 0
   }
 }
