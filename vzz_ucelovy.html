@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Účelový VZZ | Živé výkaznictví</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+<style>
+  .tbl-uvzz { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .tbl-uvzz th, .tbl-uvzz td { padding: 9px 14px; text-align: right; border-bottom: 1px solid rgba(0,0,0,0.07); }
+  .tbl-uvzz th:first-child, .tbl-uvzz td:first-child { text-align: left; font-weight: 500; color: #1B2469; }
+  .tbl-uvzz th { background: #1B2469; color: #fff; font-weight: 600; }
+  .tbl-uvzz tr.section { background: #f8fafc; font-weight: 700; }
+  .tbl-uvzz tr.section td { color: #1B2469; font-size: 14px; padding-top: 12px; padding-bottom: 12px; }
+  .tbl-uvzz tr.subtotal { background: #fef3c7; font-weight: 700; }
+  .tbl-uvzz tr.total { background: #1B2469; color: #fff; font-weight: 700; }
+  .tbl-uvzz tr.total td { color: #fff; font-size: 15px; }
+  .tbl-uvzz .pos { color: #16a34a; font-weight: 600; }
+  .tbl-uvzz .neg { color: #dc2626; font-weight: 600; }
+  .note { background: rgba(212,149,42,0.08); border-left: 4px solid #D4952A; padding: 14px 18px; border-radius: 6px; margin-top: 18px; font-size: 13px; color: #111827; line-height: 1.55; }
+  .note strong { color: #1B2469; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+  @media (max-width: 1100px) { .grid2 { grid-template-columns: 1fr; } }
+  .card h2 { color: #1B2469; font-size: 18px; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 2px solid #D4952A; }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+  .pill.live { background: #1B2469; color: #fff; }
+  .pill.archived { background: #6b7280; color: #fff; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <span class="nav-logo">22</span>
+    <div>
+      <div class="nav-title"><span id="hdr-nazev">…</span><span id="hdr-period"></span></div>
+      <div class="nav-sub">IČ: <span id="hdr-ico"></span> · Kancelář 22HLAV</div>
+    </div>
+  </div>
+  <div id="nav-links" class="nav-grid"></div>
+  <div></div>
+</nav>
+
+<main class="page-wrap">
+
+  <header class="page-hdr">
+    <h1>Účelový výkaz zisku a ztráty</h1>
+    <p class="page-sub">Dle Vyhlášky 500/2002 Sb., Příloha č. 3 — porovnání 2023 a 2024</p>
+  </header>
+
+  <div class="card" style="margin-bottom: 20px;">
+    <div style="overflow-x: auto;">
+      <table class="tbl-uvzz" id="tbl-uvzz">
+        <thead>
+          <tr>
+            <th style="width: 40%;">Položka</th>
+            <th>2023</th>
+            <th>2024</th>
+            <th>Δ abs (Kč)</th>
+            <th>Δ rel (%)</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-body"></tbody>
+      </table>
+    </div>
+    <div class="note">
+      <strong>Disclaimer:</strong> Účelový VZZ je sestaven pomocí <strong>standardního alokačního klíče</strong> pro NACE 33 (instalace průmyslových strojů), protože účetnictví neeviduje střediska.
+      Náklady jsou rozděleny dle typických poměrů: 504 zboží → 100 % COGS; 501-503 materiál → 90 % COGS, 10 % správní;
+      511-518 služby/opravy → 60 % COGS, 20 % odbyt., 20 % správní; 521-528 osobní → 60/20/20; 551-552 odpisy → 80/10/10.
+      <strong>Pro přesné sestavení účelového VZZ je nutné vést účetnictví po střediscích nebo zakázkách</strong>
+      (§ 5 vyhl. 500/2002, ČÚS 019 — Náklady a výnosy).
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Struktura nákladů 2023</h2>
+      <div id="chart-2023" style="height: 380px;"></div>
+    </div>
+    <div class="card">
+      <h2>Struktura nákladů 2024</h2>
+      <div id="chart-2024" style="height: 380px;"></div>
+    </div>
+  </div>
+
+</main>
+
+<script src="common.js"></script>
+<script>
+const kc = v => (v == null || isNaN(v)) ? "—" : Math.round(v).toLocaleString("cs-CZ") + " Kč";
+const pct = v => (v == null || isNaN(v)) ? "—" : (v >= 0 ? "+" : "") + v.toFixed(1) + " %";
+
+function delta(now, prev) {
+  if (now == null || prev == null) return [null, null];
+  const abs = now - prev;
+  const rel = prev !== 0 ? (abs / Math.abs(prev) * 100) : null;
+  return [abs, rel];
+}
+
+function row(label, v23, v24, opts={}) {
+  const [d_abs, d_rel] = delta(v24, v23);
+  const cls = opts.cls || "";
+  const fmt = opts.fmt || kc;
+  const cls_delta = (d_abs == null) ? "" : (d_abs >= 0 ? (opts.invert ? "neg" : "pos") : (opts.invert ? "pos" : "neg"));
+  return `<tr class="${cls}">
+    <td>${label}</td>
+    <td>${fmt(v23)}</td>
+    <td>${fmt(v24)}</td>
+    <td class="${cls_delta}">${d_abs == null ? "—" : fmt(d_abs)}</td>
+    <td class="${cls_delta}">${pct(d_rel)}</td>
+  </tr>`;
+}
+
+function vykresliTabulku(u23, u24) {
+  const tb = document.getElementById("tbl-body");
+  const g = (u, k) => (u && u[k] != null) ? u[k] : 0;
+  let html = "";
+
+  html += row("I. Tržby z prodeje výrobků a služeb", g(u23,"trzby_sluzby"), g(u24,"trzby_sluzby"));
+  html += row("II. Tržby z prodeje zboží",            g(u23,"trzby_zbozi"),  g(u24,"trzby_zbozi"));
+  html += row("Tržby celkem",                          g(u23,"trzby_celkem"), g(u24,"trzby_celkem"), {cls:"section"});
+  html += row("A. Náklady prodeje (COGS)",            -g(u23,"naklady_prodeje"), -g(u24,"naklady_prodeje"), {invert:true});
+  html += row("* Hrubý zisk",                          g(u23,"hruby_zisk"),   g(u24,"hruby_zisk"), {cls:"subtotal"});
+  html += row("B. Odbytové náklady",                  -g(u23,"odbytove_naklady"), -g(u24,"odbytove_naklady"), {invert:true});
+  html += row("C. Správní režie",                     -g(u23,"spravni_rezie"),    -g(u24,"spravni_rezie"), {invert:true});
+  html += row("III. Ostatní provozní výnosy",          g(u23,"ost_prov_vyn"), g(u24,"ost_prov_vyn"));
+  html += row("D. Ostatní provozní náklady",          -g(u23,"ost_prov_nak"), -g(u24,"ost_prov_nak"), {invert:true});
+  html += row("* Provozní výsledek hospodaření",       g(u23,"provozni_vh"),  g(u24,"provozni_vh"), {cls:"subtotal"});
+  html += row("Výnosové úroky",                        g(u23,"vyn_uroky"),    g(u24,"vyn_uroky"));
+  html += row("Nákladové úroky",                      -g(u23,"nak_uroky"),   -g(u24,"nak_uroky"), {invert:true});
+  html += row("Ostatní finanční výnosy",               g(u23,"ost_fin_vyn"),  g(u24,"ost_fin_vyn"));
+  html += row("Ostatní finanční náklady",             -g(u23,"ost_fin_nak"), -g(u24,"ost_fin_nak"), {invert:true});
+  html += row("* Finanční výsledek hospodaření",       g(u23,"financni_vh"),  g(u24,"financni_vh"), {cls:"subtotal"});
+  html += row("** VH před zdaněním",                   g(u23,"vh_pred_zdanenim"), g(u24,"vh_pred_zdanenim"), {cls:"subtotal"});
+  html += row("L. Daň z příjmů",                      -g(u23,"dan"),         -g(u24,"dan"), {invert:true});
+  html += row("*** VH za účetní období",               g(u23,"vh_po_zdaneni"),g(u24,"vh_po_zdaneni"), {cls:"total"});
+
+  tb.innerHTML = html;
+}
+
+function vykresliKolac(divId, u, rok) {
+  if (!u) {
+    document.getElementById(divId).innerHTML = `<div style="text-align:center;padding:40px;color:#6b7280;">Data nedostupná pro ${rok}</div>`;
+    return;
+  }
+  const data = [{
+    type: "pie",
+    hole: 0.45,
+    labels: ["Náklady prodeje (COGS)", "Odbytové náklady", "Správní režie", "Ostatní provozní"],
+    values: [u.naklady_prodeje, u.odbytove_naklady, u.spravni_rezie, u.ost_prov_nak],
+    marker: { colors: ["#1B2469", "#2d4a9e", "#D4952A", "#9ca3af"], line: { color: "#fff", width: 2 } },
+    textinfo: "label+percent",
+    textposition: "outside",
+    hovertemplate: "%{label}<br>%{value:,.0f} Kč<br>%{percent}<extra></extra>",
+  }];
+  const layout = {
+    showlegend: false,
+    margin: { l: 10, r: 10, t: 10, b: 10 },
+    paper_bgcolor: "transparent",
+    plot_bgcolor:  "transparent",
+    annotations: [{
+      text: `<b>${rok}</b><br><span style="font-size:12px">${Math.round(u.naklady_prodeje+u.odbytove_naklady+u.spravni_rezie+u.ost_prov_nak).toLocaleString("cs-CZ")} Kč</span>`,
+      showarrow: false, font: { size: 18, color: "#1B2469" },
+    }],
+  };
+  Plotly.newPlot(divId, data, layout, { displayModeBar: false, responsive: true });
+}
+
+async function render() {
+  // Načti historiku (obsahuje ucelovy_vzz pro každou periodu)
+  try {
+    const r = await fetch(`https://raw.githubusercontent.com/ucetnizaverka-hash/Live-reporting/main/data/historika_${KLIENT_ID}.json?t=${Date.now()}`);
+    const hist = await r.json();
+    renderNav({ nazev: hist.meta.nazev, ico: hist.meta.ico, klient_id: KLIENT_ID, aktualni: {}, periody: hist.periody });
+
+    const p23 = hist.periody.find(p => p.rok === 2023);
+    const p24 = hist.periody.find(p => p.rok === 2024);
+    const u23 = p23 ? p23.ucelovy_vzz : null;
+    const u24 = p24 ? p24.ucelovy_vzz : null;
+
+    vykresliTabulku(u23, u24);
+    vykresliKolac("chart-2023", u23, "Rok 2023");
+    vykresliKolac("chart-2024", u24, "Rok 2024");
+  } catch(e) {
+    document.getElementById("tbl-body").innerHTML = `<tr><td colspan="5" style="text-align:center;color:#dc2626;padding:30px;">Chyba načítání: ${e.message}</td></tr>`;
+  }
+}
+render();
+</script>
+
+</body>
+</html>

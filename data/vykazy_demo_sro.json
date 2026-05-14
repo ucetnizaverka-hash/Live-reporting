@@ -8,7 +8,7 @@
     "period_label": "1.1.2024–9.5.2024",
     "datum_od": "2024-01-01",
     "datum_do": "2024-05-09",
-    "updated": "2026-05-14T11:12:17",
+    "updated": "2026-05-14T11:55:25",
     "format": "plny",
     "pocet_zamestnancu": 0,
     "zdroj": "prubezne_vstup.xlsx",
@@ -94,6 +94,73 @@
     "vh_po_zdaneni": -15000,
     "cisty_obrat": 905000
   },
+  "ucelovy_vzz": {
+    "trzby_sluzby": 509658.94,
+    "trzby_zbozi": 395420.61,
+    "trzby_celkem": 905079.55,
+    "naklady_prodeje": 621364.6,
+    "hruby_zisk": 283714.95,
+    "odbytove_naklady": 119564.91,
+    "spravni_rezie": 153783.42,
+    "ost_prov_vyn": 0,
+    "ost_prov_nak": 17149.71,
+    "provozni_vh": -6783.09,
+    "vyn_uroky": 0,
+    "nak_uroky": 0,
+    "ost_fin_vyn": 0,
+    "ost_fin_nak": 7648.07,
+    "financni_vh": -7648.07,
+    "vh_pred_zdanenim": -14431.16,
+    "dan": 0.0,
+    "vh_po_zdaneni": -14431.16,
+    "_metoda": "detailni_z_uctu",
+    "_alokacni_klic": "Standardní alokační klíč pro NACE 33 (bez středisek)",
+    "_disclaimer": "Účelový VZZ je sestaven s pomocí standardního alokačního klíče, protože účetnictví nemá střediska. Pro přesné rozdělení do funkčních skupin je nutné vést účetnictví po střediscích.",
+    "_detail_uctu": {
+      "501": {
+        "hodnota": 33020.01,
+        "cogs": 29718.01,
+        "odbyt": 0.0,
+        "spravni": 3302.0
+      },
+      "504": {
+        "hodnota": 244992.61,
+        "cogs": 244992.61,
+        "odbyt": 0.0,
+        "spravni": 0.0
+      },
+      "511": {
+        "hodnota": 43462.76,
+        "cogs": 0.0,
+        "odbyt": 0.0,
+        "spravni": 43462.76
+      },
+      "513": {
+        "hodnota": 12546.25,
+        "cogs": 0.0,
+        "odbyt": 12546.25,
+        "spravni": 0.0
+      },
+      "518": {
+        "hodnota": 476495.3,
+        "cogs": 285897.18,
+        "odbyt": 95299.06,
+        "spravni": 95299.06
+      },
+      "521": {
+        "hodnota": 33000.0,
+        "cogs": 19800.0,
+        "odbyt": 6600.0,
+        "spravni": 6600.0
+      },
+      "551": {
+        "hodnota": 51196.0,
+        "cogs": 40956.8,
+        "odbyt": 5119.6,
+        "spravni": 5119.6
+      }
+    }
+  },
   "cashflow": {
     "cf_vh_pred_zdanenim": -14000,
     "cf_odpisy": 51000,
@@ -175,9 +242,9 @@
     "zasoby": 1250000,
     "pohledavky_kr": 213000,
     "pp": 1169000,
-    "vk": 227000,
-    "zav_kr": 2762000,
-    "cizi_zdroje": 2762000,
+    "vk": 228000,
+    "zav_kr": 2761000,
+    "cizi_zdroje": 2761000,
     "trzby_vyrobky_sluzby": 510000,
     "trzby_zbozi": 395000,
     "trzby_celkem": 905000,
@@ -186,10 +253,10 @@
     "odpisy": 51000,
     "provozni_vh": -7000,
     "financni_vh": -8000,
-    "vh_pred_zdanenim": -14000,
+    "vh_pred_zdanenim": -15000,
     "dan_z_prijmu": 0.0,
-    "vh_za_obdobi": -14000,
+    "vh_za_obdobi": -15000,
     "cisty_obrat": 905000,
-    "archivovano": "2026-05-14T11:12:17"
+    "archivovano": "2026-05-14T11:55:25"
   }
 }
