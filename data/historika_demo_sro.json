@@ -3,7 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-14T14:56:55",
+    "updated": "2026-05-14T15:02:51",
     "roky": [
       2023,
       2024
@@ -135,199 +135,205 @@
       "mesice": 12,
       "period_label": "Rok 2024",
       "je_plny_rok": true,
-      "aktiva_netto": 2989000,
-      "stala_netto": 356000,
-      "obezna_netto": 2632000,
-      "zasoby": 1250000,
-      "pohledavky_kr": 213000,
-      "pp": 1169000,
-      "cr_aktiv": 1000,
-      "vk": 228000,
+      "aktiva_netto": 3063000,
+      "stala_netto": 254000,
+      "obezna_netto": 2807000,
+      "zasoby": 1075000,
+      "pohledavky_kr": 264000,
+      "pp": 1468000,
+      "cr_aktiv": 2000,
+      "vk": 245000,
       "rezervy": 0,
-      "cizi_zdroje": 2761000,
-      "zav_kr": 2761000,
+      "cizi_zdroje": 2738000,
+      "zav_kr": 2738000,
       "zav_dl": 0,
-      "cr_pasiv": 0.0,
-      "trzby_sluzby": 510000,
-      "trzby_zbozi": 395000,
-      "trzby_celkem": 905000,
-      "vyk_spotreba": 811000,
-      "osobni_naklady": 33000,
-      "odpisy": 51000,
-      "provozni_vh": -7000,
-      "financni_vh": -8000,
-      "vh_pred_zdanenim": -15000,
-      "vh_za_obdobi": -15000,
-      "cisty_obrat": 905000,
-      "roa": -0.48,
-      "roe": -6.35,
-      "ros": -1.59,
-      "ebitda": 44000,
-      "ebitda_marze": 4.86,
-      "bezna_likvidita": 0.95,
-      "okamzita_likvidita": 0.42,
-      "celkova_zadluzenost": 92.37,
-      "altman_z": 0.347,
-      "altman_pasmo": "cervene",
+      "cr_pasiv": 80000,
+      "trzby_sluzby": 1394000,
+      "trzby_zbozi": 1997000,
+      "trzby_celkem": 3391000,
+      "vyk_spotreba": 2995000,
+      "osobni_naklady": 87000,
+      "odpisy": 154000,
+      "provozni_vh": 81000,
+      "financni_vh": -25000,
+      "vh_pred_zdanenim": 56000,
+      "vh_za_obdobi": 3000,
+      "cisty_obrat": 3391000,
+      "roa": 1.83,
+      "roe": 1.31,
+      "ros": 1.65,
+      "ebitda": 235000,
+      "ebitda_marze": 6.93,
+      "bezna_likvidita": 1.03,
+      "okamzita_likvidita": 0.54,
+      "celkova_zadluzenost": 89.39,
+      "altman_z": 1.398,
+      "altman_pasmo": "sede",
       "horiz": {
         "aktiva_netto": {
-          "abs": -24523.0,
-          "pct": -0.8
+          "abs": 49477.0,
+          "pct": 1.6
         },
         "stala_netto": {
-          "abs": -51227.0,
-          "pct": -12.6
+          "abs": -153227.0,
+          "pct": -37.6
         },
         "obezna_netto": {
-          "abs": 26703.0,
-          "pct": 1.0
+          "abs": 201703.0,
+          "pct": 7.7
         },
         "zasoby": {
-          "abs": 43.0,
-          "pct": 0.0
+          "abs": -174957.0,
+          "pct": -14.0
         },
         "pohledavky_kr": {
-          "abs": -128915.0,
-          "pct": -37.7
+          "abs": -77915.0,
+          "pct": -22.8
         },
         "pp": {
-          "abs": 155575.0,
-          "pct": 15.4
+          "abs": 454575.0,
+          "pct": 44.9
         },
         "vk": {
-          "abs": -13547.0,
-          "pct": -5.6
+          "abs": 3453.0,
+          "pct": 1.4
         },
         "cizi_zdroje": {
-          "abs": 53869.0,
-          "pct": 2.0
+          "abs": 30869.0,
+          "pct": 1.1
         },
         "zav_kr": {
-          "abs": 53869.0,
-          "pct": 2.0
+          "abs": 30869.0,
+          "pct": 1.1
         },
         "trzby_celkem": {
-          "abs": -3597000,
-          "pct": -79.9
+          "abs": -1111000,
+          "pct": -24.7
         },
         "vyk_spotreba": {
-          "abs": -2814000,
-          "pct": -77.6
+          "abs": -630000,
+          "pct": -17.4
         },
         "osobni_naklady": {
-          "abs": -417000,
-          "pct": -92.7
+          "abs": -363000,
+          "pct": -80.7
         },
         "odpisy": {
-          "abs": -102000,
-          "pct": -66.7
+          "abs": 1000,
+          "pct": 0.7
         },
         "provozni_vh": {
-          "abs": -206000,
-          "pct": -103.5
+          "abs": -118000,
+          "pct": -59.3
         },
         "financni_vh": {
-          "abs": 21000,
-          "pct": 72.4
+          "abs": 4000,
+          "pct": 13.8
         },
         "vh_pred_zdanenim": {
-          "abs": -185000,
-          "pct": -108.8
+          "abs": -114000,
+          "pct": -67.1
         },
         "vh_za_obdobi": {
-          "abs": -185000,
-          "pct": -108.8
+          "abs": -167000,
+          "pct": -98.2
         },
         "cisty_obrat": {
-          "abs": -3608000,
-          "pct": -79.9
+          "abs": -1122000,
+          "pct": -24.9
         }
       },
       "vert_rozvaha": {
-        "stala_netto": 11.91,
-        "obezna_netto": 88.06,
-        "zasoby": 41.82,
-        "pohledavky_kr": 7.13,
-        "pp": 39.11,
-        "vk": 7.63,
-        "cizi_zdroje": 92.37,
-        "zav_kr": 92.37
+        "stala_netto": 8.29,
+        "obezna_netto": 91.64,
+        "zasoby": 35.1,
+        "pohledavky_kr": 8.62,
+        "pp": 47.93,
+        "vk": 8.0,
+        "cizi_zdroje": 89.39,
+        "zav_kr": 89.39
       },
       "vert_vzz": {
-        "trzby_sluzby": 56.35,
-        "trzby_zbozi": 43.65,
-        "vyk_spotreba": 89.61,
-        "osobni_naklady": 3.65,
-        "odpisy": 5.64,
-        "provozni_vh": -0.77,
-        "financni_vh": -0.88,
-        "vh_pred_zdanenim": -1.66,
-        "vh_za_obdobi": -1.66
+        "trzby_sluzby": 41.11,
+        "trzby_zbozi": 58.89,
+        "vyk_spotreba": 88.32,
+        "osobni_naklady": 2.57,
+        "odpisy": 4.54,
+        "provozni_vh": 2.39,
+        "financni_vh": -0.74,
+        "vh_pred_zdanenim": 1.65,
+        "vh_za_obdobi": 0.09
       },
       "ucelovy_vzz": {
-        "trzby_sluzby": 510000,
-        "trzby_zbozi": 395000,
-        "trzby_celkem": 905000,
-        "naklady_prodeje": 621000,
-        "hruby_zisk": 284000,
-        "odbytove_naklady": 120000,
-        "spravni_rezie": 154000,
-        "ost_prov_vyn": 0,
-        "ost_prov_nak": 17000,
-        "provozni_vh": -7000,
+        "trzby_sluzby": 1394000,
+        "trzby_zbozi": 1997000,
+        "trzby_celkem": 3391000,
+        "naklady_prodeje": 2412000,
+        "hruby_zisk": 979000,
+        "odbytove_naklady": 394000,
+        "spravni_rezie": 430000,
+        "ost_prov_vyn": 33000,
+        "ost_prov_nak": 107000,
+        "provozni_vh": 81000,
         "vyn_uroky": 0,
         "nak_uroky": 0,
         "ost_fin_vyn": 0,
-        "ost_fin_nak": 8000,
-        "financni_vh": -8000,
-        "vh_pred_zdanenim": -15000,
-        "dan": 0.0,
-        "vh_po_zdaneni": -15000,
+        "ost_fin_nak": 25000,
+        "financni_vh": -25000,
+        "vh_pred_zdanenim": 56000,
+        "dan": 53000,
+        "vh_po_zdaneni": 3000,
         "_metoda": "detailni_z_uctu",
         "_alokacni_klic": "Standardní alokační klíč pro NACE 33 (bez středisek)",
         "_disclaimer": "Účelový VZZ je sestaven s pomocí standardního alokačního klíče, protože účetnictví nemá střediska. Pro přesné rozdělení do funkčních skupin je nutné vést účetnictví po střediscích.",
         "_detail_uctu": {
           "501": {
-            "hodnota": 33020.01,
-            "cogs": 29718.01,
+            "hodnota": 134486.62,
+            "cogs": 121037.96,
             "odbyt": 0.0,
-            "spravni": 3302.0
+            "spravni": 13448.66
+          },
+          "502": {
+            "hodnota": 122864.78,
+            "cogs": 110578.3,
+            "odbyt": 0.0,
+            "spravni": 12286.48
           },
           "504": {
-            "hodnota": 244992.61,
-            "cogs": 244992.61,
+            "hodnota": 1150432.66,
+            "cogs": 1150432.66,
             "odbyt": 0.0,
             "spravni": 0.0
           },
           "511": {
-            "hodnota": 43462.76,
+            "hodnota": 86594.16,
             "cogs": 0.0,
             "odbyt": 0.0,
-            "spravni": 43462.76
+            "spravni": 86594.16
           },
           "513": {
-            "hodnota": 12546.25,
+            "hodnota": 75970.25,
             "cogs": 0.0,
-            "odbyt": 12546.25,
+            "odbyt": 75970.25,
             "spravni": 0.0
           },
           "518": {
-            "hodnota": 476495.3,
-            "cogs": 285897.18,
-            "odbyt": 95299.06,
-            "spravni": 95299.06
+            "hodnota": 1424251.31,
+            "cogs": 854550.79,
+            "odbyt": 284850.26,
+            "spravni": 284850.26
           },
           "521": {
-            "hodnota": 33000.0,
-            "cogs": 19800.0,
-            "odbyt": 6600.0,
-            "spravni": 6600.0
+            "hodnota": 87000.0,
+            "cogs": 52200.0,
+            "odbyt": 17400.0,
+            "spravni": 17400.0
           },
           "551": {
-            "hodnota": 51196.0,
-            "cogs": 40956.8,
-            "odbyt": 5119.6,
-            "spravni": 5119.6
+            "hodnota": 153588.0,
+            "cogs": 122870.4,
+            "odbyt": 15358.8,
+            "spravni": 15358.8
           }
         }
       }
