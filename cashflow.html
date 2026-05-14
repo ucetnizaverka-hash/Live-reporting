@@ -171,12 +171,11 @@ loadData(d => {
     SEP(),
 
     // ---- CELKEM ----
-    R("F.",      "Čisté zvýšení, resp. snížení peněžních prostředků (A.***+B.***+C.***)", "35", "cf_cista_zmena",  {bold:true, negOk:true}),
-    R("R.",      "Stav peněžních prostředků a ekvivalentů na konci účetního období",    "36", "pp_konec_cf",       {bold:true}),
+    R("F.",      "Čisté zvýšení, resp. snížení peněžních prostředků (A.***+B.***+C.***)", "35",
+        p => (v0(p,'cf_cista_zmena') || (v0(p,'cf_provozni') + v0(p,'cf_investicni') + v0(p,'cf_financni'))),
+        {bold:true, negOk:true}),
+    R("R.",      "Stav peněžních prostředků a ekvivalentů na konci účetního období",    "36",
+        p => (v0(p,'pp_konec_cf') || (v0(p,'pp_zacatek') + v0(p,'cf_provozni') + v0(p,'cf_investicni') + v0(p,'cf_financni'))),
+        {bold:true}),
     SEP(),
-    R("",        "Kontrola: PP z rozvahy (účty 211+221)",                                "",  p => v0(p,'penezni_prostredky') || v0(p,'pp_konec_rozvaha') || v0(p,'pp'), {note:false}),
-  ].join("");
-
-});
-</script>
-</body></html>
+    R("",      
