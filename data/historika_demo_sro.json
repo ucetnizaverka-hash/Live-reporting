@@ -3,7 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-14T11:13:44",
+    "updated": "2026-05-14T11:56:33",
     "roky": [
       2023,
       2024
@@ -68,6 +68,61 @@
         "financni_vh": -0.64,
         "vh_pred_zdanenim": 3.78,
         "vh_za_obdobi": 3.78
+      },
+      "ucelovy_vzz": {
+        "trzby_sluzby": 1523000,
+        "trzby_zbozi": 2979000,
+        "trzby_celkem": 4502000,
+        "naklady_prodeje": 3401520.0,
+        "hruby_zisk": 1100480.0,
+        "odbytove_naklady": 382446.0,
+        "spravni_rezie": 444034.0,
+        "ost_prov_vyn": 0,
+        "ost_prov_nak": 0,
+        "provozni_vh": 274000.0,
+        "vyn_uroky": 0,
+        "nak_uroky": 0,
+        "ost_fin_vyn": 0,
+        "ost_fin_nak": 0,
+        "financni_vh": 0,
+        "vh_pred_zdanenim": 170000,
+        "dan": 0,
+        "vh_po_zdaneni": 170000,
+        "_metoda": "agregovany",
+        "_alokacni_klic": "Standardní alokační klíč pro NACE 33 (bez středisek)",
+        "_disclaimer": "Účelový VZZ je sestaven s pomocí standardního alokačního klíče, protože účetnictví nemá střediska. Pro přesné rozdělení do funkčních skupin je nutné vést účetnictví po střediscích.",
+        "_detail_kategorii": {
+          "nak_zbozi": {
+            "hodnota": 2085300.0,
+            "cogs": 2085300.0,
+            "odbyt": 0.0,
+            "spravni": 0.0
+          },
+          "spotreba_mat": {
+            "hodnota": 615880.0,
+            "cogs": 554292.0,
+            "odbyt": 0.0,
+            "spravni": 61588.0
+          },
+          "sluzby": {
+            "hodnota": 923820.0,
+            "cogs": 369528.0,
+            "odbyt": 277146.0,
+            "spravni": 277146.0
+          },
+          "osobni": {
+            "hodnota": 450000,
+            "cogs": 270000.0,
+            "odbyt": 90000.0,
+            "spravni": 90000.0
+          },
+          "odpisy": {
+            "hodnota": 153000,
+            "cogs": 122400.0,
+            "odbyt": 15300.0,
+            "spravni": 15300.0
+          }
+        }
       }
     },
     {
@@ -200,6 +255,61 @@
         "financni_vh": -0.74,
         "vh_pred_zdanenim": 1.65,
         "vh_za_obdobi": 0.09
+      },
+      "ucelovy_vzz": {
+        "trzby_sluzby": 1394000,
+        "trzby_zbozi": 1997000,
+        "trzby_celkem": 3391000,
+        "naklady_prodeje": 2531560.0,
+        "hruby_zisk": 859440.0,
+        "odbytove_naklady": 320278.0,
+        "spravni_rezie": 384162.0,
+        "ost_prov_vyn": 0,
+        "ost_prov_nak": 0,
+        "provozni_vh": 155000.0,
+        "vyn_uroky": 0,
+        "nak_uroky": 0,
+        "ost_fin_vyn": 0,
+        "ost_fin_nak": 0,
+        "financni_vh": 0,
+        "vh_pred_zdanenim": 56000,
+        "dan": 0,
+        "vh_po_zdaneni": 3000,
+        "_metoda": "agregovany",
+        "_alokacni_klic": "Standardní alokační klíč pro NACE 33 (bez středisek)",
+        "_disclaimer": "Účelový VZZ je sestaven s pomocí standardního alokačního klíče, protože účetnictví nemá střediska. Pro přesné rozdělení do funkčních skupin je nutné vést účetnictví po střediscích.",
+        "_detail_kategorii": {
+          "nak_zbozi": {
+            "hodnota": 1397900.0,
+            "cogs": 1397900.0,
+            "odbyt": 0.0,
+            "spravni": 0.0
+          },
+          "spotreba_mat": {
+            "hodnota": 638840.0,
+            "cogs": 574956.0,
+            "odbyt": 0.0,
+            "spravni": 63884.0
+          },
+          "sluzby": {
+            "hodnota": 958260.0,
+            "cogs": 383304.0,
+            "odbyt": 287478.0,
+            "spravni": 287478.0
+          },
+          "osobni": {
+            "hodnota": 87000,
+            "cogs": 52200.0,
+            "odbyt": 17400.0,
+            "spravni": 17400.0
+          },
+          "odpisy": {
+            "hodnota": 154000,
+            "cogs": 123200.0,
+            "odbyt": 15400.0,
+            "spravni": 15400.0
+          }
+        }
       }
     }
   ],
