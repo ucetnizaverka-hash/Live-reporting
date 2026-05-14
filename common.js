@@ -100,19 +100,17 @@ function renderNav(d) {
     document.getElementById("hdr-ico").textContent = d ? (d.ico||"") : "";
 
   const histPages = [
-    {href:"historika.html",    label:"Historická analýza"},
-    {href:"rozvaha.html",      label:"Rozvaha"},
-    {href:"vzz.html",          label:"VZZ – druhový"},
-    {href:"vzz_ucelovy.html",  label:"VZZ – účelový"},
-    {href:"cashflow.html",     label:"Cash Flow"},
+    {href:"historika.html", label:"Historická analýza"},
+    {href:"rozvaha.html",   label:"Rozvaha"},
+    {href:"vzz.html",       label:"VZZ"},
+    {href:"cashflow.html",  label:"Cash Flow"},
   ];
   const livePages = [
-    {href:"index.html",        label:"Úvodní stránka"},
-    {href:"rozvaha.html",      label:"Rozvaha"},
-    {href:"vzz.html",          label:"VZZ – druhový"},
-    {href:"vzz_ucelovy.html",  label:"VZZ – účelový"},
-    {href:"cashflow.html",     label:"Cash Flow"},
-    {href:"ukazatele.html",    label:"Ukazatele"},
+    {href:"index.html",     label:"Úvodní stránka"},
+    {href:"rozvaha.html",   label:"Rozvaha"},
+    {href:"vzz.html",       label:"VZZ"},
+    {href:"cashflow.html",  label:"Cash Flow"},
+    {href:"ukazatele.html", label:"Ukazatele"},
   ];
 
   // Hist stranky vzdy s #rocni, live stranky bez hashe
@@ -243,3 +241,4 @@ function trendArrow(cur, prev) {
     ? '<span class="delta up">▲ ' + Math.abs(d).toFixed(1) + '</span>'
     : '<span class="delta down">▼ ' + Math.abs(d).toFixed(1) + '</span>';
 }
+                                                                                                                                                                             
