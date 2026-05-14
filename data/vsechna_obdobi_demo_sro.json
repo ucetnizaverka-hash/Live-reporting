@@ -4,7 +4,7 @@
   "ico": "123456789",
   "nace": "33.20",
   "nace_nazev": "Instalace prumyslovych stroju a zarizeni",
-  "updated": "2026-05-14T14:12:48",
+  "updated": "2026-05-14T14:55:09",
   "aktualni": {
     "label": "1.1.2024–9.5.2024",
     "rok": 2024,
@@ -300,24 +300,24 @@
     "rok": 2024,
     "mesice": 12,
     "period_label": "1.1.2024–31.12.2024",
-    "aktiva_netto": 3061000,
+    "aktiva_netto": 3063000,
     "stala_netto": 254000,
     "dnm_netto": 0.0,
     "dhm_netto": 254000,
-    "obezna_netto": 2806000,
+    "obezna_netto": 2807000,
     "zasoby": 1075000,
     "pohledavky_kr": 264000,
     "pp": 1468000,
-    "pasiva_celkem": 3061000,
+    "pasiva_celkem": 3063000,
     "vk": 245000,
     "zk": 100000,
     "vh_min_let": 142000,
-    "nz_min_let": null,
-    "ztrata_min_let": null,
-    "jiný_vh_min": null,
+    "nz_min_let": 142000,
+    "ztrata_min_let": 0.0,
+    "jiný_vh_min": 0.0,
     "rezervy": 0,
-    "cizi_zdroje": 2737000,
-    "zav_kr": 2737000,
+    "cizi_zdroje": 2738000,
+    "zav_kr": 2738000,
     "zav_dl": 0,
     "cr_aktiv": 2000,
     "cr_pasiv": 80000,
@@ -399,11 +399,11 @@
       "X5": 1.0254
     },
     "pohotova_likvidita": 0.63,
-    "cf_provozni": 454000,
-    "cf_investicni": 0.0,
+    "cf_provozni": 507000,
+    "cf_investicni": 33000,
     "cf_financni": 0.0,
     "pp_zacatek": 1013000,
-    "pp_konec_cf": 1468000,
+    "pp_konec_cf": 1553000,
     "cf_vh_pred_zdanenim": 56000,
     "cf_odpisy": 154000,
     "cf_nak_uroky": 0,
@@ -421,10 +421,82 @@
     "doba_obratu_pohl": 28.0,
     "doba_obratu_zav": 290.6,
     "urokove_kryti": null,
-    "aktiva_celkem": 3061000,
+    "aktiva_celkem": 3063000,
     "vlastni_kapital": 245000,
-    "obezna_aktiva": 2806000,
+    "obezna_aktiva": 2807000,
     "pocet_zamestnancu": 0,
-    "ucelovy_vzz": {}
+    "ucelovy_vzz": {
+      "trzby_sluzby": 1394000,
+      "trzby_zbozi": 1997000,
+      "trzby_celkem": 3391000,
+      "naklady_prodeje": 2412000,
+      "hruby_zisk": 979000,
+      "odbytove_naklady": 394000,
+      "spravni_rezie": 430000,
+      "ost_prov_vyn": 33000,
+      "ost_prov_nak": 107000,
+      "provozni_vh": 81000,
+      "vyn_uroky": 0,
+      "nak_uroky": 0,
+      "ost_fin_vyn": 0,
+      "ost_fin_nak": 25000,
+      "financni_vh": -25000,
+      "vh_pred_zdanenim": 56000,
+      "dan": 53000,
+      "vh_po_zdaneni": 3000,
+      "_metoda": "detailni_z_uctu",
+      "_alokacni_klic": "Standardní alokační klíč pro NACE 33 (bez středisek)",
+      "_disclaimer": "Účelový VZZ je sestaven s pomocí standardního alokačního klíče, protože účetnictví nemá střediska. Pro přesné rozdělení do funkčních skupin je nutné vést účetnictví po střediscích.",
+      "_detail_uctu": {
+        "501": {
+          "hodnota": 134486.62,
+          "cogs": 121037.96,
+          "odbyt": 0.0,
+          "spravni": 13448.66
+        },
+        "502": {
+          "hodnota": 122864.78,
+          "cogs": 110578.3,
+          "odbyt": 0.0,
+          "spravni": 12286.48
+        },
+        "504": {
+          "hodnota": 1150432.66,
+          "cogs": 1150432.66,
+          "odbyt": 0.0,
+          "spravni": 0.0
+        },
+        "511": {
+          "hodnota": 86594.16,
+          "cogs": 0.0,
+          "odbyt": 0.0,
+          "spravni": 86594.16
+        },
+        "513": {
+          "hodnota": 75970.25,
+          "cogs": 0.0,
+          "odbyt": 75970.25,
+          "spravni": 0.0
+        },
+        "518": {
+          "hodnota": 1424251.31,
+          "cogs": 854550.79,
+          "odbyt": 284850.26,
+          "spravni": 284850.26
+        },
+        "521": {
+          "hodnota": 87000.0,
+          "cogs": 52200.0,
+          "odbyt": 17400.0,
+          "spravni": 17400.0
+        },
+        "551": {
+          "hodnota": 153588.0,
+          "cogs": 122870.4,
+          "odbyt": 15358.8,
+          "spravni": 15358.8
+        }
+      }
+    }
   }
 }
