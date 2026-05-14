@@ -8,13 +8,13 @@
     "period_label": "1.1.2024–9.5.2024",
     "datum_od": "2024-01-01",
     "datum_do": "2024-05-09",
-    "updated": "2026-05-14T10:37:22",
+    "updated": "2026-05-14T10:57:07",
     "kategorie_uj": "mikro",
-    "rozvaha_format": "mikro",
-    "vzz_format": "zkraceny",
-    "priloha_format": "zkracena",
-    "cf_povinne": false,
-    "zmeny_vk_povinne": false,
+    "rozvaha_format": "plny",
+    "vzz_format": "plny",
+    "priloha_format": "plna",
+    "cf_povinne": true,
+    "zmeny_vk_povinne": true,
     "audit_povinny": false,
     "pocet_zamestnancu": 0,
     "zdroj": "prubezne_vstup.xlsx",
@@ -196,6 +196,6 @@
     "dan_z_prijmu": 0.0,
     "vh_za_obdobi": -14000,
     "cisty_obrat": 905000,
-    "archivovano": "2026-05-14T10:37:22"
+    "archivovano": "2026-05-14T10:57:07"
   }
 }
