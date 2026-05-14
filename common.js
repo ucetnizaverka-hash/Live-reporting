@@ -132,7 +132,7 @@ function renderNav(d) {
     <div class="nav-group">
       <span class="nav-glbl">Export</span>
       <div class="nav-glinks">
-        <a href="export.html" class="nav-lnk" style="background:linear-gradient(135deg,#D4952A,#f0b652);color:#1B2469;font-weight:600;border-radius:6px;padding:6px 12px;">📄 Stáhnout vše do PDF</a>
+        <a href="export.html" class="nav-lnk" style="background:linear-gradient(135deg,#D4952A,#f0b652);color:#1B2469;font-weight:600;border-radius:6px;padding:6px 12px;">Stáhnout vše do PDF</a>
       </div>
     </div>`;
   _updateModeToggle(d);
@@ -241,4 +241,4 @@ function trendArrow(cur, prev) {
     ? '<span class="delta up">▲ ' + Math.abs(d).toFixed(1) + '</span>'
     : '<span class="delta down">▼ ' + Math.abs(d).toFixed(1) + '</span>';
 }
-                                                                                                                                                                             
+                                                                                                                                                                                  
