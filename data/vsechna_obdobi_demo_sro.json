@@ -4,7 +4,7 @@
   "ico": "123456789",
   "nace": "33.20",
   "nace_nazev": "Instalace prumyslovych stroju a zarizeni",
-  "updated": "2026-05-14T09:36:52",
+  "updated": "2026-05-14T10:01:19",
   "aktualni": {
     "label": "1.1.2024–9.5.2024",
     "rok": 2024,
@@ -109,11 +109,11 @@
       "X5": 0.9519
     },
     "pohotova_likvidita": 0.5,
-    "cf_provozni": 155000,
+    "cf_provozni": 158000,
     "cf_investicni": 0.0,
     "cf_financni": 0.0,
     "pp_zacatek": 1013000,
-    "pp_konec_cf": 1169000,
+    "pp_konec_cf": 1172000,
     "cf_vh_pred_zdanenim": 14000,
     "cf_odpisy": 51000,
     "cf_nak_uroky": 0,
