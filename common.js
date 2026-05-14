@@ -102,15 +102,15 @@ function renderNav(d) {
   const histPages = [
     {href:"historika.html",    label:"Historická analýza"},
     {href:"rozvaha.html",      label:"Rozvaha"},
-    {href:"vzz.html",          label:"VZZ"},
-    {href:"vzz_ucelovy.html",  label:"VZZ účelový"},
+    {href:"vzz.html",          label:"VZZ – druhový"},
+    {href:"vzz_ucelovy.html",  label:"VZZ – účelový"},
     {href:"cashflow.html",     label:"Cash Flow"},
   ];
   const livePages = [
     {href:"index.html",        label:"Úvodní stránka"},
     {href:"rozvaha.html",      label:"Rozvaha"},
-    {href:"vzz.html",          label:"VZZ"},
-    {href:"vzz_ucelovy.html",  label:"VZZ účelový"},
+    {href:"vzz.html",          label:"VZZ – druhový"},
+    {href:"vzz_ucelovy.html",  label:"VZZ – účelový"},
     {href:"cashflow.html",     label:"Cash Flow"},
     {href:"ukazatele.html",    label:"Ukazatele"},
   ];
