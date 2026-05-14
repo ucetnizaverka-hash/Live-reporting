@@ -7,165 +7,167 @@
   th, td { padding: 3px 7px; }
   td.oz { width:5%; text-align:center; font-weight:600; color:var(--gold); }
   td.cr { width:4%; text-align:center; color:var(--text-dim); font-size:11px; }
-  td.tx { width:55%; }
-  td.num { text-align:right; }
+  td.tx { width:50%; }
+  td.num, th.num { text-align:right; }
   tr.section-head td { background:rgba(0,0,0,.03) !important; font-weight:700; color:var(--gold); font-size:12px; }
+  tr.tot td { background: var(--navy) !important; color: #fff !important; font-weight: 700; }
   tr.zero td.num { color:rgba(240,244,255,.25); }
   .tis-note { font-size:11px; color:var(--text-m); margin-bottom:6px; }
-  /* Způsob stanovení box - tmavé pozadí, černý text aby ladil */
   .zps-box { background:#fffbeb; border:1px solid #fde68a; border-left:4px solid #D4952A;
              color:#1B2469; padding:8px 12px; border-radius:6px; margin-bottom:10px;
              font-size:11px; line-height:1.45; }
   .zps-box strong { color:#1B2469; }
-  /* Compact layout */
   main { padding: 6px 12px 14px; }
   .section { padding: 12px 14px; margin-bottom: 8px; border-radius: 12px; }
   .section h2 { font-size: 10px; margin-bottom: 7px; padding-bottom: 6px; }
-  .header-top { padding: 5px 0 2px; }
-  .nav-group { padding: 3px 16px 5px; gap: 3px; }
-  .nav-lnk { padding: 3px 10px; font-size: 11px; }
-  .nav-glbl { font-size: 8px; }
-  .disclaimer { padding: 6px 12px; margin-bottom: 8px; font-size: 11px; }
-  footer { padding: 8px; font-size: 11px; }
-  /* Grafy struktury - mřížka 2 sloupce */
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-  @media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
-  .grid2 > div { background: rgba(255,255,255,.04); border-radius: 8px; padding: 6px; }
-  .grid2 h3 { font-size: 11px; color: var(--gold); margin-bottom: 4px; }
+  .grid-charts { display: grid; gap: 10px; margin-top: 12px; }
+  .grid-charts > div { background: rgba(255,255,255,.04); border-radius: 8px; padding: 6px; }
+  .grid-charts h3 { font-size: 11px; color: var(--gold); margin-bottom: 4px; }
 </style>
 </head><body>
 <header>
   <div class="header-top">
     <div class="logo">22<span>HLAV</span> &nbsp;|&nbsp; Výkaz zisku a ztráty (účelové členění)</div>
-    <div class="header-meta" style="display:flex;align-items:center;gap:10px"><strong id="hdr-nazev">—</strong><span id="hdr-period"></span><span id="mode-badge"></span> · IČO: <span id="hdr-ico"></span></div>
+    <div class="header-meta" style="display:flex;align-items:center;gap:10px">
+      <strong id="hdr-nazev">—</strong><span id="hdr-period"></span><span id="mode-badge"></span> · IČO: <span id="hdr-ico"></span>
+    </div>
   </div>
   <nav id="nav-links"></nav>
-  <div id="mode-toggle"></div>
 </header>
 <main>
   <div id="loading">Načítám…</div><div id="err"></div>
   <div id="app" style="display:none">
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
     <div class="section">
-      <h2>Výkaz zisku a ztráty — účelové členění, srovnání 2023 / 2024</h2>
-      <p class="tis-note">Hodnoty v Kč &nbsp;·&nbsp; Dle Vyhlášky 500/2002 Sb., Příloha č. 3</p>
+      <h2>Výkaz zisku a ztráty — účelové členění (plný rozsah)</h2>
+      <p class="tis-note">Hodnoty v Kč · Dle Vyhlášky 500/2002 Sb., Příloha č. 3</p>
 
       <div class="zps-box">
-        <strong>Způsob stanovení:</strong> Účelové členění je rozpočteno standardním alokačním klíčem pro NACE 33 (504 → COGS; 501-503 → 90 % COGS / 10 % správní; 511-518 → 60 / 20 / 20; 521-528 → 60 / 20 / 20; 551-552 → 80 / 10 / 10). Pro přesné rozdělení je nutné vést účetnictví po střediscích (ČÚS 019).
+        <strong>Způsob stanovení:</strong> Účelové členění je rozpočteno standardním alokačním klíčem pro NACE 33 (504 → COGS; 501-503 → 90 / 10; 511-518 → 60 / 20 / 20; 521-528 → 60 / 20 / 20; 551-552 → 80 / 10 / 10). Pro přesné rozdělení je nutné vést účetnictví po střediscích (ČÚS 019).
       </div>
 
       <div style="overflow-x:auto">
         <table id="vzz-table"><thead id="vzz-head"></thead><tbody id="vzz-body"></tbody></table>
       </div>
 
-      <div class="grid2" id="charts-wrap"></div>
+      <div class="grid-charts" id="charts-wrap"></div>
     </div>
   </div>
 </main>
 <footer>Data jsou generována automatizovaným účetním procesem · 22HLAV · Průběžné výkaznictví v2.0</footer>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
 <script src="data/vsechna_obdobi_demo_sro.js"></script>
 <script src="data/historika_demo_sro.js"></script>
 <script src="common.js"></script>
 <script>
-(function(){
-  if(typeof window.kc!=="function"){
-    window.kc=function(v,z){if(v===null||v===undefined)return z||"—";return Math.round(v).toLocaleString("cs-CZ")+" Kč";};
-  }
-})();
-</script>
-<script>
-loadData(d => {
-  // Načti účelové VZZ z _HIST_DATA (script tag historika_demo_sro.js)
+loadData(function(d){
   const hist = window._HIST_DATA || {periody:[]};
-  const p23 = (hist.periody||[]).find(p => p.rok === 2023);
-  const p24 = (hist.periody||[]).find(p => p.rok === 2024);
+  const p23 = (hist.periody||[]).find(function(p){return p.rok===2023;});
+  const p24 = (hist.periody||[]).find(function(p){return p.rok===2024;});
   const u23 = p23 ? p23.ucelovy_vzz : null;
   const u24 = p24 ? p24.ucelovy_vzz : null;
-  // Aktuální období (průběžné) – přímo z vykazy_demo_sro.json přes konsolidaci
-  const ua  = (d.aktualni && d.aktualni.ucelovy_vzz) ? d.aktualni.ucelovy_vzz : null;
-  const uaLabel = (d.aktualni && d.aktualni.period_label) ? d.aktualni.period_label : "Aktuální";
+  const ua  = (d && d.aktualni && d.aktualni.ucelovy_vzz) ? d.aktualni.ucelovy_vzz : null;
+  const uaLabel = (d && d.aktualni && d.aktualni.period_label) ? d.aktualni.period_label : "Aktuální";
 
-  if (!u23 && !u24 && !ua) {
-    document.getElementById("vzz-body").innerHTML = `<tr><td colspan="6" style="text-align:center;color:#dc2626;padding:30px;">Účelový VZZ není dostupný v datech.</td></tr>`;
+  const cols = [];
+  if (u23) cols.push({label:"2023", data:u23, live:false});
+  if (u24) cols.push({label:"2024", data:u24, live:false});
+  if (ua)  cols.push({label:uaLabel, data:ua, live:true});
+
+  if (cols.length === 0) {
+    document.getElementById("vzz-body").innerHTML = '<tr><td colspan="5" style="text-align:center;color:#dc2626;padding:30px;">Účelový VZZ není dostupný v datech.</td></tr>';
     return;
   }
-
-  // Sloupce: 2023, 2024 (plný rok), Aktuální období
-  const cols = [];
-  if (u23) cols.push({label:"2023",        data:u23});
-  if (u24) cols.push({label:"2024",        data:u24});
-  if (ua)  cols.push({label:uaLabel,       data:ua, isLive:true});
 
   const showDelta = cols.length >= 2;
 
   // Záhlaví
-  document.getElementById("vzz-head").innerHTML = `
-    <tr>
-      <th class="oz" rowspan="2">Ozn.</th>
-      <th style="text-align:left" rowspan="2">TEXT</th>
-      <th class="cr" rowspan="2">Č.ř.</th>
-      <th colspan="${cols.length}" style="text-align:center"></th>
-      ${showDelta ? '<th rowspan="2">Δ % (mezi 2 posledními)</th>' : ''}
-    </tr>
-    <tr>${cols.map(c => `<th style="font-size:11px">${c.label}${c.isLive?' <span style="color:#16a34a;font-size:9px">(průběžné)</span>':''}</th>`).join('')}</tr>
-    <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td class="cr">c</td>${cols.map((_,i)=>`<th>${i+1}</th>`).join('')}${showDelta?'<th></th>':''}</tr>`;
+  let head = '<tr><th class="oz" rowspan="2">Ozn.</th><th rowspan="2" style="text-align:left">TEXT</th><th class="cr" rowspan="2">Č.ř.</th><th colspan="' + cols.length + '" style="text-align:center">Hodnoty</th>';
+  if (showDelta) head += '<th rowspan="2">Δ %</th>';
+  head += '</tr><tr>';
+  cols.forEach(function(c){
+    head += '<th class="num" style="font-size:11px">' + c.label + (c.live ? ' <span style="color:#16a34a;font-size:9px">(průběžné)</span>' : '') + '</th>';
+  });
+  head += '</tr>';
+  document.getElementById("vzz-head").innerHTML = head;
 
-  const v0 = (u, k) => (u && u[k] != null) ? u[k] : 0;
-
-  // Řádek tabulky
-  let cr = 1;
-  function R(oz, txt, key, opts={}) {
+  // Tělo
+  function fmt(v) {
+    if (v == null || isNaN(v)) return "—";
+    return Math.round(v).toLocaleString("cs-CZ") + " Kč";
+  }
+  function R(oz, txt, key, opts) {
+    opts = opts || {};
     const sign = opts.neg ? -1 : 1;
-    const vals = cols.map(c => sign * v0(c.data, key));
-    // Δ mezi posledními dvěma sloupci (typicky 2024 vs aktuální období, nebo 2023 vs 2024)
-    const last = vals[vals.length - 1];
-    const prev = vals.length >= 2 ? vals[vals.length - 2] : null;
+    const vals = cols.map(function(c){
+      const v = (c.data && c.data[key] != null) ? c.data[key] : 0;
+      return sign * v;
+    });
+    const last = vals[vals.length-1];
+    const prev = vals.length>=2 ? vals[vals.length-2] : null;
     const dRel = (prev != null && prev !== 0) ? ((last - prev) / Math.abs(prev) * 100) : null;
-    const isZero = vals.every(v => v === 0);
-    const cls = [
-      opts.sec ? "section-head" : "",
-      isZero  ? "zero"          : "",
-      opts.bold ? "bold" : "",
-    ].filter(Boolean).join(" ");
-    const lineNum = cr++;
-    const ozCell  = oz ? `<td class="oz">${oz}</td>` : `<td class="oz"></td>`;
-    const valCells = vals.map(v => `<td class="num">${kc(v)}</td>`).join('');
-    const dCell   = showDelta ? `<td class="num">${dRel == null ? "—" : (dRel >= 0 ? "+" : "") + dRel.toFixed(1) + "%"}</td>` : '';
-    return `<tr class="${cls}">${ozCell}<td class="tx">${txt}</td><td class="cr">${lineNum}</td>${valCells}${dCell}</tr>`;
+    const isZero = vals.every(function(v){return v === 0;});
+    let cls = "";
+    if (opts.sec) cls += " section-head";
+    if (opts.tot) cls += " tot";
+    if (isZero) cls += " zero";
+    const ozCell = '<td class="oz">' + (oz || "") + '</td>';
+    const valCells = vals.map(function(v){return '<td class="num">' + fmt(v) + '</td>';}).join("");
+    let dCell = "";
+    if (showDelta) {
+      dCell = '<td class="num">' + (dRel == null ? "—" : (dRel >= 0 ? "+" : "") + dRel.toFixed(1) + "%") + '</td>';
+    }
+    return '<tr class="' + cls + '">' + ozCell + '<td class="tx">' + txt + '</td><td class="cr"></td>' + valCells + dCell + '</tr>';
   }
 
-  let html = "";
-  html += R("I.",  "Tržby z prodeje výrobků a služeb", "trzby_sluzby");
-  html += R("II.", "Tržby z prodeje zboží",             "trzby_zbozi");
-  html += R("",    "Tržby celkem",                       "trzby_celkem", {sec:true});
-  html += R("A.",  "Náklady prodeje (COGS)",             "naklady_prodeje", {neg:true});
-  html += R("*",   "Hrubý zisk z prodeje",               "hruby_zisk",      {sec:true});
-  html += R("B.",  "Odbytové náklady",                   "odbytove_naklady",{neg:true});
-  html += R("C.",  "Správní režie",                      "spravni_rezie",   {neg:true});
-  html += R("III.","Ostatní provozní výnosy",            "ost_prov_vyn");
-  html += R("D.",  "Ostatní provozní náklady",           "ost_prov_nak",    {neg:true});
-  html += R("*",   "Provozní výsledek hospodaření",      "provozni_vh",     {sec:true});
-  html += R("IV.", "Výnosové úroky",                     "vyn_uroky");
-  html += R("E.",  "Nákladové úroky",                    "nak_uroky",       {neg:true});
-  html += R("V.",  "Ostatní finanční výnosy",            "ost_fin_vyn");
-  html += R("F.",  "Ostatní finanční náklady",           "ost_fin_nak",     {neg:true});
-  html += R("*",   "Finanční výsledek hospodaření",      "financni_vh",     {sec:true});
-  html += R("**",  "Výsledek hospodaření před zdaněním", "vh_pred_zdanenim",{sec:true});
-  html += R("L.",  "Daň z příjmů",                       "dan",             {neg:true});
-  html += R("***", "Výsledek hospodaření za období",     "vh_po_zdaneni",   {sec:true, bold:true});
+  let body = "";
+  body += R("I.",  "Tržby z prodeje výrobků a služeb", "trzby_sluzby");
+  body += R("II.", "Tržby z prodeje zboží",            "trzby_zbozi");
+  body += R("",    "<b>Tržby celkem</b>",              "trzby_celkem", {sec:true});
+  body += R("A.",  "Náklady prodeje (COGS)",           "naklady_prodeje", {neg:true});
+  body += R("*",   "<b>Hrubý zisk z prodeje</b>",      "hruby_zisk",      {sec:true});
+  body += R("B.",  "Odbytové náklady",                 "odbytove_naklady",{neg:true});
+  body += R("C.",  "Správní režie",                    "spravni_rezie",   {neg:true});
+  body += R("III.","Ostatní provozní výnosy",          "ost_prov_vyn");
+  body += R("D.",  "Ostatní provozní náklady",         "ost_prov_nak",    {neg:true});
+  body += R("*",   "<b>Provozní VH</b>",               "provozni_vh",     {sec:true});
+  body += R("IV.", "Výnosové úroky",                   "vyn_uroky");
+  body += R("E.",  "Nákladové úroky",                  "nak_uroky",       {neg:true});
+  body += R("V.",  "Ostatní finanční výnosy",          "ost_fin_vyn");
+  body += R("F.",  "Ostatní finanční náklady",         "ost_fin_nak",     {neg:true});
+  body += R("*",   "<b>Finanční VH</b>",               "financni_vh",     {sec:true});
+  body += R("**",  "<b>VH před zdaněním</b>",          "vh_pred_zdanenim",{sec:true});
+  body += R("L.",  "Daň z příjmů",                     "dan",             {neg:true});
+  body += R("***", "<b>VH za účetní období</b>",       "vh_po_zdaneni",   {tot:true});
+  document.getElementById("vzz-body").innerHTML = body;
 
-  document.getElementById("vzz-body").innerHTML = html;
+  // Donut grafy
+  const wrap = document.getElementById("charts-wrap");
+  wrap.style.gridTemplateColumns = "repeat(" + cols.length + ", 1fr)";
+  let chartsHtml = "";
+  cols.forEach(function(c, i){
+    chartsHtml += '<div><h3>Struktura nákladů — ' + c.label + (c.live ? ' <span style="color:#16a34a">(průběžné)</span>' : '') + '</h3><div id="chart-' + i + '" style="height:230px"></div></div>';
+  });
+  wrap.innerHTML = chartsHtml;
 
-  // Donut grafy — pro každý sloupec
-  const chartsWrap = document.getElementById("charts-wrap");
-  chartsWrap.style.gridTemplateColumns = `repeat(${cols.length}, 1fr)`;
-  chartsWrap.innerHTML = cols.map((c, i) =>
-    `<div><h3>Struktura nákladů — ${c.label}${c.isLive?' <span style="color:#16a34a">(průběžné)</span>':''}</h3><div id="chart-${i}" style="height: 240px;"></div></div>`
-  ).join("");
-
-  function donut(divId, u, label) {
-    if (!u) { document.getElementById(divId).innerHTML = `<div style="text-align:center;padding:30px;color:#6b7280;font-size:11px;">N/A</div>`; return; }
-    const data = [{
-      type:"pie", hole:0.5,
-      labels:["Náklady prodeje","Odbytové","Správní","Ost. provo
+  cols.forEach(function(c, i){
+    const u = c.data;
+    if (!u) return;
+    Plotly.newPlot("chart-" + i, [{
+      type: "pie", hole: 0.5,
+      labels: ["Náklady prodeje", "Odbytové", "Správní", "Ost. provozní"],
+      values: [u.naklady_prodeje || 0, u.odbytove_naklady || 0, u.spravni_rezie || 0, u.ost_prov_nak || 0],
+      marker: { colors: ["#1B2469","#2d4a9e","#D4952A","#9ca3af"], line: { color: "#fff", width: 1.5 } },
+      textinfo: "label+percent", textposition: "outside",
+      hovertemplate: "%{label}<br>%{value:,.0f} Kč<br>%{percent}<extra></extra>"
+    }], {
+      showlegend: false, margin: { l:5, r:5, t:5, b:5 },
+      paper_bgcolor: "transparent", plot_bgcolor: "transparent",
+      annotations: [{ text: "<b>" + c.label + "</b>", showarrow: false, font: { size: 12, color: "#D4952A" } }]
+    }, { displayModeBar: false, responsive: true });
+  });
+});
+</script>
+</body></html>
+                                                                                                                                                                                                                                                                                                                                                                      
