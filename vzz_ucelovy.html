@@ -39,11 +39,14 @@
   <div id="app" style="display:none">
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
     <div class="section">
-      <h2>Výkaz zisku a ztráty — účelové členění (plný rozsah)</h2>
-      <p class="tis-note">Hodnoty v Kč · Dle Vyhlášky 500/2002 Sb., Příloha č. 3</p>
+      <h2>Výkaz zisku a ztráty — účelové členění (MODELOVÝ ODHAD)</h2>
+      <p class="tis-note">Hodnoty v Kč · Struktura dle Vyhlášky 500/2002 Sb., Příloha č. 3 (orientačně)</p>
 
-      <div class="zps-box">
-        <strong>Způsob stanovení:</strong> Účelové členění je rozpočteno standardním alokačním klíčem pro NACE 33 (504 → COGS; 501-503 → 90 / 10; 511-518 → 60 / 20 / 20; 521-528 → 60 / 20 / 20; 551-552 → 80 / 10 / 10). Pro přesné rozdělení je nutné vést účetnictví po střediscích (ČÚS 019).
+      <div class="zps-box" style="background:#fee2e2; border-color:#fca5a5; border-left-color:#dc2626; color:#7f1d1d;">
+        <strong style="color:#7f1d1d;">⚠ UPOZORNĚNÍ – nejde o výkaz dle ZoÚ:</strong>
+        Účelové členění VZZ podle <strong>§ 21 ZoÚ a Vyhlášky 500/2002 Sb. Příloha č. 3 + ČÚS 019</strong> vyžaduje, aby účetní jednotka vedla účetnictví <strong>již od prvotního zápisu po střediscích nebo zakázkách</strong> (místa vzniku nákladu, účel vynaložení). Bez středisek <strong>nelze účelový VZZ legálně sestavit</strong> — zákon nezná přepočet pomocí procentuálního klíče.
+        <br><br>
+        Hodnoty zde uvedené jsou pouze <strong>manažerský odhad</strong> rozpočtený heuristickým klíčem typickým pro odvětví NACE 33 (504 → COGS; 501–503 → 90/10; 511–518 a 521–528 → 60/20/20; 551–552 → 80/10/10). <strong>NELZE je použít jako účelový VZZ pro Sbírku listin ani daňové účely.</strong> Tato firma vede účetnictví v druhovém členění → pro Sbírku listin se odevzdává <strong>VZZ druhový</strong>.
       </div>
 
       <div style="overflow-x:auto">
@@ -159,15 +162,4 @@ loadData(function(d){
       labels: ["Náklady prodeje", "Odbytové", "Správní", "Ost. provozní"],
       values: [u.naklady_prodeje || 0, u.odbytove_naklady || 0, u.spravni_rezie || 0, u.ost_prov_nak || 0],
       marker: { colors: ["#1B2469","#2d4a9e","#D4952A","#9ca3af"], line: { color: "#fff", width: 1.5 } },
-      textinfo: "label+percent", textposition: "outside",
-      hovertemplate: "%{label}<br>%{value:,.0f} Kč<br>%{percent}<extra></extra>"
-    }], {
-      showlegend: false, margin: { l:5, r:5, t:5, b:5 },
-      paper_bgcolor: "transparent", plot_bgcolor: "transparent",
-      annotations: [{ text: "<b>" + c.label + "</b>", showarrow: false, font: { size: 12, color: "#D4952A" } }]
-    }, { displayModeBar: false, responsive: true });
-  });
-});
-</script>
-</body></html>
-                                                                                                                                                                                                                                                                                                                                                                      
+      textinfo: "label+percent",
