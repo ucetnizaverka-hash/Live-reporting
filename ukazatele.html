@@ -304,4 +304,12 @@ loadData(d => {
 
   // Zadluženost
   Plotly.newPlot("ch-zad", [
-    {name:"Celková zadlu�
+    {name:"Celková zadluženost %", x:labels, type:"bar",
+     y:allP.map(p => Math.round(parseFloat(p.celkova_zadluzenost||0)*10)/10),
+     marker:{color:allP.map((_,i) => _c("220,38,38",i))}},
+    {name:"Míra zadluženosti %",   x:labels, type:"bar",
+     y:allP.map(p => fVK(p) ? Math.round(fCZ(p)/fVK(p)*100*10)/10 : 0),
+     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
+  ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
+});
+</script></body></html>
