@@ -127,6 +127,13 @@ function renderNav(d) {
     <div class="nav-group">
       <span class="nav-glbl">Historické výkaznictví</span>
       <div class="nav-glinks">${histPages.map(mkHist).join("")}</div>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-group">
+      <span class="nav-glbl">Export</span>
+      <div class="nav-glinks">
+        <a href="export.html" class="nav-lnk" style="background:linear-gradient(135deg,#D4952A,#f0b652);color:#1B2469;font-weight:600;border-radius:6px;padding:6px 12px;">📄 Stáhnout vše do PDF</a>
+      </div>
     </div>`;
   _updateModeToggle(d);
 }
@@ -237,10 +244,3 @@ function trendArrow(cur, prev) {
 
 // --- Animated background helper ---
 function injectBgCanvas() {
-  if (document.querySelector('.bg-canvas')) return;
-  const div = document.createElement('div');
-  div.className = 'bg-canvas';
-  div.innerHTML = '<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>';
-  document.body.insertBefore(div, document.body.firstChild);
-}
-document.addEventListener('DOMContentLoaded', injectBgCanvas);

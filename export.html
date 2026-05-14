@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Export do PDF | Živé výkaznictví</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  body { margin: 0; padding: 0; background: linear-gradient(145deg,#010a2a 0%,#031050 30%,#061880 55%,#041260 75%,#020930 100%); min-height: 100vh; color: #f0f4ff; font-family: 'DM Sans', sans-serif; }
+  .wrap { max-width: 800px; margin: 50px auto; padding: 40px; background: rgba(255,255,255,0.05); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+  h1 { margin: 0 0 8px 0; font-size: 32px; color: #D4952A; }
+  p { color: rgba(240,244,255,0.85); line-height: 1.6; }
+  .btn-export { display: inline-block; background: linear-gradient(135deg,#D4952A,#f0b652); color: #1B2469; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 16px; border: none; cursor: pointer; margin-top: 16px; transition: transform 0.2s; }
+  .btn-export:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212,149,42,0.5); }
+  .btn-export:disabled { background: #6b7280; cursor: not-allowed; }
+  .progress { margin-top: 24px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); display: none; }
+  .progress.active { display: block; }
+  .progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 10px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg,#D4952A,#f0b652); width: 0%; transition: width 0.4s ease; }
+  .step { padding: 6px 0; color: rgba(240,244,255,0.7); }
+  .step.done { color: #4ade80; }
+  .step.error { color: #f87171; }
+  iframe { border: 0; width: 1400px; height: 2200px; }
+  .iframe-hidden { position: absolute; left: -10000px; top: 0; opacity: 0; pointer-events: none; }
+  ul { color: rgba(240,244,255,0.85); line-height: 1.8; }
+  li { margin: 6px 0; }
+  .ico { display:inline-block; width:24px; }
+  .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); color: rgba(240,244,255,0.5); font-size: 13px; }
+  a { color: #f0b652; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>📄 Export aplikace do PDF</h1>
+  <p>Tento nástroj postupně načte všechny stránky aplikace, vykreslí grafy a všechny screenshoty sloučí do jednoho PDF souboru. <strong>Funguje přímo v prohlížeči</strong> – nepotřebuje žádný server ani instalaci.</p>
+
+  <h3 style="color:#D4952A;margin-top:24px;">Co bude v PDF</h3>
+  <ul>
+    <li><span class="ico">📊</span> Dashboard – hlavní přehled klíčových ukazatelů</li>
+    <li><span class="ico">💼</span> Výkaz zisku a ztráty (VZZ)</li>
+    <li><span class="ico">⚖️</span> Rozvaha</li>
+    <li><span class="ico">💧</span> Cash flow</li>
+    <li><span class="ico">📈</span> Finanční ukazatele (ROA, ROE, IN05, …)</li>
+    <li><span class="ico">📅</span> Historický vývoj (meziroční srovnání)</li>
+  </ul>
+
+  <button id="btn-export" class="btn-export">▶ Spustit export do PDF</button>
+
+  <div id="progress" class="progress">
+    <div><strong id="status-text">Připravuji…</strong></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div id="steps" style="margin-top:16px;"></div>
+  </div>
+
+  <div class="footer">
+    Tip: Export trvá ~30–60 sekund (každá stránka 5–10 s). Soubor se po dokončení automaticky stáhne.<br>
+    Alternativně lze stáhnout pre-rendrované PDF: <a href="data/vykazy_demo_sro.pdf" download>vykazy_demo_sro.pdf</a>
+  </div>
+</div>
+
+<!-- Skryté iframe pro načítání stránek -->
+<div class="iframe-hidden">
+  <iframe id="render-frame"></iframe>
+</div>
+
+<script>
+const PAGES = [
+  {url: "index.html",     title: "Dashboard"},
+  {url: "vzz.html",       title: "Výkaz zisku a ztráty"},
+  {url: "rozvaha.html",   title: "Rozvaha"},
+  {url: "cashflow.html",  title: "Cash flow"},
+  {url: "ukazatele.html", title: "Finanční ukazatele"},
+  {url: "historika.html", title: "Historická analýza"},
+];
+
+const WAIT_LOAD    = 6000;   // ms čekání na render grafů
+const SCALE        = 2;      // device pixel ratio
+const FRAME_WIDTH  = 1400;
+const FRAME_HEIGHT = 2200;
+
+const btn = document.getElementById("btn-export");
+const progress = document.getElementById("progress");
+const fill = document.getElementById("progress-fill");
+const stepsEl = document.getElementById("steps");
+const statusEl = document.getElementById("status-text");
+
+function addStep(text, cls="") {
+  const div = document.createElement("div");
+  div.className = "step " + cls;
+  div.textContent = text;
+  stepsEl.appendChild(div);
+  return div;
+}
+
+function setProgress(pct, text) {
+  fill.style.width = pct + "%";
+  if(text) statusEl.textContent = text;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function loadIframe(url) {
+  const frame = document.getElementById("render-frame");
+  frame.style.width  = FRAME_WIDTH  + "px";
+  frame.style.height = FRAME_HEIGHT + "px";
+  return new Promise((resolve, reject) => {
+    let done = false;
+    frame.onload = () => { if(!done) { done = true; resolve(frame); } };
+    frame.onerror = e => { if(!done) { done = true; reject(e); } };
+    frame.src = url;
+    setTimeout(() => { if(!done) { done = true; resolve(frame); } }, 30000);
+  });
+}
+
+async function captureFrame(frame, title) {
+  const body = frame.contentDocument.body;
+  // Vykresli celé tělo iframe
+  const canvas = await html2canvas(body, {
+    scale: SCALE,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: "#010a2a",
+    width: FRAME_WIDTH,
+    height: body.scrollHeight,
+    windowWidth: FRAME_WIDTH,
+    windowHeight: body.scrollHeight,
+  });
+  return canvas;
+}
+
+async function runExport() {
+  btn.disabled = true;
+  btn.textContent = "⏳ Pracuji…";
+  progress.classList.add("active");
+  stepsEl.innerHTML = "";
+
+  const { jsPDF } = window.jspdf;
+  // Landscape A4: 297×210 mm, but at high DPI screens use larger canvas
+  const pdf = new jsPDF({
+    orientation: "landscape",
+    unit: "mm",
+    format: "a4",
+  });
+  const pageW = pdf.internal.pageSize.getWidth();
+  const pageH = pdf.internal.pageSize.getHeight();
+
+  let success = 0;
+  for (let i = 0; i < PAGES.length; i++) {
+    const { url, title } = PAGES[i];
+    const stepEl = addStep(`[${i+1}/${PAGES.length}] ${title} – načítám…`);
+    setProgress((i / PAGES.length) * 90, `${i+1}/${PAGES.length}: ${title}`);
+
+    try {
+      await loadIframe(url);
+      await sleep(WAIT_LOAD);   // počkat na Plotly + data fetch
+      stepEl.textContent = `[${i+1}/${PAGES.length}] ${title} – kreslím screenshot…`;
+      const canvas = await captureFrame(document.getElementById("render-frame"), title);
+
+      // Vlož do PDF: zachovat aspect ratio, fit na A4 landscape
+      const imgData = canvas.toDataURL("image/jpeg", 0.92);
+      const imgW   = canvas.width;
+      const imgH   = canvas.height;
+      const ratio  = Math.min(pageW / imgW, pageH / imgH) * 4;  // *4 protože canvas v px, page v mm
+      const finalW = imgW * ratio;
+      const finalH = imgH * ratio;
+      const x = (pageW - finalW) / 2;
+      const y = (pageH - finalH) / 2;
+
+      // Lépe: použij celou A4 landscape, scale tak aby šířka pasovala
+      const scaleByW = pageW / (imgW / SCALE / 3.78);   // px -> mm (96dpi)
+      let wMM = imgW / SCALE / 3.78;
+      let hMM = imgH / SCALE / 3.78;
+      if(wMM > pageW) { const sc = pageW / wMM; wMM *= sc; hMM *= sc; }
+      if(hMM > pageH) { const sc = pageH / hMM; wMM *= sc; hMM *= sc; }
+      const xx = (pageW - wMM) / 2;
+      const yy = (pageH - hMM) / 2;
+
+      if (i > 0) pdf.addPage();
+      pdf.addImage(imgData, "JPEG", xx, yy, wMM, hMM);
+
+      stepEl.textContent = `✓ [${i+1}/${PAGES.length}] ${title}`;
+      stepEl.classList.add("done");
+      success++;
+    } catch(e) {
+      stepEl.textContent = `✗ [${i+1}/${PAGES.length}] ${title} – chyba: ${e.message || e}`;
+      stepEl.classList.add("error");
+      console.error(e);
+    }
+  }
+
+  setProgress(95, "Vytvářím PDF…");
+
+  const ts = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 16);
+  const filename = `Zive_vykaznictvi_${ts}.pdf`;
+  pdf.save(filename);
+
+  setProgress(100, `Hotovo – staženo ${success}/${PAGES.length} stránek do ${filename}`);
+  addStep(`📥 Soubor stažen: ${filename}`, "done");
+
+  btn.disabled = false;
+  btn.textContent = "▶ Spustit znovu";
+}
+
+btn.addEventListener("click", runExport);
+</script>
+
+</body>
+</html>
