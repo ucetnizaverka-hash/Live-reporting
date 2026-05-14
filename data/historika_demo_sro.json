@@ -3,7 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-14T15:45:24",
+    "updated": "2026-05-14T15:53:56",
     "roky": [
       2023,
       2024
@@ -72,61 +72,6 @@
         "financni_vh": -0.64,
         "vh_pred_zdanenim": 3.78,
         "vh_za_obdobi": 3.78
-      },
-      "ucelovy_vzz": {
-        "trzby_sluzby": 1523000,
-        "trzby_zbozi": 2979000,
-        "trzby_celkem": 4502000,
-        "naklady_prodeje": 3401520.0,
-        "hruby_zisk": 1100480.0,
-        "odbytove_naklady": 382446.0,
-        "spravni_rezie": 444034.0,
-        "ost_prov_vyn": 0,
-        "ost_prov_nak": 0,
-        "provozni_vh": 274000.0,
-        "vyn_uroky": 0,
-        "nak_uroky": 0,
-        "ost_fin_vyn": 0,
-        "ost_fin_nak": 0,
-        "financni_vh": 0,
-        "vh_pred_zdanenim": 170000,
-        "dan": 0,
-        "vh_po_zdaneni": 170000,
-        "_metoda": "agregovany",
-        "_alokacni_klic": "Standardní alokační klíč pro NACE 33 (bez středisek)",
-        "_disclaimer": "Účelový VZZ je sestaven s pomocí standardního alokačního klíče, protože účetnictví nemá střediska. Pro přesné rozdělení do funkčních skupin je nutné vést účetnictví po střediscích.",
-        "_detail_kategorii": {
-          "nak_zbozi": {
-            "hodnota": 2085300.0,
-            "cogs": 2085300.0,
-            "odbyt": 0.0,
-            "spravni": 0.0
-          },
-          "spotreba_mat": {
-            "hodnota": 615880.0,
-            "cogs": 554292.0,
-            "odbyt": 0.0,
-            "spravni": 61588.0
-          },
-          "sluzby": {
-            "hodnota": 923820.0,
-            "cogs": 369528.0,
-            "odbyt": 277146.0,
-            "spravni": 277146.0
-          },
-          "osobni": {
-            "hodnota": 450000,
-            "cogs": 270000.0,
-            "odbyt": 90000.0,
-            "spravni": 90000.0
-          },
-          "odpisy": {
-            "hodnota": 153000,
-            "cogs": 122400.0,
-            "odbyt": 15300.0,
-            "spravni": 15300.0
-          }
-        }
       }
     },
     {
@@ -263,79 +208,6 @@
         "financni_vh": -0.74,
         "vh_pred_zdanenim": 1.65,
         "vh_za_obdobi": 0.09
-      },
-      "ucelovy_vzz": {
-        "trzby_sluzby": 1394000,
-        "trzby_zbozi": 1997000,
-        "trzby_celkem": 3391000,
-        "naklady_prodeje": 2412000,
-        "hruby_zisk": 979000,
-        "odbytove_naklady": 394000,
-        "spravni_rezie": 430000,
-        "ost_prov_vyn": 33000,
-        "ost_prov_nak": 107000,
-        "provozni_vh": 81000,
-        "vyn_uroky": 0,
-        "nak_uroky": 0,
-        "ost_fin_vyn": 0,
-        "ost_fin_nak": 25000,
-        "financni_vh": -25000,
-        "vh_pred_zdanenim": 56000,
-        "dan": 53000,
-        "vh_po_zdaneni": 3000,
-        "_metoda": "detailni_z_uctu",
-        "_alokacni_klic": "Standardní alokační klíč pro NACE 33 (bez středisek)",
-        "_disclaimer": "Účelový VZZ je sestaven s pomocí standardního alokačního klíče, protože účetnictví nemá střediska. Pro přesné rozdělení do funkčních skupin je nutné vést účetnictví po střediscích.",
-        "_detail_uctu": {
-          "501": {
-            "hodnota": 134486.62,
-            "cogs": 121037.96,
-            "odbyt": 0.0,
-            "spravni": 13448.66
-          },
-          "502": {
-            "hodnota": 122864.78,
-            "cogs": 110578.3,
-            "odbyt": 0.0,
-            "spravni": 12286.48
-          },
-          "504": {
-            "hodnota": 1150432.66,
-            "cogs": 1150432.66,
-            "odbyt": 0.0,
-            "spravni": 0.0
-          },
-          "511": {
-            "hodnota": 86594.16,
-            "cogs": 0.0,
-            "odbyt": 0.0,
-            "spravni": 86594.16
-          },
-          "513": {
-            "hodnota": 75970.25,
-            "cogs": 0.0,
-            "odbyt": 75970.25,
-            "spravni": 0.0
-          },
-          "518": {
-            "hodnota": 1424251.31,
-            "cogs": 854550.79,
-            "odbyt": 284850.26,
-            "spravni": 284850.26
-          },
-          "521": {
-            "hodnota": 87000.0,
-            "cogs": 52200.0,
-            "odbyt": 17400.0,
-            "spravni": 17400.0
-          },
-          "551": {
-            "hodnota": 153588.0,
-            "cogs": 122870.4,
-            "odbyt": 15358.8,
-            "spravni": 15358.8
-          }
-        }
       }
     }
   ],
