@@ -262,35 +262,50 @@ function buildYearCards(periody) {
 // ── Trend-bary ──────────────────────────────────────────────────────────
 function buildTrendBars(periody) {
   const el = document.getElementById("trend-bars");
+  if (!el) return;
   const rows = [
-    {lbl:"Tržby celkem",    key:"trzby_celkem",    higherBetter:true},
-    {lbl:"Výkonová spotřeba",key:"vyk_spotreba",   higherBetter:false},
-    {lbl:"Osobní náklady",  key:"osobni_naklady",  higherBetter:false},
-    {lbl:"VH za období",    key:"vh_za_obdobi",    higherBetter:true},
-    {lbl:"Vlastní kapitál", key:"vk",              higherBetter:true},
-    {lbl:"Peněžní prostř.", key:"pp",              higherBetter:true},
+    {lbl:"Tržby celkem",     key:"trzby_celkem",     higherBetter:true},
+    {lbl:"Výkonová spotřeba",key:"vyk_spotreba",     higherBetter:false},
+    {lbl:"Osobní náklady",   key:"osobni_naklady",   higherBetter:false},
+    {lbl:"VH za období",     key:"vh_za_obdobi",     higherBetter:true},
+    {lbl:"Aktiva celkem",    key:"aktiva_netto",     higherBetter:null},
+    {lbl:"Vlastní kapitál",  key:"vk",               higherBetter:true},
+    {lbl:"Cizí zdroje",      key:"cizi_zdroje",      higherBetter:false},
+    {lbl:"Peněžní prostř.",  key:"pp",               higherBetter:true},
   ];
 
-  const COLORS_BAR = ["rgba(220,38,38,.85)","rgba(212,149,42,.85)","rgba(52,211,153,.75)"];
+  const COLORS = ["rgba(45,74,158,.85)","rgba(212,149,42,.9)","rgba(52,211,153,.85)"];
 
-  let html = "";
+  let html = `<div style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Vývoj klíčových položek mezi obdobími. Šipky a procenta ukazují meziroční změnu.</div>`;
   rows.forEach(row => {
-    const vals = periody.map(p => p[row.key]||0);
+    const vals = periody.map(p => parseFloat(p[row.key]) || 0);
     const maxV = Math.max(...vals.map(Math.abs), 1);
-    html += `<div style="margin-bottom:12px">
-      <div style="font-size:11px;font-weight:600;color:rgba(240,244,255,.5);margin-bottom:6px">${row.lbl}</div>
-      <div style="display:flex;flex-direction:column;gap:4px">`;
+    html += `<div style="margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:rgba(240,244,255,.7);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">${row.lbl}</div>
+      <div style="display:flex;flex-direction:column;gap:5px">`;
     periody.forEach((p,i) => {
-      const v = p[row.key]||0;
+      const v = vals[i];
       const pct = Math.max(Math.abs(v)/maxV*100, v!==0?2:0);
       const neg = v < 0;
-      const col = COLORS_BAR[i % COLORS_BAR.length];
-      html += `<div style="display:flex;align-items:center;gap:8px">
-        <div style="width:80px;font-size:10px;font-weight:700;color:rgba(240,244,255,.6);text-align:right;flex-shrink:0">${p.label||p.rok}</div>
-        <div style="flex:1;height:9px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden">
-          <div style="width:${pct}%;height:100%;border-radius:4px;background:${col}"></div>
+      const col = COLORS[i % COLORS.length];
+      // Delta voci predchozimu roku
+      let deltaTxt = "";
+      if (i > 0) {
+        const prev = vals[i-1];
+        if (prev !== 0) {
+          const d = (v - prev) / Math.abs(prev) * 100;
+          const isUp = d >= 0;
+          const good = row.higherBetter === null ? null : (row.higherBetter ? isUp : !isUp);
+          const dcls = good === null ? "" : (good ? "color:var(--green)" : "color:var(--red)");
+          deltaTxt = `<span style="font-size:10px;font-weight:700;${dcls};margin-left:6px">${isUp?"▲":"▼"} ${Math.abs(d).toFixed(1)}%</span>`;
+        }
+      }
+      html += `<div style="display:flex;align-items:center;gap:10px">
+        <div style="width:90px;font-size:11px;font-weight:700;color:rgba(240,244,255,.7);text-align:right;flex-shrink:0">${p.label||("Rok "+p.rok)}</div>
+        <div style="flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.06);overflow:hidden">
+          <div style="width:${pct}%;height:100%;border-radius:5px;background:${col};transition:width .6s ease"></div>
         </div>
-        <div style="font-size:11px;font-weight:600;color:${neg?"var(--red)":"var(--text)"};min-width:110px;text-align:right">${kMil(v)}</div>
+        <div style="font-size:12px;font-weight:600;color:${neg?"var(--red)":"var(--text)"};min-width:140px;text-align:right;display:flex;align-items:center;justify-content:flex-end">${kMil(v)}${deltaTxt}</div>
       </div>`;
     });
     html += `</div></div>`;
@@ -500,25 +515,4 @@ async function main(){
 
     Plotly.newPlot("ch-aktiva",[
       {name:"Stálá aktiva",x:labels,y:periody.map(p=>tis(p.stala_netto<0?0:p.stala_netto)),type:"bar",marker:{color:"rgba(212,149,42,.85)"}},
-      {name:"Oběžná aktiva",x:labels,y:periody.map(p=>tis(p.obezna_netto)),type:"bar",marker:{color:"rgba(45,74,158,.85)"}}
-    ],{..._PH,barmode:"stack",yaxis:{..._PH.yaxis,ticksuffix:" tis."}},_HC);
-
-    Plotly.newPlot("ch-altman",[
-      {name:"IN05",x:labels,y:periody.map(p=>p.in05||0),type:"scatter",mode:"lines+markers+text",
-       line:{color:"#fbbf24",width:2.5},marker:{size:10,color:"#fbbf24"},
-       text:periody.map(p=>(p.in05||0).toFixed(2)),textposition:"top center",textfont:{size:10,color:"#fbbf24"}},
-      {name:"Tvorba hodnoty (1.6)",x:labels,y:labels.map(()=>1.6),type:"scatter",mode:"lines",
-       line:{color:"#34d399",width:1,dash:"dot"},showlegend:true},
-      {name:"Finanční tíseň (0.9)",x:labels,y:labels.map(()=>0.9),type:"scatter",mode:"lines",
-       line:{color:"#f87171",width:1,dash:"dot"},showlegend:true}
-    ],{..._PH,yaxis:{..._PH.yaxis,range:[0,Math.max(2.5,...periody.map(p=>p.in05||0))+0.3]}},_HC);
-
-    // Projekce — odstraněna (zobrazujeme pouze uzavřená roční období)
-
-    document.getElementById("loading").style.display="none";
-    document.getElementById("app").style.display="block";
-  });
-}
-main();
-</script>
-</body></html>
+      {name:"Oběžná aktiva",x:labels,y:periody.map(p=>tis(p.obezna_netto)),type:"bar",marker:{color:"rgba(45,74,158,.
