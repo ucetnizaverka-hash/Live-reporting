@@ -148,4 +148,10 @@ loadData(function(d){
     p => v0(p,'cf_provozni') + v0(p,'cf_investicni') + v0(p,'cf_financni'),
     {bold:true}));
   rows.push(R("R.", "Stav peněžních prostředků na konci období (P. + F.)", "24",
-    p => v0(p,'pp_konec_cf') || (v0(p,'pp_zacatek') + v0(p,'cf_provozni') + v0(p,'cf_investicni') + v0
+    p => v0(p,'pp_konec_cf') || (v0(p,'pp_zacatek') + v0(p,'cf_provozni') + v0(p,'cf_investicni') + v0(p,'cf_financni')),
+    {bold:true}));
+
+  document.getElementById("cf-body").innerHTML = rows.join("");
+});
+</script>
+</body></html>
