@@ -8,7 +8,7 @@
     "period_label": "1.1.2024–9.5.2024",
     "datum_od": "2024-01-01",
     "datum_do": "2024-05-09",
-    "updated": "2026-05-15T10:28:36",
+    "updated": "2026-05-15T11:34:17",
     "format": "plny",
     "pocet_zamestnancu": 0,
     "zdroj": "prubezne_vstup.xlsx",
@@ -146,24 +146,26 @@
     "doba_obratu_zas": 497.2,
     "doba_obratu_pohl": 84.9,
     "doba_obratu_zav": 1099.7,
-    "in05": 0.679,
+    "in05": 0.807,
     "in05_pasmo": "cervene",
     "in05_x": {
       "X1": 1.0914,
       "X2": 9.0,
-      "X3": 0.0072,
-      "X4": 0.2999,
+      "X3": 0.0173,
+      "X4": 0.7199,
       "X5": 0.9519
     },
-    "altman_z": 0.679,
+    "altman_z": 0.807,
     "altman_pasmo": "cervene",
     "altman_x": {
       "X1": 1.0914,
       "X2": 9.0,
-      "X3": 0.0072,
-      "X4": 0.2999,
+      "X3": 0.0173,
+      "X4": 0.7199,
       "X5": 0.9519
-    }
+    },
+    "anualizovano_in05": true,
+    "anualizacni_faktor": 2.4
   },
   "analyza_ext": {},
   "minule": {
@@ -192,6 +194,6 @@
     "dan_z_prijmu": 3000,
     "vh_za_obdobi": 11000,
     "cisty_obrat": 905000,
-    "archivovano": "2026-05-15T10:28:36"
+    "archivovano": "2026-05-15T11:34:17"
   }
 }
