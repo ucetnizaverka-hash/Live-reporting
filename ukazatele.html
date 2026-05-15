@@ -49,7 +49,7 @@
       <h2>Index IN05 <span style="font-weight:400;color:var(--text-m);font-size:10px">(Neumaierovi — pro české firmy)</span></h2>
       <table><thead id="in05-head"></thead><tbody id="in05-body"></tbody></table>
       <div style="font-size:11px;color:var(--text-dim);margin-top:8px;font-style:italic">
-        IN05 = 0,13×(A/CZ) + 0,04×(EBIT/ÚN, max 9) + 3,97×(EBIT/A) + 0,21×(Výnosy/A) + 0,09×(OA/(KZ+KB úvěry))
+        IN05 = 0,13×(A/CZ) + 0,04×(EBIT/ÚN, max 9) + 3,97×(EBIT/A) + 0,21×(Čistý obrat/A) + 0,09×(OA/(KZ+KB úvěry))
         &nbsp;|&nbsp; Tvorba hodnoty: ≥1,6 · Šedá zóna: 0,9–1,6 · Finanční tíseň: &lt;0,9
       </div>
     </div>
@@ -143,13 +143,13 @@ loadData(d => {
   document.getElementById("rent-body").innerHTML = [
     RC("Rentabilita celkového kapitálu (ROA)",
        p => fA(p) ? fEbit(p)/fA(p)*100 : null, s.roa, sP, true,
-       "EBIT / Aktiva × 100"),
+       "EBIT (VH před zd. + nák. úroky) / Aktiva × 100"),
     RC("Rentabilita vlastního kapitálu (ROE)",
        p => fVK(p) ? parseFloat(p.vh_za_obdobi||0)/fVK(p)*100 : null, s.roe, sP, true,
        "Čistý zisk / Vlastní kapitál × 100"),
     RC("Rentabilita tržeb (ROS)",
        p => fT(p) ? parseFloat(p.vh_za_obdobi||0)/fT(p)*100 : null, s.ros, sP, true,
-       "Zisk / Tržby × 100"),
+       "Čistý zisk / Čistý obrat (60x) × 100"),
   ].join("");
 
   // ── LIKVIDITA ─────────────────────────────────────────────────────────
@@ -172,23 +172,23 @@ loadData(d => {
     RC("Obrat aktiv",
        p => fA(p) ? fT(p)/fA(p) : null, s.obratovost_aktiv,
        v => v==null ? "—" : sN2(v)+"×", true,
-       "Tržby / Aktiva"),
+       "Čistý obrat (60x) / Aktiva"),
     RC("Obrat dlouhodobého majetku",
        p => fDM(p) ? fT(p)/fDM(p) : null, null,
        v => v==null ? "—" : sN2(v)+"×", true,
-       "Tržby / Dlouhodobý majetek"),
+       "Čistý obrat / Dlouhodobý majetek"),
     RC("Doba obratu zásob",
        p => fDob(p, fZas), null,
        v => v==null ? "—" : v+" dní", false,
-       "Průměrný stav zásob / Tržby × 360"),
+       "Průměrný stav zásob / Čistý obrat × 360"),
     RC("Doba obratu pohledávek",
        p => fDob(p, fPohl), s.doba_obratu_pohl,
        v => v==null ? "—" : v+" dní", false,
-       "Průměrný stav pohledávek / Tržby × 360"),
+       "Průměrný stav pohledávek / Čistý obrat × 360"),
     RC("Doba obratu závazků",
        p => fDob(p, fZavKr), s.doba_obratu_zav,
        v => v==null ? "—" : v+" dní", true,
-       "Krátkodobé závazky / Tržby × 360"),
+       "Krátkodobé závazky / Čistý obrat × 360"),
   ].join("");
 
   // ── ZADLUŽENOST ───────────────────────────────────────────────────────
@@ -219,7 +219,7 @@ loadData(d => {
     ["x1","0,13","A / CZ",       "Aktiva / Cizí zdroje"],
     ["x2","0,04","EBIT / ÚN",    "EBIT / Nákl. úroky (max 9)"],
     ["x3","3,97","EBIT / A",     "EBIT / Aktiva"],
-    ["x4","0,21","Výnosy / A",   "Výnosy / Aktiva"],
+    ["x4","0,21","Obrat / A",    "Čistý obrat (60x) / Aktiva"],
     ["x5","0,09","OA / (KZ+KB)", "OA / (Kr. závazky + Kr. ban. úvěry)"],
   ];
   const in05B = p => {
@@ -309,7 +309,4 @@ loadData(d => {
      marker:{color:allP.map((_,i) => _c("220,38,38",i))}},
     {name:"Míra zadluženosti %",   x:labels, type:"bar",
      y:allP.map(p => fVK(p) ? Math.round(fCZ(p)/fVK(p)*100*10)/10 : 0),
-     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
-  ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
-});
-</script></body></html>
+     marker:{color:allP.map((_,i) => _c(
