@@ -180,15 +180,15 @@ loadData(d => {
     RC("Doba obratu zásob",
        p => fDob(p, fZas), null,
        v => v==null ? "—" : v+" dní", false,
-       "Průměrný stav zásob / Čistý obrat × 360"),
+       "Průměrný stav zásob × dny období / Tržby"),
     RC("Doba obratu pohledávek",
        p => fDob(p, fPohl), s.doba_obratu_pohl,
        v => v==null ? "—" : v+" dní", false,
-       "Průměrný stav pohledávek / Čistý obrat × 360"),
+       "Průměrný stav pohledávek × dny období / Tržby"),
     RC("Doba obratu závazků",
        p => fDob(p, fZavKr), s.doba_obratu_zav,
        v => v==null ? "—" : v+" dní", true,
-       "Krátkodobé závazky / Čistý obrat × 360"),
+       "Krátkodobé závazky × dny období / Tržby"),
   ].join("");
 
   // ── ZADLUŽENOST ───────────────────────────────────────────────────────
@@ -312,5 +312,4 @@ loadData(d => {
      marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
   ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
 });
-</script></body></html>
- 
+</script></body></html
