@@ -87,26 +87,27 @@ loadData(d => {
     return 0;
   };
 
-  // Řádek tabulky
+  // Řádek tabulky — pokud je note:true a všechny hodnoty 0, řádek se VYNECHÁ
   const R = (oz, txt, vz, cr, key, {bold=false, sec=false, note=false, sub=false, sub2=false, negOk=false}={}) => {
     const vals = allP.map(p => v0(p, key));
     const last = vals[vals.length-1];
     const prev = vals.length>=2 ? vals[vals.length-2] : null;
     const allZero = vals.every(v => !v || v==0);
+    // Skryj note řádky bez dat — nezahlcujeme výkaz placeholdery
+    if (note && allZero) return '';
     const cls = sec ? 'section-head' : bold ? 'bold' : sub2 ? 'sub2' : sub ? 'sub' : '';
-    const zeroCls = (!sec && !bold && allZero) ? ' zero' : '';
-    let row = `<tr class="${cls}${zeroCls}">
+    let row = `<tr class="${cls}">
       <td class="oz">${oz}</td>
-      <td class="tx">${note ? `<em style="color:var(--text-dim)">${txt}</em>` : txt}</td>
+      <td class="tx">${txt}</td>
       <td class="vz">${vz}</td>
       <td class="cr">${cr}</td>`;
     vals.forEach(v => {
       const neg = v < 0;
-      row += `<td class="num${neg && !negOk ? ' neg' : (neg && negOk ? ' neg' : '')}">${kc(v, '0 Kč')}</td>`;
+      row += `<td class="num${neg ? ' neg' : ''}">${v===0?'—':kc(v, '—')}</td>`;
     });
     if(showDelta) {
       const d2 = delta(last, prev);
-      row += d2===null ? `<td></td>` : `<td class="${d2>=0?'pos':'neg'}">${d2>=0?'':''} ${Math.abs(d2).toFixed(1)}%</td>`;
+      row += d2===null ? `<td></td>` : `<td class="${d2>=0?'pos':'neg'}">${d2>=0?'+':''}${d2.toFixed(1)}%</td>`;
     }
     return row + `</tr>`;
   };
@@ -174,4 +175,4 @@ loadData(d => {
   ].join("");
 });
 </script>
-</body></html>
+</body></
