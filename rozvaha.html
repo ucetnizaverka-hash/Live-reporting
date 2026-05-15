@@ -136,8 +136,9 @@ loadData(d => {
     RA("C.I.3.","  Výrobky a zboží",                       "41","zasoby_zbozi",  {sub:true,note:true}),
     RA("C.I.5.","  Poskytnuté zálohy na zásoby",           "43","zasoby_zalohy", {sub:true,note:true}),
     AHEAD("C.II. Pohledávky"),
-    RA("C.II.", "Pohledávky celkem",                       "44","pohledavky_kr"),
-    RA("C.II.2.","  Krátkodobé pohledávky",                "46","pohledavky_kr", {sub:true}),
+    RA("C.II.", "Pohledávky celkem",                       "44","pohledavky_kr",   {bold:true}),
+    RA("C.II.1.","  Dlouhodobé pohledávky",                "45","pohledavky_dl",   {sub:true,note:true}),
+    RA("C.II.2.","  Krátkodobé pohledávky",                "46","pohledavky_kr",   {sub:true}),
     AHEAD("C.III. Krátkodobý finanční majetek"),
     RA("C.III.","KFM celkem",                              "47","kfm",           {note:true}),
     AHEAD("C.IV. Peněžní prostředky"),
@@ -165,8 +166,7 @@ loadData(d => {
     ASEP(),
     AHEAD("A. VLASTNÍ KAPITÁL"),
     RA("A.",    "Vlastní kapitál celkem",                  "02","vk",            {bold:true}),
-    RA("A.I.",  "Základní kapitál",                        "03","zk",            {sub:true}),
-    RA("A.I.1.","  Základní kapitál",                      "04","zk",            {sub:true}),
+    RA("A.I.",  "Základní kapitál",                        "03","zk",            {bold:true}),
     RA("A.II.", "Ážio a kapitálové fondy",                 "05","kapitalove_fondy",{sub:true,note:true}),
     RA("A.III.","Fondy ze zisku",                          "09","fondy_ze_zisku",{sub:true,note:true}),
     RA("A.III.1.","  Ostatní rezervní fondy",              "10","rezervni_fond", {sub:true,note:true}),
@@ -205,6 +205,3 @@ loadData(d => {
     RA("D.",    "Časové rozlišení pasiv",                  "66","cr_pasiv"),
   ].join("");
 
-});
-</script>
-</body></html>
