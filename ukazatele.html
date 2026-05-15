@@ -143,7 +143,7 @@ loadData(d => {
   document.getElementById("rent-body").innerHTML = [
     RC("Rentabilita celkového kapitálu (ROA)",
        p => fA(p) ? fEbit(p)/fA(p)*100 : null, s.roa, sP, true,
-       "EBIT (VH před zd. + nák. úroky) / Aktiva × 100"),
+       "EBIT (VH před zd. + nákl. úroky) / Aktiva (netto) × 100"),
     RC("Rentabilita vlastního kapitálu (ROE)",
        p => fVK(p) ? parseFloat(p.vh_za_obdobi||0)/fVK(p)*100 : null, s.roe, sP, true,
        "Čistý zisk / Vlastní kapitál × 100"),
@@ -313,4 +313,4 @@ loadData(d => {
   ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
 });
 </script></body></html>
-          
+ 
