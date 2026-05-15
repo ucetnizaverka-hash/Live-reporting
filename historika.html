@@ -324,8 +324,12 @@ function buildHoriz(periody, rows, el) {
   let body = "<tbody>";
   rows.forEach(row => {
     if(row.group){ body+=`<tr class="grp"><td colspan="${1+periody.length+(hasHoriz?periody.filter(p=>p.horiz).length:0)}">${row.label}</td></tr>`; return; }
-    body += `<tr><td>${row.label}</td>`;
-    periody.forEach(p => body += `<td>${row.fmt?row.fmt(p[row.key]):n0(p[row.key])}</td>`);
+    // bold = soucet/total radek, sub = podsoucet, regular = polozka
+    const style = row.bold ? 'style="font-weight:800;background:#fef3c7;color:#92400e;border-top:2px solid #d4952a"'
+                 : row.sub ? 'style="font-weight:600;background:#f8f9fa;color:#475569"'
+                 : '';
+    body += `<tr ${style}><td>${row.label}</td>`;
+    periody.forEach(p => body += `<td${row.bold?' style="font-weight:800"':''}>${row.fmt?row.fmt(p[row.key]):n0(p[row.key])}</td>`);
     if(hasHoriz) periody.forEach(p => {
       if(!p.horiz) return;
       const h=p.horiz[row.key]||{};
@@ -429,35 +433,35 @@ async function main(){
     // Horizontální analýza
     buildHoriz(periody,[
       {group:true,label:"Výnosy"},
-      {label:"Tržby celkem",       key:"trzby_celkem"},
-      {label:"  Tržby ze služeb",  key:"trzby_sluzby"},
-      {label:"  Tržby ze zboží",   key:"trzby_zbozi"},
+      {label:"I.  Tržby ze služeb",  key:"trzby_sluzby"},
+      {label:"II. Tržby ze zboží",   key:"trzby_zbozi"},
+      {label:"TRŽBY CELKEM",         key:"trzby_celkem", bold:true},
       {group:true,label:"Náklady"},
-      {label:"Výkonová spotřeba",  key:"vyk_spotreba"},
-      {label:"Osobní náklady",     key:"osobni_naklady"},
-      {label:"Odpisy",             key:"odpisy"},
-      {group:true,label:"Výsledek"},
-      {label:"Provozní VH",        key:"provozni_vh"},
-      {label:"Finanční VH",        key:"financni_vh"},
-      {label:"VH před zdaněním",   key:"vh_pred_zdanenim"},
-      {label:"VH za účetní období",key:"vh_za_obdobi"},
+      {label:"A. Výkonová spotřeba", key:"vyk_spotreba", sub:true},
+      {label:"D. Osobní náklady",    key:"osobni_naklady", sub:true},
+      {label:"E. Odpisy a úpravy",   key:"odpisy", sub:true},
+      {group:true,label:"Výsledek hospodaření"},
+      {label:"*  Provozní VH",        key:"provozni_vh", sub:true},
+      {label:"*  Finanční VH",        key:"financni_vh", sub:true},
+      {label:"** VH PŘED ZDANĚNÍM",   key:"vh_pred_zdanenim", bold:true},
+      {label:"***VH ZA ÚČETNÍ OBDOBÍ",key:"vh_za_obdobi", bold:true},
     ],document.getElementById("horiz-vzz"));
 
     buildHoriz(periody,[
       {group:true,label:"AKTIVA"},
-      {label:"Aktiva celkem",       key:"aktiva_netto"},
-      {label:"B. Stálá aktiva",     key:"stala_netto"},
-      {label:"C. Oběžná aktiva",    key:"obezna_netto"},
-      {label:"  Zásoby",            key:"zasoby"},
-      {label:"  Pohledávky kr.",    key:"pohledavky_kr"},
-      {label:"  Peněžní prostředky",key:"pp"},
-      {label:"D. Časové rozlišení aktiv", key:"cr_aktiv"},
+      {label:"B.   Stálá aktiva (DM)",     key:"stala_netto", sub:true},
+      {label:"C.   Oběžná aktiva",         key:"obezna_netto", sub:true},
+      {label:"     Zásoby",                key:"zasoby"},
+      {label:"     Pohledávky krátkodobé", key:"pohledavky_kr"},
+      {label:"     Peněžní prostředky",    key:"pp"},
+      {label:"D.   Časové rozlišení aktiv",key:"cr_aktiv", sub:true},
+      {label:"AKTIVA CELKEM",              key:"aktiva_netto", bold:true},
       {group:true,label:"PASIVA"},
-      {label:"Pasiva celkem",       key:"pasiva_celkem"},
-      {label:"A. Vlastní kapitál",  key:"vk"},
-      {label:"B+C. Cizí zdroje",    key:"cizi_zdroje"},
-      {label:"  Závazky krátkodobé",key:"zav_kr"},
-      {label:"D. Časové rozlišení pasiv", key:"cr_pasiv"},
+      {label:"A.   Vlastní kapitál",       key:"vk", sub:true},
+      {label:"B+C. Cizí zdroje",           key:"cizi_zdroje", sub:true},
+      {label:"     Závazky krátkodobé",    key:"zav_kr"},
+      {label:"D.   Časové rozlišení pasiv",key:"cr_pasiv", sub:true},
+      {label:"PASIVA CELKEM",              key:"pasiva_celkem", bold:true},
     ],document.getElementById("horiz-rozvaha"));
 
     // Vertikální analýza
@@ -522,12 +526,4 @@ async function main(){
     Plotly.newPlot("ch-aktiva",[
       {name:"Stálá aktiva",x:labels,y:periody.map(p=>tis(p.stala_netto<0?0:p.stala_netto)),type:"bar",marker:{color:"rgba(212,149,42,.85)"}},
       {name:"Oběžná aktiva",x:labels,y:periody.map(p=>tis(p.obezna_netto)),type:"bar",marker:{color:"rgba(45,74,158,.85)"}}
-    ],{..._PH,barmode:"stack",yaxis:{..._PH.yaxis,ticksuffix:" tis."}},_HC);
-
-    Plotly.newPlot("ch-altman",[
-      {name:"IN05",x:labels,y:periody.map(p=>p.in05||0),type:"scatter",mode:"lines+markers+text",
-       line:{color:"#fbbf24",width:2.5},marker:{size:10,color:"#fbbf24"},
-       text:periody.map(p=>(p.in05||0).toFixed(2)),textposition:"top center",textfont:{size:10,color:"#fbbf24"}},
-      {name:"Tvorba hodnoty (1.6)",x:labels,y:labels.map(()=>1.6),type:"scatter",mode:"lines",
-       line:{color:"#34d399",width:1,dash:"dot"},showlegend:true},
-      {name:"Finanční tíseň (0.9)",x:labels,y:labels.map(()=>0.9),type:"sca
+    ],{..._PH
