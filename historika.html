@@ -117,9 +117,9 @@
       <span class="arrow">▼</span><span>Horizontální analýza — meziroční změny</span>
     </div>
     <div class="collapsible-body" id="sec-horiz">
-      <div style="margin-top:12px;margin-bottom:6px;font-size:11px;font-weight:600;color:rgba(240,244,255,.5)">VZZ</div>
+      <div style="margin-top:12px;margin-bottom:6px;font-size:11px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:.5px">VZZ</div>
       <div class="tbl-wrap" style="overflow-x:auto;margin-bottom:14px"><table class="ana-table" id="horiz-vzz"></table></div>
-      <div style="margin-bottom:6px;font-size:11px;font-weight:600;color:rgba(240,244,255,.5)">Rozvaha</div>
+      <div style="margin-bottom:6px;font-size:11px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:.5px">Rozvaha</div>
       <div class="tbl-wrap" style="overflow-x:auto"><table class="ana-table" id="horiz-rozvaha"></table></div>
     </div>
 
@@ -127,9 +127,9 @@
       <span class="arrow">▼</span><span>Vertikální analýza — struktura (%)</span>
     </div>
     <div class="collapsible-body" id="sec-vert">
-      <div style="margin-top:12px;margin-bottom:6px;font-size:11px;font-weight:600;color:rgba(240,244,255,.5)">Struktura VZZ</div>
+      <div style="margin-top:12px;margin-bottom:6px;font-size:11px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:.5px">Struktura VZZ</div>
       <div class="tbl-wrap" style="overflow-x:auto;margin-bottom:14px"><table class="ana-table" id="vert-vzz"></table></div>
-      <div style="margin-bottom:6px;font-size:11px;font-weight:600;color:rgba(240,244,255,.5)">Struktura rozvahy</div>
+      <div style="margin-bottom:6px;font-size:11px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:.5px">Struktura rozvahy</div>
       <div class="tbl-wrap" style="overflow-x:auto"><table class="ana-table" id="vert-rozvaha"></table></div>
     </div>
 
@@ -271,12 +271,12 @@ function buildTrendBars(periody) {
 
   const COLORS = ["rgba(45,74,158,.85)","rgba(212,149,42,.9)","rgba(52,211,153,.85)"];
 
-  let html = `<div style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Vývoj klíčových položek mezi obdobími. Šipky a procenta ukazují meziroční změnu.</div>`;
+  let html = `<div style="font-size:12px;color:#64748b;margin-bottom:14px">Vývoj klíčových položek mezi obdobími. Šipky a procenta ukazují meziroční změnu.</div>`;
   rows.forEach(row => {
     const vals = periody.map(p => parseFloat(p[row.key]) || 0);
     const maxV = Math.max(...vals.map(Math.abs), 1);
     html += `<div style="margin-bottom:14px">
-      <div style="font-size:12px;font-weight:700;color:rgba(240,244,255,.7);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">${row.lbl}</div>
+      <div style="font-size:12px;font-weight:700;color:#1e293b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">${row.lbl}</div>
       <div style="display:flex;flex-direction:column;gap:5px">`;
     periody.forEach((p,i) => {
       const v = vals[i];
@@ -296,11 +296,11 @@ function buildTrendBars(periody) {
         }
       }
       html += `<div style="display:flex;align-items:center;gap:10px">
-        <div style="width:90px;font-size:11px;font-weight:700;color:rgba(240,244,255,.7);text-align:right;flex-shrink:0">${p.label||("Rok "+p.rok)}</div>
-        <div style="flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.06);overflow:hidden">
+        <div style="width:90px;font-size:11px;font-weight:700;color:#475569;text-align:right;flex-shrink:0">${p.label||("Rok "+p.rok)}</div>
+        <div style="flex:1;height:10px;border-radius:5px;background:#f1f5f9;overflow:hidden">
           <div style="width:${pct}%;height:100%;border-radius:5px;background:${col};transition:width .6s ease"></div>
         </div>
-        <div style="font-size:12px;font-weight:600;color:${neg?"var(--red)":"var(--text)"};min-width:140px;text-align:right;display:flex;align-items:center;justify-content:flex-end">${kMil(v)}${deltaTxt}</div>
+        <div style="font-size:12px;font-weight:600;color:${neg?"#dc2626":"#1e293b"};min-width:140px;text-align:right;display:flex;align-items:center;justify-content:flex-end">${kMil(v)}${deltaTxt}</div>
       </div>`;
     });
     html += `</div></div>`;
