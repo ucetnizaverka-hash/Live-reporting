@@ -8,7 +8,7 @@
     "period_label": "1.1.2024–31.12.2024",
     "datum_od": "2024-01-01",
     "datum_do": "2024-12-31",
-    "updated": "2026-05-15T10:19:47",
+    "updated": "2026-05-15T10:28:41",
     "format": "plny",
     "pocet_zamestnancu": 0,
     "zdroj": "denik_2024.xlsx",
@@ -16,18 +16,18 @@
     "upozorneni": "Vykaz ziveho vykaznictvi - sestaven automaticky. Zahrnuje odpisy a rezervy z predvahy. Dan z prijmu je vypoctena vzorcem (21 % ze zakladu VH/1000*1000) bez danovych uprav. Pro ucely danoveho priznani zpracujte s ucetnim."
   },
   "rozvaha": {
-    "aktiva_celkem": 3063000,
+    "aktiva_celkem": 3062000,
     "stala_aktiva": 254000,
     "dnm": 0.0,
     "dhm": 254000,
     "dfm": 0,
-    "obezna_aktiva": 2807000,
+    "obezna_aktiva": 2806000,
     "zasoby": 1075000,
     "pohledavky_kr": 264000,
     "kfm": 0,
     "penezni_prostredky": 1468000,
     "cr_aktiv": 2000,
-    "pasiva_celkem": 3063000,
+    "pasiva_celkem": 3062000,
     "vlastni_kapital": 297000,
     "zk": 100000,
     "vh_min_let": 142000,
@@ -35,10 +35,10 @@
     "ztrata_min_let": 0.0,
     "jiný_vh_min": 0.0,
     "vh_bezne_obdobi": 55000,
-    "cizi_zdroje": 2686000,
+    "cizi_zdroje": 2685000,
     "rezervy": 0,
     "zavazky_dl": 0,
-    "zavazky_kr": 2686000,
+    "zavazky_kr": 2685000,
     "cr_pasiv": 80000,
     "dnm_prava": 0.0,
     "dhm_pozemky_stavby": 0,
@@ -192,6 +192,6 @@
     "dan_z_prijmu": 3000,
     "vh_za_obdobi": 11000,
     "cisty_obrat": 905000,
-    "archivovano": "2026-05-15T10:19:42"
+    "archivovano": "2026-05-15T10:28:36"
   }
 }
