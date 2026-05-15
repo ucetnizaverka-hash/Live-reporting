@@ -410,12 +410,7 @@ loadData(d=>{
     ...(_isLive ? [] : [{lbl:"Index IN05", val:a.in05!=null?parseFloat(a.in05).toFixed(2).replace(".",","):"—", extra:in05Badge(a.in05_pasmo), cls:"navy"}]),
     {lbl:"Celk. zadluženost", val:pct(a.celkova_zadluzenost),  sub:"Benchmark: "+pct(s.celkova_zadluzenost),                     cls:"teal"},
     {lbl:"Běžná likvidita",   val:num(a.bezna_likvidita),      sub:"Benchmark: "+num(s.bezna_likvidita),                         cls:"teal"},
-    (function(){
-      const cpk = parseFloat(a.obezna_netto||0) - parseFloat(a.zav_kr||0);
-      const cls = cpk >= 0 ? "violet" : "violet";
-      const sign = cpk >= 0 ? "Kladný — likvidní polštář" : "Záporný — krátké závazky > oběžná";
-      return {lbl:"Čistý pracovní kapitál", val:kc(cpk), sub:sign, cls:cls};
-    })(),
+    {lbl:"Pohotová likvidita",val:num(a.pohotova_likvidita),   sub:"(Pohl. + PP) / Kr. závazky",                                  cls:"teal"},
   ];
   document.getElementById("kpi-grid").innerHTML=kpiData.map(k=>`
     <div class="kpi ${k.cls||''}">
