@@ -8,7 +8,7 @@
     "period_label": "1.1.2024–31.12.2024",
     "datum_od": "2024-01-01",
     "datum_do": "2024-12-31",
-    "updated": "2026-05-15T00:45:31",
+    "updated": "2026-05-15T00:58:34",
     "format": "plny",
     "pocet_zamestnancu": 0,
     "zdroj": "denik_2024.xlsx",
@@ -105,12 +105,12 @@
     "cf_pred_zmenami_pk": 210000,
     "cf_zmena_pohledavky": 78000,
     "cf_zmena_zasoby": 175000,
-    "cf_zmena_zavazky": -23000,
+    "cf_zmena_zavazky": 29000,
     "cf_zmena_cr_pas": 15000,
     "cf_zmena_cr_akt": -1000,
     "cf_zmeny_pk_celkem": 245000,
     "cf_pred_zdanenim": 454000,
-    "cf_dan": 0,
+    "cf_dan": -53000,
     "cf_vyn_uroky_prijate": 0,
     "cf_nak_uroky_zaplacene": 0,
     "cf_provozni": 421000,
@@ -192,6 +192,6 @@
     "dan_z_prijmu": 0.0,
     "vh_za_obdobi": -15000,
     "cisty_obrat": 905000,
-    "archivovano": "2026-05-15T00:45:26"
+    "archivovano": "2026-05-15T00:58:30"
   }
 }
