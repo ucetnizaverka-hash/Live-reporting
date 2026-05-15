@@ -61,6 +61,21 @@
       <div class="chart-box"><h3>Doby obratu (dní)</h3><div id="ch-dob" style="height:200px"></div></div>
       <div class="chart-box"><h3>Zadluženost (%)</h3><div id="ch-zad" style="height:200px"></div></div>
     </div>
+
+    <!-- LIVE-only: Trendové porovnání s rokem 2023 -->
+    <div class="section" id="live-trend-box" style="display:none">
+      <h2>Trendové porovnání · aktuální období vs. Rok 2023</h2>
+      <table class="ana-table" id="live-trend-tbl"><thead></thead><tbody></tbody></table>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:8px;font-style:italic">
+        Stavové ukazatele srovnatelné přímo. Tokové (CF, tržby) jsou v aktuálním období jen za část roku.
+      </div>
+    </div>
+
+    <!-- LIVE-only: Struktura cizích zdrojů + Struktura oběžných aktiv -->
+    <div class="charts-2" id="live-extra-charts" style="display:none">
+      <div class="chart-box"><h3>Struktura cizích zdrojů</h3><div id="ch-cz-pie" style="height:200px"></div></div>
+      <div class="chart-box"><h3>Struktura oběžných aktiv</h3><div id="ch-oa-pie" style="height:200px"></div></div>
+    </div>
   </div>
 </main>
 <footer><span>22HLAV</span> · Průběžné výkaznictví v2.0 · Metodika AVS</footer>
@@ -98,6 +113,14 @@ loadData(d => {
     document.querySelectorAll('.chart-box').forEach(box => {
       const h3 = box.querySelector('h3');
       if (h3 && /Rentabilita|Doby obratu/.test(h3.textContent)) box.style.display = 'none';
+    });
+    // Po skrytí — pokud v 2-col řadě zbyl jen jeden graf, roztáhni přes oba sloupce
+    document.querySelectorAll('.charts-2').forEach(grid => {
+      const boxes = Array.from(grid.querySelectorAll('.chart-box'));
+      const visible = boxes.filter(b => b.style.display !== 'none');
+      if (visible.length === 1 && boxes.length === 2) {
+        visible[0].style.gridColumn = '1 / -1';
+      }
     });
     // Disclaimer
     const disc = document.getElementById('disclaimer');
@@ -286,23 +309,181 @@ loadData(d => {
   const _CFG = {responsive:true, displayModeBar:false};
   const _c = (rgb, i) => `rgba(${rgb},${Math.min(0.95, 0.6+i*0.15)})`;
 
-  // Rentabilita — *100 pro procenta, /10 pro desetinu
-  Plotly.newPlot("ch-rent", [
-    {name:"ROA %", x:labels, type:"bar",
-     y:allP.map(p => fA(p) ? Math.round(fEbit(p)/fA(p)*1000)/10 : 0),
-     text:allP.map(p => fA(p) ? (Math.round(fEbit(p)/fA(p)*1000)/10).toFixed(1)+"%" : ""),
+  // Po skrytí — pokud v 2-col řadě zbyl jen jeden graf, roztáhni přes oba sloupce
+  if (isLive) {
+    document.querySelectorAll('.charts-2').forEach(grid => {
+      const boxes = Array.from(grid.querySelectorAll('.chart-box'));
+      const visible = boxes.filter(b => b.style.display !== 'none');
+      if (visible.length === 1 && boxes.length === 2) {
+        visible[0].style.gridColumn = '1 / -1';
+      }
+    });
+  }
+
+  // Rentabilita — jen ROCNI
+  if (!isLive) {
+    Plotly.newPlot("ch-rent", [
+      {name:"ROA %", x:labels, type:"bar",
+       y:allP.map(p => fA(p) ? Math.round(fEbit(p)/fA(p)*1000)/10 : 0),
+       text:allP.map(p => fA(p) ? (Math.round(fEbit(p)/fA(p)*1000)/10).toFixed(1)+"%" : ""),
+       textposition:"outside",
+       marker:{color:allP.map((_,i) => _c("45,74,158",i))}},
+      {name:"ROE %", x:labels, type:"bar",
+       y:allP.map(p => fVK(p) ? Math.round(parseFloat(p.vh_za_obdobi||0)/fVK(p)*1000)/10 : 0),
+       text:allP.map(p => fVK(p) ? (Math.round(parseFloat(p.vh_za_obdobi||0)/fVK(p)*1000)/10).toFixed(1)+"%" : ""),
+       textposition:"outside",
+       marker:{color:allP.map((_,i) => _c("52,211,153",i))}},
+      {name:"ROS %", x:labels, type:"bar",
+       y:allP.map(p => fT(p) ? Math.round(parseFloat(p.vh_za_obdobi||0)/fT(p)*1000)/10 : 0),
+       text:allP.map(p => fT(p) ? (Math.round(parseFloat(p.vh_za_obdobi||0)/fT(p)*1000)/10).toFixed(1)+"%" : ""),
+       textposition:"outside",
+       marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
+    ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
+  }
+
+  // Likvidita (vždy)
+  Plotly.newPlot("ch-lik", [
+    {name:"Běžná", x:labels, type:"bar",
+     y:allP.map(p => fZavKr(p) ? Math.round(fOA(p)/fZavKr(p)*100)/100 : 0),
+     text:allP.map(p => fZavKr(p) ? (Math.round(fOA(p)/fZavKr(p)*100)/100).toFixed(2).replace(".",",") : ""),
      textposition:"outside",
-     marker:{color:allP.map((_,i) => _c("45,74,158",i))}},
-    {name:"ROE %", x:labels, type:"bar",
-     y:allP.map(p => fVK(p) ? Math.round(parseFloat(p.vh_za_obdobi||0)/fVK(p)*1000)/10 : 0),
-     text:allP.map(p => fVK(p) ? (Math.round(parseFloat(p.vh_za_obdobi||0)/fVK(p)*1000)/10).toFixed(1)+"%" : ""),
+     marker:{color:"#3b82f6"}},
+    {name:"Pohotová", x:labels, type:"bar",
+     y:allP.map(p => fZavKr(p) ? Math.round((fPohl(p)+fPP(p))/fZavKr(p)*100)/100 : 0),
+     text:allP.map(p => fZavKr(p) ? (Math.round((fPohl(p)+fPP(p))/fZavKr(p)*100)/100).toFixed(2).replace(".",",") : ""),
      textposition:"outside",
-     marker:{color:allP.map((_,i) => _c("52,211,153",i))}},
-    {name:"ROS %", x:labels, type:"bar",
-     y:allP.map(p => fT(p) ? Math.round(parseFloat(p.vh_za_obdobi||0)/fT(p)*1000)/10 : 0),
-     text:allP.map(p => fT(p) ? (Math.round(parseFloat(p.vh_za_obdobi||0)/fT(p)*1000)/10).toFixed(1)+"%" : ""),
+     marker:{color:"#10b981"}},
+    {name:"Okamžitá", x:labels, type:"bar",
+     y:allP.map(p => fZavKr(p) ? Math.round(fPP(p)/fZavKr(p)*100)/100 : 0),
+     text:allP.map(p => fZavKr(p) ? (Math.round(fPP(p)/fZavKr(p)*100)/100).toFixed(2).replace(".",",") : ""),
      textposition:"outside",
-     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
+     marker:{color:"#f59e0b"}},
+  ], {..._PL, yaxis:{..._PL.yaxis, title:{text:"× násobek",font:{size:9}}}}, _CFG);
+
+  // Doby obratu — jen ROCNI
+  if (!isLive) {
+    Plotly.newPlot("ch-dob", [
+      {name:"Zásoby",     x:labels, type:"bar",
+       y:allP.map(p => fDob(p, fZas) || 0),
+       text:allP.map(p => { const v=fDob(p,fZas); return v!=null ? v+" dní" : ""; }),
+       textposition:"outside",
+       marker:{color:"#0ea5e9"}},
+      {name:"Pohledávky", x:labels, type:"bar",
+       y:allP.map(p => fDob(p, fPohl) || 0),
+       text:allP.map(p => { const v=fDob(p,fPohl); return v!=null ? v+" dní" : ""; }),
+       textposition:"outside",
+       marker:{color:"#10b981"}},
+      {name:"Závazky",    x:labels, type:"bar",
+       y:allP.map(p => fDob(p, fZavKr) || 0),
+       text:allP.map(p => { const v=fDob(p,fZavKr); return v!=null ? v+" dní" : ""; }),
+       textposition:"outside",
+       marker:{color:"#f59e0b"}},
+    ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" dní"}}, _CFG);
+  }
+
+  // Zadluženost (vždy)
+  Plotly.newPlot("ch-zad", [
+    {name:"Celková zadluženost", x:labels, type:"bar",
+     y:allP.map(p => parseFloat(p.celkova_zadluzenost || 0)),
+     text:allP.map(p => p.celkova_zadluzenost!=null ? parseFloat(p.celkova_zadluzenost).toFixed(1).replace(".",",")+" %" : ""),
+     textposition:"outside",
+     marker:{color:"#dc2626"}},
+    {name:"Krytí DM VK ×100", x:labels, type:"bar",
+     y:allP.map(p => fDM(p) ? Math.round(fVK(p)/fDM(p)*1000)/10 : 0),
+     text:allP.map(p => fDM(p) ? (Math.round(fVK(p)/fDM(p)*1000)/10).toFixed(1).replace(".",",")+" %" : ""),
+     textposition:"outside",
+     marker:{color:"#7c3aed"}},
   ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
+
+  // ── LIVE-only: trendové porovnání + struktura cizích zdrojů/OA ──────
+  if (isLive) {
+    const _prev = (d.periody||[]).find(p => p.rok === 2023);
+    const _tBox = document.getElementById("live-trend-box");
+    if (_prev && _tBox) {
+      _tBox.style.display = "block";
+      const _dlt = (cur, prev) => {
+        if (cur==null || prev==null || prev===0) return `<td class="gray">—</td>`;
+        const v = (cur - prev) / Math.abs(prev) * 100;
+        const cls = v >= 0 ? "pos" : "neg";
+        const sign = v >= 0 ? "▲" : "▼";
+        return `<td class="${cls}">${sign} ${Math.abs(v).toFixed(1).replace(".",",")} %</td>`;
+      };
+      const fmtNum = v => (v==null||isNaN(parseFloat(v))) ? "—" : parseFloat(v).toFixed(2).replace(".",",");
+      const fmtPct = v => (v==null||isNaN(parseFloat(v))) ? "—" : parseFloat(v).toFixed(1).replace(".",",")+" %";
+
+      const _cur  = a;
+      const _bl   = p => p.zav_kr ? p.obezna_netto/p.zav_kr : null;
+      const _pohlL= p => p.zav_kr ? (parseFloat(p.pohledavky_kr||0)+parseFloat(p.pp||0))/p.zav_kr : null;
+      const _ok   = p => p.zav_kr ? p.pp/p.zav_kr : null;
+      const _mz   = p => p.vk ? p.cizi_zdroje/p.vk*100 : null;
+      const _kdm  = p => p.stala_netto ? p.vk/p.stala_netto : null;
+
+      const rows = [
+        {grp:"Likvidita"},
+        {lbl:"Běžná likvidita",    cur:_bl(_cur),    prev:_bl(_prev),    fmt:fmtNum},
+        {lbl:"Pohotová likvidita", cur:_pohlL(_cur), prev:_pohlL(_prev), fmt:fmtNum},
+        {lbl:"Okamžitá likvidita", cur:_ok(_cur),    prev:_ok(_prev),    fmt:fmtNum},
+        {grp:"Zadluženost"},
+        {lbl:"Celková zadluženost",   cur:_cur.celkova_zadluzenost, prev:_prev.celkova_zadluzenost, fmt:fmtPct},
+        {lbl:"Míra zadluženosti",     cur:_mz(_cur),  prev:_mz(_prev),  fmt:fmtPct},
+        {lbl:"Krytí DM vlast. kap.",  cur:_kdm(_cur), prev:_kdm(_prev), fmt:fmtNum},
+        {grp:"Kapitálová struktura"},
+        {lbl:"Aktiva celkem",       cur:_cur.aktiva_netto, prev:_prev.aktiva_netto, fmt:kc},
+        {lbl:"Vlastní kapitál",     cur:_cur.vk,           prev:_prev.vk,           fmt:kc},
+        {lbl:"Cizí zdroje",         cur:_cur.cizi_zdroje,  prev:_prev.cizi_zdroje,  fmt:kc},
+        {lbl:"Peněžní prostředky",  cur:_cur.pp,           prev:_prev.pp,           fmt:kc},
+      ];
+      document.querySelector("#live-trend-tbl thead").innerHTML =
+        `<tr><th style="width:42%">Ukazatel</th><th>Rok 2023</th><th>Aktuální období</th><th>Změna</th></tr>`;
+      document.querySelector("#live-trend-tbl tbody").innerHTML = rows.map(r => {
+        if (r.grp) return `<tr class="grp"><td colspan="4">${r.grp}</td></tr>`;
+        return `<tr><td>${r.lbl}</td><td class="gray">${r.fmt(r.prev)}</td><td><strong>${r.fmt(r.cur)}</strong></td>${_dlt(r.cur, r.prev)}</tr>`;
+      }).join("");
+    }
+
+    const _xBox = document.getElementById("live-extra-charts");
+    if (_xBox) _xBox.style.display = "grid";
+
+    const _czSplit = [
+      {label:"Závazky z obch. styku", val: parseFloat(a.zav_dodavatele||0), color:"#dc2626"},
+      {label:"Daňové závazky",        val: parseFloat(a.zav_stat_dan||0),   color:"#ea580c"},
+      {label:"Závazky ke zaměstnancům",val:parseFloat(a.zav_mzdy||0),       color:"#f59e0b"},
+      {label:"Závazky ke společníkům",val: parseFloat(a.zav_spolecnici||0), color:"#a855f7"},
+      {label:"Ostatní krát. závazky", val: parseFloat(a.zav_jine||0),       color:"#94a3b8"},
+      {label:"Dlouhodobé závazky",    val: parseFloat(a.zav_dl||0),         color:"#0ea5e9"},
+      {label:"Rezervy",               val: parseFloat(a.rezervy||0),        color:"#7c3aed"},
+    ].filter(x => x.val > 0);
+    Plotly.newPlot("ch-cz-pie", [{
+      type:"pie",
+      labels:_czSplit.map(x=>x.label),
+      values:_czSplit.map(x=>x.val),
+      marker:{colors:_czSplit.map(x=>x.color)},
+      textinfo:"percent",
+      textfont:{size:10,color:"#fff"},
+      hole:0.5,
+      hovertemplate:"%{label}: %{value:,.0f} Kč<extra></extra>"
+    }], {..._PL, margin:{t:8,r:8,b:8,l:8}, showlegend:true,
+        legend:{orientation:"v", x:1.02, y:0.5, font:{size:9}},
+        annotations:[{text:"Cizí<br><b>"+kc(a.cizi_zdroje)+"</b>", showarrow:false, font:{size:10,color:"#374151"}}]
+    }, _CFG);
+
+    const _oaSplit = [
+      {label:"Zásoby",     val: parseFloat(a.zasoby||0),        color:"#0ea5e9"},
+      {label:"Pohledávky", val: parseFloat(a.pohledavky_kr||0), color:"#10b981"},
+      {label:"Peníze",     val: parseFloat(a.pp||0),            color:"#22d3ee"},
+    ].filter(x => x.val > 0);
+    Plotly.newPlot("ch-oa-pie", [{
+      type:"pie",
+      labels:_oaSplit.map(x=>x.label),
+      values:_oaSplit.map(x=>x.val),
+      marker:{colors:_oaSplit.map(x=>x.color)},
+      textinfo:"label+percent",
+      textfont:{size:11,color:"#fff"},
+      hole:0.5,
+      hovertemplate:"%{label}: %{value:,.0f} Kč<extra></extra>"
+    }], {..._PL, margin:{t:8,r:8,b:8,l:8}, showlegend:false,
+        annotations:[{text:"OA<br><b>"+kc(a.obezna_netto)+"</b>", showarrow:false, font:{size:10,color:"#374151"}}]
+    }, _CFG);
+  }
 });
 </script></body></html>

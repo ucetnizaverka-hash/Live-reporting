@@ -323,6 +323,22 @@ td.gray{color:var(--text-dim);font-size:11px}td.note{color:var(--text-dim);font-
     <!-- 2-sloupcové grafy -->
     <div class="charts-2col" id="charts"></div>
 
+    <!-- Doplňkové grafy: struktury -->
+    <div class="charts-2col">
+      <div class="chart-box"><h3>Struktura tržeb</h3><div id="ch-trzby-pie" style="height:220px"></div></div>
+      <div class="chart-box"><h3>Struktura aktiv</h3><div id="ch-aktiva-pie" style="height:220px"></div></div>
+    </div>
+
+    <!-- Trendová mini-tabulka -->
+    <div class="section" id="trend-table-box" style="display:none">
+      <h2>Trendové porovnání · aktuální období vs. Rok 2023</h2>
+      <table class="ana-table" id="trend-table"><thead></thead><tbody></tbody></table>
+      <div style="font-size:10.5px;color:var(--text-dim);margin-top:6px;font-style:italic">
+        Tokové veličiny (tržby, VH, CF) jsou v aktuálním období za <span id="trend-mes">—</span> měsíců — pro hrubé srovnání s rokem 2023.
+        Stavové veličiny (aktiva, kapitál, peníze) odrážejí stav k <span id="trend-do">—</span>.
+      </div>
+    </div>
+
     <!-- PDF + datum -->
     <div class="section" style="padding:11px 16px;display:flex;align-items:center;gap:14px">
       <a class="btn-gold" id="pdf-btn" href="#" target="_blank">Stáhnout PDF výkaz</a>
@@ -408,7 +424,7 @@ loadData(d=>{
   // Grafy: v LIVE bez ROA (tokový, sezónnost), pouze Tržby+VH a samostatně Aktiva
   document.getElementById("charts").innerHTML = _isLive
     ? `<div class="chart-box"><h3>Tržby a VH (tis. Kč)</h3><div id="ch1" style="height:220px"></div></div>
-       <div class="chart-box"><h3>Aktiva (tis. Kč)</h3><div id="ch2" style="height:220px"></div></div>`
+       <div class="chart-box"><h3>Aktiva, VK a Cizí zdroje (tis. Kč)</h3><div id="ch2" style="height:220px"></div></div>`
     : `<div class="chart-box"><h3>Tržby a VH (tis. Kč)</h3><div id="ch1" style="height:220px"></div></div>
        <div class="chart-box"><h3>Aktiva a ROA (%)</h3><div id="ch2" style="height:220px"></div></div>`;
 
@@ -420,6 +436,115 @@ loadData(d=>{
      marker:{color:"#f59e0b",line:{width:0}},
      text:allP.map(p=>Math.round((p.vh_za_obdobi||0)/1000)+" tis."),textposition:"outside",textfont:{size:8,color:"#374151"}}
   ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:8}}}},{responsive:true,displayModeBar:false});
+
+  // ── ch2 — Aktiva + VK + Cizí zdroje (LIVE) nebo Aktiva + ROA (ROCNI) ─
+  if (_isLive) {
+    Plotly.newPlot("ch2",[
+      {name:"Aktiva celkem",x:labels,y:allP.map(p=>Math.round((p.aktiva_netto||0)/1000)),type:"bar",
+       marker:{color:"#2563eb",line:{width:0}},
+       text:allP.map(p=>Math.round((p.aktiva_netto||0)/1000)+" tis."),textposition:"outside",textfont:{size:8,color:"#374151"}},
+      {name:"Vlastní kapitál",x:labels,y:allP.map(p=>Math.round((p.vk||0)/1000)),type:"bar",
+       marker:{color:"#10b981",line:{width:0}},
+       text:allP.map(p=>Math.round((p.vk||0)/1000)+" tis."),textposition:"outside",textfont:{size:8,color:"#374151"}},
+      {name:"Cizí zdroje",x:labels,y:allP.map(p=>Math.round((p.cizi_zdroje||0)/1000)),type:"bar",
+       marker:{color:"#94a3b8",line:{width:0}},
+       text:allP.map(p=>Math.round((p.cizi_zdroje||0)/1000)+" tis."),textposition:"outside",textfont:{size:8,color:"#374151"}}
+    ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:8}}}},{responsive:true,displayModeBar:false});
+  } else {
+    Plotly.newPlot("ch2",[
+      {name:"Aktiva celkem",x:labels,y:allP.map(p=>Math.round((p.aktiva_netto||0)/1000)),type:"bar",
+       marker:{color:"#2563eb",line:{width:0}},yaxis:"y",
+       text:allP.map(p=>Math.round((p.aktiva_netto||0)/1000)+" tis."),textposition:"outside",textfont:{size:8,color:"#374151"}},
+      {name:"ROA %",x:labels,y:allP.map(p=>parseFloat(p.roa||0)),type:"scatter",mode:"lines+markers",
+       marker:{color:"#f59e0b",size:9},line:{width:3,color:"#f59e0b"},yaxis:"y2"}
+    ],{...PLY,
+       yaxis:{...PLY.yaxis,title:{text:"tis. Kč",font:{size:8}},ticksuffix:" tis."},
+       yaxis2:{title:{text:"ROA %",font:{size:8}},overlaying:"y",side:"right",ticksuffix:" %",showgrid:false,tickfont:{size:9,color:"#374151"}}
+    },{responsive:true,displayModeBar:false});
+  }
+
+  // ── Struktura tržeb (donut) ───────────────────────────────────────────
+  const _trzbySplit = [
+    {label:"Tržby za služby", val: parseFloat(a.trzby_sluzby||0), color:"#3b82f6"},
+    {label:"Tržby za zboží",  val: parseFloat(a.trzby_zbozi||0),  color:"#f59e0b"},
+  ].filter(x => x.val > 0);
+  Plotly.newPlot("ch-trzby-pie",[{
+    type:"pie",
+    labels:_trzbySplit.map(x=>x.label),
+    values:_trzbySplit.map(x=>x.val),
+    marker:{colors:_trzbySplit.map(x=>x.color)},
+    textinfo:"label+percent",
+    textfont:{size:11,color:"#fff"},
+    hole:0.55,
+    hovertemplate:"%{label}: %{value:,.0f} Kč<extra></extra>"
+  }],{...PLY, margin:{t:8,r:12,b:12,l:12}, showlegend:false,
+      annotations:[{text:"Tržby<br><b>"+kc(a.trzby_celkem)+"</b>", showarrow:false, font:{size:11,color:"#374151"}}]
+  },{responsive:true,displayModeBar:false});
+
+  // ── Struktura aktiv (donut) ───────────────────────────────────────────
+  const _aktivaSplit = [
+    {label:"Stálá aktiva",     val: parseFloat(a.stala_netto||0),   color:"#1e40af"},
+    {label:"Zásoby",           val: parseFloat(a.zasoby||0),        color:"#0ea5e9"},
+    {label:"Pohledávky",       val: parseFloat(a.pohledavky_kr||0), color:"#10b981"},
+    {label:"Peněžní prostředky",val:parseFloat(a.pp||0),            color:"#22d3ee"},
+    {label:"Časové rozlišení", val: parseFloat(a.cr_aktiv||0),      color:"#94a3b8"},
+  ].filter(x => x.val > 0);
+  Plotly.newPlot("ch-aktiva-pie",[{
+    type:"pie",
+    labels:_aktivaSplit.map(x=>x.label),
+    values:_aktivaSplit.map(x=>x.val),
+    marker:{colors:_aktivaSplit.map(x=>x.color)},
+    textinfo:"label+percent",
+    textfont:{size:10,color:"#fff"},
+    hole:0.55,
+    hovertemplate:"%{label}: %{value:,.0f} Kč<extra></extra>"
+  }],{...PLY, margin:{t:8,r:12,b:12,l:12}, showlegend:false,
+      annotations:[{text:"Aktiva<br><b>"+kc(a.aktiva_netto)+"</b>", showarrow:false, font:{size:11,color:"#374151"}}]
+  },{responsive:true,displayModeBar:false});
+
+  // ── Trendová tabulka — aktuální vs Rok 2023 (jen v LIVE) ─────────────
+  const _prev = (d.periody||[]).find(p => p.rok === 2023);
+  const _trendBox = document.getElementById("trend-table-box");
+  if (_isLive && _prev && _trendBox) {
+    _trendBox.style.display = "block";
+    const _mes = a.mesice || a.mesice_obdobi || "—";
+    const _do = a.datum_do || "—";
+    const _mesEl = document.getElementById("trend-mes");
+    const _doEl = document.getElementById("trend-do");
+    if (_mesEl) _mesEl.textContent = _mes;
+    if (_doEl) _doEl.textContent = _do;
+
+    const _dlt = (cur, prev) => {
+      if (cur==null || prev==null || prev===0) return `<td class="gray">—</td>`;
+      const v = (cur - prev) / Math.abs(prev) * 100;
+      const cls = v >= 0 ? "pos" : "neg";
+      const sign = v >= 0 ? "▲" : "▼";
+      return `<td class="${cls}">${sign} ${Math.abs(v).toFixed(1).replace(".",",")} %</td>`;
+    };
+
+    const rows = [
+      {grp:"Tokové (za období)"},
+      {lbl:"Tržby celkem", cur:a.trzby_celkem, prev:_prev.trzby_celkem, fmt:kc},
+      {lbl:"VH za období", cur:a.vh_za_obdobi, prev:_prev.vh_za_obdobi, fmt:kc},
+      {lbl:"CF provozní",  cur:a.cf_provozni,  prev:_prev.cf_provozni,  fmt:kc},
+      {grp:"Stavové (k datu)"},
+      {lbl:"Aktiva celkem",       cur:a.aktiva_netto, prev:_prev.aktiva_netto, fmt:kc},
+      {lbl:"Vlastní kapitál",     cur:a.vk,           prev:_prev.vk,           fmt:kc},
+      {lbl:"Peněžní prostředky",  cur:a.pp,           prev:_prev.pp,           fmt:kc},
+      {lbl:"Zásoby",              cur:a.zasoby,       prev:_prev.zasoby,       fmt:kc},
+      {grp:"Poměrové"},
+      {lbl:"Běžná likvidita",     cur:a.bezna_likvidita,    prev:_prev.bezna_likvidita,    fmt:num},
+      {lbl:"Okamžitá likvidita",  cur:a.okamzita_likvidita, prev:_prev.okamzita_likvidita, fmt:num},
+      {lbl:"Celk. zadluženost",   cur:a.celkova_zadluzenost,prev:_prev.celkova_zadluzenost,fmt:pct},
+    ];
+
+    document.querySelector("#trend-table thead").innerHTML =
+      `<tr><th style="width:42%">Ukazatel</th><th>Rok 2023</th><th>Aktuální</th><th>Změna</th></tr>`;
+    document.querySelector("#trend-table tbody").innerHTML = rows.map(r => {
+      if (r.grp) return `<tr class="grp"><td colspan="4">${r.grp}</td></tr>`;
+      return `<tr><td>${r.lbl}</td><td class="gray">${r.fmt(r.prev)}</td><td><strong>${r.fmt(r.cur)}</strong></td>${_dlt(r.cur, r.prev)}</tr>`;
+    }).join("");
+  }
 });
 </script>
 </body></html>
