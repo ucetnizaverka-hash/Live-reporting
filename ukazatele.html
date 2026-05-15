@@ -163,7 +163,7 @@ loadData(d => {
   };
 
   // ── Výpočetní funkce (AVS metodika) ──────────────────────────────────
-  const fEbit  = p => parseFloat(p.vh_pred_zdanenim||0) + parseFloat(p.nak_uroky||0);
+  const fEbit  = p => parseFloat(p.provozni_vh||0);  // EBIT = Provozní VH (dle metodiky IN05)
   const fCfOp  = p => p.cf_provozni!=null ? parseFloat(p.cf_provozni)
                      : fEbit(p) + parseFloat(p.odpisy||0) - parseFloat(p.dan||0);
   const fT     = p => parseFloat(p.trzby_celkem||0);
@@ -194,7 +194,7 @@ loadData(d => {
   document.getElementById("rent-body").innerHTML = [
     RC("Rentabilita celkového kapitálu (ROA)",
        p => fA(p) ? fEbit(p)/fA(p)*100 : null, s.roa, sP, true,
-       "EBIT (VH před zd. + nákl. úroky) / Aktiva (netto) × 100"),
+       "EBIT (Provozní VH dle IN05) / Aktiva (netto) × 100"),
     RC("Rentabilita vlastního kapitálu (ROE)",
        p => fVK(p) ? parseFloat(p.vh_za_obdobi||0)/fVK(p)*100 : null, s.roe, sP, true,
        "Čistý zisk / Vlastní kapitál × 100"),
