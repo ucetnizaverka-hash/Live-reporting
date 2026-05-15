@@ -39,7 +39,6 @@
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
     <div class="section">
       <h2>Výkaz zisku a ztráty — druhové členění, plný rozsah</h2>
-      <p class="tis-note">Hodnoty v Kč &nbsp;·&nbsp; * Daň z příjmů = odhad (21 % ze základu ⌊VH/1000⌋×1000), bez daňových úprav</p>
       <div style="overflow-x:auto">
         <table id="vzz-table"><thead id="vzz-head"></thead><tbody id="vzz-body"></tbody></table>
       </div>
@@ -79,7 +78,7 @@ loadData(d => {
       <th colspan="${n}" style="text-align:center"></th>
       ${showDelta ? '<th rowspan="2">Δ %</th>' : ''}
     </tr>
-    <tr>${labels.map((l,i) => `<th style="font-size:11px">${l}</th>`).join('')}</tr>
+    <tr>${labels.map((l,i) => `<th style="font-size:11px;text-align:center">${l}</th>`).join('')}</tr>
     <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td></td><td class="cr">c</td>${labels.map((_,i)=>`<th>${i+1}</th>`).join('')}${showDelta?'<th></th>':''}</tr>`;
 
   const v0 = (p, key) => {
@@ -174,5 +173,4 @@ loadData(d => {
     R("",      "Čistý obrat za účetní období",                   "",               "49", "cisty_obrat"),
   ].join("");
 });
-</script>
-</body></html>
+</scrip

@@ -82,7 +82,7 @@ loadData(d => {
     <th colspan="${n}" style="text-align:center">Netto</th>
     ${showDelta?'<th rowspan="2">Δ %</th>':''}
   </tr>
-  <tr>${labels.map(l=>`<th style="font-size:11px">${l}</th>`).join('')}</tr>
+  <tr>${labels.map(l=>`<th style="font-size:11px;text-align:center">${l}</th>`).join('')}</tr>
   <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td class="cr">c</td>${labels.map((_,i)=>`<th>${i+1}</th>`).join('')}${showDelta?'<th></th>':''}</tr>`;
   document.getElementById("akt-head").innerHTML = aktHead;
 
@@ -157,7 +157,7 @@ loadData(d => {
     <th colspan="${n}" style="text-align:center">Skutečnost</th>
     ${showDelta?'<th rowspan="2">Δ %</th>':''}
   </tr>
-  <tr>${labels.map(l=>`<th style="font-size:11px">${l}</th>`).join('')}</tr>
+  <tr>${labels.map(l=>`<th style="font-size:11px;text-align:center">${l}</th>`).join('')}</tr>
   <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td class="cr">c</td>${labels.map((_,i)=>`<th>${i+1}</th>`).join('')}${showDelta?'<th></th>':''}</tr>`;
   document.getElementById("pas-head").innerHTML = pasHead;
 
@@ -203,8 +203,4 @@ loadData(d => {
     RA("C.II.13.","   Jiné závazky",                       "46","zav_jine",      {sub:true,note:true}),
     ASEP(),
     RA("D.",    "Časové rozlišení pasiv",                  "66","cr_pasiv"),
-  ].join("");
-
-});
-</script>
-</body></html>
+  ].join

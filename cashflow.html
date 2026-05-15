@@ -65,7 +65,7 @@ loadData(function(d){
       <th colspan="${n}" style="text-align:center"></th>
       ${showDelta ? '<th rowspan="2">Δ %</th>' : ''}
     </tr>
-    <tr>${labels.map(l => `<th style="font-size:11px">${l}</th>`).join('')}</tr>`;
+    <tr>${labels.map(l => `<th style="font-size:11px;text-align:center">${l}</th>`).join('')}</tr>`;
 
   function v0(p, key) {
     if (p && p[key] !== undefined && p[key] !== null) return p[key];
@@ -153,5 +153,4 @@ loadData(function(d){
 
   document.getElementById("cf-body").innerHTML = rows.join("");
 });
-</script>
-</body></html>
+</scrip
