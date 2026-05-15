@@ -134,7 +134,15 @@ loadData(d => {
   const fZas   = p => parseFloat(p.zasoby||0);
   const fPohl  = p => parseFloat(p.pohledavky_kr||0);
   const fRez   = p => parseFloat(p.rezervy||0);
-  const fDob   = (p, fn) => fT(p)>0 ? Math.round(fn(p)/(fT(p)/360)) : null;
+  // Počet dní v období: ROCNI/2023 = 365/366, LIVE = skutečně mezi datum_od a datum_do
+  const fDni   = p => {
+    if (p.datum_od && p.datum_do) {
+      const d1 = new Date(p.datum_od), d2 = new Date(p.datum_do);
+      return Math.round((d2 - d1) / 86400000) + 1;
+    }
+    return (p.mesice === 12 || p.mesice_obdobi === 12) ? 365 : (p.mesice||p.mesice_obdobi||12) * 30;
+  };
+  const fDob   = (p, fn) => fT(p)>0 ? Math.round(fn(p)*fDni(p)/fT(p)) : null;
   const sP     = v => (v==null||isNaN(parseFloat(v))) ? "—" : pct(parseFloat(v));
   const sN2    = v => (v==null||isNaN(parseFloat(v))) ? "—" : num(parseFloat(v));
 
@@ -305,11 +313,4 @@ loadData(d => {
     // Zadluženost
   Plotly.newPlot("ch-zad", [
     {name:"Celková zadluženost %", x:labels, type:"bar",
-     y:allP.map(p => Math.round(parseFloat(p.celkova_zadluzenost||0)*10)/10),
-     marker:{color:allP.map((_,i) => _c("220,38,38",i))}},
-    {name:"Míra zadluženosti %", x:labels, type:"bar",
-     y:allP.map(p => fVK(p) ? Math.round(fCZ(p)/fVK(p)*100*10)/10 : 0),
-     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
-  ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
-});
-</script></body></html
+     y:allP.map(p => Math.rou
