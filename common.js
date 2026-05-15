@@ -12,8 +12,8 @@ const kc = (v, empty="—") => {
   const n = parseFloat(v); if(isNaN(n)) return String(v);
   return n.toLocaleString("cs-CZ",{maximumFractionDigits:0}) + " Kč";
 };
-const pct  = (v,d=1) => (v===null||v===undefined) ? "—" : parseFloat(v).toFixed(d)+" %";
-const num  = (v,d=2) => (v===null||v===undefined) ? "—" : parseFloat(v).toFixed(d);
+const pct  = (v,d=1) => (v===null||v===undefined) ? "—" : parseFloat(v).toFixed(d).replace(".",",")+" %";
+const num  = (v,d=2) => (v===null||v===undefined) ? "—" : parseFloat(v).toFixed(d).replace(".",",");
 const days = (v) => (v===null||v===undefined) ? "—" : Math.round(parseFloat(v))+" dní";
 
 const delta = (a,b) => {
@@ -232,5 +232,4 @@ function trendArrow(cur, prev) {
   if(Math.abs(d) < 0.01) return '<span class="delta">→</span>';
   return d > 0
     ? '<span class="delta up">▲ ' + Math.abs(d).toFixed(1) + '</span>'
-    : '<span class="delta down">▼ ' + Math.abs(d).toFixed(1) + '</span>';
-}
+    : '<span class="delta down">▼ ' + Math

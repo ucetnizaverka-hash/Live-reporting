@@ -8,7 +8,7 @@
     "period_label": "1.1.2024–31.12.2024",
     "datum_od": "2024-01-01",
     "datum_do": "2024-12-31",
-    "updated": "2026-05-15T14:41:52",
+    "updated": "2026-05-15T17:17:58",
     "format": "plny",
     "pocet_zamestnancu": 0,
     "zdroj": "denik_2024.xlsx",
@@ -132,7 +132,7 @@
   "analyza": {
     "roa": 1.83,
     "roe": 18.63,
-    "ros": 1.61,
+    "ros": 1.63,
     "bezna_likvidita": 1.05,
     "pohotova_likvidita": 0.64,
     "okamzita_likvidita": 0.55,
@@ -194,6 +194,6 @@
     "dan_z_prijmu": 3000,
     "vh_za_obdobi": 11000,
     "cisty_obrat": 905000,
-    "archivovano": "2026-05-15T14:41:50"
+    "archivovano": "2026-05-15T17:17:55"
   }
 }

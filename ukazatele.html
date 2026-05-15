@@ -180,7 +180,7 @@ loadData(d => {
     RC("Obrat aktiv",
        p => fA(p) ? fT(p)/fA(p) : null, s.obratovost_aktiv,
        v => v==null ? "—" : sN2(v)+"×", true,
-       "Čistý obrat (60x) / Aktiva"),
+       "Čistý obrat / Aktiva"),
     RC("Obrat dlouhodobého majetku",
        p => fDM(p) ? fT(p)/fDM(p) : null, null,
        v => v==null ? "—" : sN2(v)+"×", true,
@@ -227,7 +227,7 @@ loadData(d => {
     ["x1","0,13","A / CZ",       "Aktiva / Cizí zdroje"],
     ["x2","0,04","EBIT / ÚN",    "EBIT / Nákl. úroky (max 9)"],
     ["x3","3,97","EBIT / A",     "EBIT / Aktiva"],
-    ["x4","0,21","Obrat / A",    "Čistý obrat (60x) / Aktiva"],
+    ["x4","0,21","Obrat / A",    "Čistý obrat / Aktiva"],
     ["x5","0,09","OA / (KZ+KB)", "OA / (Kr. závazky + Kr. ban. úvěry)"],
   ];
   const in05B = p => {
@@ -321,3 +321,4 @@ loadData(d => {
   ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
 });
 </script></body></html>
+      
