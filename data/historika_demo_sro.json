@@ -3,7 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-14T23:19:50",
+    "updated": "2026-05-15T00:23:59",
     "roky": [
       2023,
       2024
@@ -19,7 +19,7 @@
       "je_plny_rok": true,
       "aktiva_netto": 3014000,
       "stala_netto": 407000,
-      "obezna_netto": 2605000,
+      "obezna_netto": 2606000,
       "zasoby": 1250000,
       "pohledavky_kr": 342000,
       "pp": 1013000,
@@ -54,7 +54,7 @@
       "horiz": null,
       "vert_rozvaha": {
         "stala_netto": 13.5,
-        "obezna_netto": 86.43,
+        "obezna_netto": 86.46,
         "zasoby": 41.47,
         "pohledavky_kr": 11.35,
         "pp": 33.61,
@@ -124,8 +124,8 @@
           "pct": -37.6
         },
         "obezna_netto": {
-          "abs": 202000,
-          "pct": 7.8
+          "abs": 201000,
+          "pct": 7.7
         },
         "zasoby": {
           "abs": -175000,

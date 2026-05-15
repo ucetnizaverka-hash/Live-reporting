@@ -4,7 +4,7 @@
   "ico": "123456789",
   "nace": "33.20",
   "nace_nazev": "Instalace prumyslovych stroju a zarizeni",
-  "updated": "2026-05-14T23:19:50",
+  "updated": "2026-05-15T00:23:59",
   "aktualni": {
     "label": "1.1.2024–9.5.2024",
     "rok": 2024,
@@ -21,7 +21,7 @@
     "pasiva_celkem": 2989000,
     "vk": 228000,
     "zk": 100000,
-    "vh_min_let": 142000,
+    "vh_min_let": 143000,
     "nz_min_let": 0,
     "ztrata_min_let": -29000,
     "jiný_vh_min": 171000,
@@ -42,7 +42,7 @@
     "pp_ucty": 235000,
     "kapitalove_fondy": 0,
     "fondy_ze_zisku": 0,
-    "vh_za_obdobi": -14000,
+    "vh_za_obdobi": -15000,
     "zav_dodavatele": 44000,
     "zav_mzdy": 8000,
     "zav_sp_zp": 0,
@@ -153,7 +153,7 @@
       "dnm_netto": 0.0,
       "dhm_netto": 407000,
       "dfm": 0,
-      "obezna_netto": 2605000,
+      "obezna_netto": 2606000,
       "zasoby": 1250000,
       "pohledavky_kr": 342000,
       "kfm": 0,
@@ -203,6 +203,7 @@
       "financni_vh": -29000,
       "vh_pred_zdanenim": 170000,
       "dan": 0,
+      "vh_po_zdaneni": 170000,
       "roa": 5.64,
       "roe": 70.25,
       "ros": 3.78,
@@ -216,13 +217,13 @@
         "X2": 9.0,
         "X3": 0.066,
         "X4": 1.4937,
-        "X5": 0.9623
+        "X5": 0.9627
       },
       "in05_x1": 1.1134,
       "in05_x2": 9.0,
       "in05_x3": 0.066,
       "in05_x4": 1.4937,
-      "in05_x5": 0.9623,
+      "in05_x5": 0.9627,
       "altman_z": 1.167,
       "altman_pasmo": "sede",
       "altman_x": {
@@ -230,7 +231,7 @@
         "X2": 9.0,
         "X3": 0.066,
         "X4": 1.4937,
-        "X5": 0.9623
+        "X5": 0.9627
       },
       "pohotova_likvidita": 0.5,
       "cf_provozni": 323000,
