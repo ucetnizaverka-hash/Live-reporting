@@ -8,7 +8,7 @@
     "period_label": "1.1.2024–9.5.2024",
     "datum_od": "2024-01-01",
     "datum_do": "2024-05-09",
-    "updated": "2026-05-15T10:15:38",
+    "updated": "2026-05-15T10:19:42",
     "format": "plny",
     "pocet_zamestnancu": 0,
     "zdroj": "prubezne_vstup.xlsx",
@@ -130,9 +130,9 @@
     "cf_poznamka": "Provozni CF – nepřímá metoda. Zmeny PK vypočteny z rozdilu vs minule obdobi. Investicni a financni CF = 0 (nelze zjistit z predvahy – doplnte rucne)."
   },
   "analyza": {
-    "roa": 0.47,
+    "roa": 0.72,
     "roe": 4.4,
-    "ros": 1.55,
+    "ros": 2.4,
     "bezna_likvidita": 0.95,
     "pohotova_likvidita": 0.5,
     "okamzita_likvidita": 0.42,
@@ -146,21 +146,21 @@
     "doba_obratu_zas": 497.2,
     "doba_obratu_pohl": 84.9,
     "doba_obratu_zav": 1099.7,
-    "in05": 0.669,
+    "in05": 0.679,
     "in05_pasmo": "cervene",
     "in05_x": {
       "X1": 1.0914,
       "X2": 9.0,
-      "X3": 0.0047,
+      "X3": 0.0072,
       "X4": 0.2999,
       "X5": 0.9519
     },
-    "altman_z": 0.669,
+    "altman_z": 0.679,
     "altman_pasmo": "cervene",
     "altman_x": {
       "X1": 1.0914,
       "X2": 9.0,
-      "X3": 0.0047,
+      "X3": 0.0072,
       "X4": 0.2999,
       "X5": 0.9519
     }
@@ -192,6 +192,6 @@
     "dan_z_prijmu": 3000,
     "vh_za_obdobi": 11000,
     "cisty_obrat": 905000,
-    "archivovano": "2026-05-15T10:15:38"
+    "archivovano": "2026-05-15T10:19:42"
   }
 }
