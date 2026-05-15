@@ -3,7 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-15T10:32:05"
+    "updated": "2026-05-15T10:44:59"
   },
   "periody": [
     {
@@ -36,7 +36,7 @@
       "financni_vh": -29000,
       "vh_pred_zdanenim": 170000,
       "vh_za_obdobi": 170000,
-      "cisty_obrat": 4513000,
+      "cisty_obrat": 4502000,
       "roa": 5.64,
       "roe": 70.25,
       "ros": 3.78,

@@ -4,7 +4,7 @@
   "ico": "123456789",
   "nace": "33.20",
   "nace_nazev": "Instalace prumyslovych stroju a zarizeni",
-  "updated": "2026-05-15T10:32:05",
+  "updated": "2026-05-15T10:44:59",
   "aktualni": {
     "label": "1.1.2024–9.5.2024",
     "rok": 2024,
@@ -185,7 +185,7 @@
       "zav_stat_dan": 80626,
       "zav_jine": 2508467,
       "trzby_celkem": 4502000,
-      "cisty_obrat": 4513000,
+      "cisty_obrat": 4502000,
       "trzby_sluzby": 1523000,
       "trzby_zbozi": 2979000,
       "vyk_spotreba": 3625000,
