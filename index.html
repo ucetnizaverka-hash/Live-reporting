@@ -370,25 +370,28 @@ loadData(d=>{
   document.getElementById("hdr-period").textContent=a.period_label||"";
   const hn=document.getElementById("hero-nazev");if(hn)hn.textContent=d.nazev||"";
 
-  // Hero KPI row — 3 headline numbers
+  // Hero KPI row — v LIVE bez IN05 (neplatí pro <12 měsíců)
+  const _liveHero = getMode() !== "rocni";
   const hkr=document.getElementById("hero-kpi-row");
   if(hkr){
     const items=[
       {lbl:"Tržby",val:kc(a.trzby_celkem)},
       {lbl:"VH za období",val:kc(a.vh_za_obdobi)},
-      {lbl:"Index IN05",val:a.in05!=null?parseFloat(a.in05).toFixed(2):"—"},
+      ...(_liveHero ? [{lbl:"Aktiva celkem",val:kc(a.aktiva_netto)}]
+                    : [{lbl:"Index IN05",val:a.in05!=null?parseFloat(a.in05).toFixed(2).replace(".",","):"—"}]),
     ];
     hkr.innerHTML=items.map(i=>`<div class="hkp"><div class="hk-val">${i.val}</div><div class="hk-lbl">${i.lbl}</div></div>`).join("");
   }
 
-  // 8 KPI karet — 4 sloupce (bez delta srovnani — prubezne 5 mes. nelze srovnavat s celym rokem)
+  // KPI karty — v LIVE bez IN05 (interpretační pásma neplatí pro <12 měsíců)
+  const _isLive = getMode() !== "rocni";
   const kpiData=[
     {lbl:"Tržby celkem",      val:kc(a.trzby_celkem),          cls:""},
     {lbl:"VH za období",      val:kc(a.vh_za_obdobi),          cls:""},
-    {lbl:"Rentabilita tržeb (ROS)", val:a.ros!=null?parseFloat(a.ros).toFixed(1)+" %":"—", cls:""},
+    {lbl:"Rentabilita tržeb (ROS)", val:a.ros!=null?parseFloat(a.ros).toFixed(1).replace(".",",")+" %":"—", cls:""},
     {lbl:"Aktiva celkem",     val:kc(a.aktiva_netto),          cls:""},
     {lbl:"Peněžní prostředky",val:kc(a.pp),                   sub:"CF provozní: "+kc(a.cf_provozni),                             cls:"navy"},
-    {lbl:"Index IN05",         val:a.in05!=null?parseFloat(a.in05).toFixed(2):"—", extra:in05Badge(a.in05_pasmo),                cls:"navy"},
+    ...(_isLive ? [] : [{lbl:"Index IN05", val:a.in05!=null?parseFloat(a.in05).toFixed(2).replace(".",","):"—", extra:in05Badge(a.in05_pasmo), cls:"navy"}]),
     {lbl:"Celk. zadluženost", val:pct(a.celkova_zadluzenost),  sub:"Benchmark: "+pct(s.celkova_zadluzenost),                     cls:"teal"},
     {lbl:"Běžná likvidita",   val:num(a.bezna_likvidita),      sub:"Benchmark: "+num(s.bezna_likvidita),                         cls:"teal"},
   ];
@@ -402,10 +405,12 @@ loadData(d=>{
 
   const allP=getModeAllP(d),labels=allP.map(p=>p.label||p.period_label);
 
-  // 2 grafy vedle sebe
-  document.getElementById("charts").innerHTML=`
-    <div class="chart-box"><h3>Tržby a VH (tis. Kč)</h3><div id="ch1" style="height:220px"></div></div>
-    <div class="chart-box"><h3>Aktiva a ROA (%)</h3><div id="ch2" style="height:220px"></div></div>`;
+  // Grafy: v LIVE bez ROA (tokový, sezónnost), pouze Tržby+VH a samostatně Aktiva
+  document.getElementById("charts").innerHTML = _isLive
+    ? `<div class="chart-box"><h3>Tržby a VH (tis. Kč)</h3><div id="ch1" style="height:220px"></div></div>
+       <div class="chart-box"><h3>Aktiva (tis. Kč)</h3><div id="ch2" style="height:220px"></div></div>`
+    : `<div class="chart-box"><h3>Tržby a VH (tis. Kč)</h3><div id="ch1" style="height:220px"></div></div>
+       <div class="chart-box"><h3>Aktiva a ROA (%)</h3><div id="ch2" style="height:220px"></div></div>`;
 
   Plotly.newPlot("ch1",[
     {name:"Tržby",x:labels,y:allP.map(p=>Math.round((p.trzby_celkem||0)/1000)),type:"bar",
@@ -416,16 +421,7 @@ loadData(d=>{
      text:allP.map(p=>Math.round((p.vh_za_obdobi||0)/1000)+" tis."),textposition:"outside",textfont:{size:8,color:"#374151"}}
   ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:8}}}},{responsive:true,displayModeBar:false});
 
-  Plotly.newPlot("ch2",[
-    {name:"Aktiva",x:labels,y:allP.map(p=>Math.round((p.aktiva_netto||0)/1000)),type:"bar",
-     marker:{color:"rgba(42,92,255,.75)"},yaxis:"y"},
-    {name:"ROA %",x:labels,y:allP.map(p=>p.roa||0),type:"scatter",mode:"lines+markers+text",
-     line:{color:"#f59e0b",width:2.5},marker:{size:6,color:"#f59e0b"},yaxis:"y2",
-     text:allP.map(p=>num(p.roa||0,1)+"%"),textposition:"top center",textfont:{size:8,color:"#d97706"}}
-  ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:8}}},
-     yaxis2:{overlaying:"y",side:"right",gridcolor:"rgba(0,0,0,0)",ticksuffix:"%",tickfont:{size:9,color:"#374151"}}},
-  {responsive:true,displayModeBar:false});
-});
-</script>
-</body>
-</html>
+  // V LIVE: graf Aktiva (bez ROA), v ROCNI: Aktiva + ROA na druhé ose
+  if (_isLive) {
+    Plotly.newPlot("ch2",[
+      {name:"Aktiva",x:labels,y:allP.map(p=>Math.round((p.aktiva_netto||0)/1000)),type:"bar",

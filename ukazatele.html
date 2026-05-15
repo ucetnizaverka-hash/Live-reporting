@@ -85,7 +85,27 @@ loadData(d => {
   document.title = (d.nazev||"")+" | Ukazatele";
   const labels = allP.map(p => p.label || p.period_label);
   const a = getModeData(d);
+  const isLive = getMode() !== "rocni";
   const showBench = (getMode() === "rocni") && s && s.rok;
+
+  // V LIVE režimu skryjeme sekce, které nedávají smysl bez plnoročních dat
+  if (isLive) {
+    // Skryj celé sekce Rentabilita, Aktivita, IN05 a grafy rentability/dob
+    document.querySelectorAll('.section').forEach(sec => {
+      const h = sec.querySelector('h2');
+      if (h && /Rentabilita|Aktivita|Index IN05/.test(h.textContent)) sec.style.display = 'none';
+    });
+    document.querySelectorAll('.chart-box').forEach(box => {
+      const h3 = box.querySelector('h3');
+      if (h3 && /Rentabilita|Doby obratu/.test(h3.textContent)) box.style.display = 'none';
+    });
+    // Disclaimer
+    const disc = document.getElementById('disclaimer');
+    if (disc) {
+      disc.style.display = 'block';
+      disc.innerHTML = '<strong>Průběžné výkaznictví:</strong> zobrazujeme pouze ukazatele, které dávají smysl bez plnoročních dat (likvidita, stavová zadluženost). Rentabilita (ROA, ROE), aktivita, IN05 a další tokové ukazatele jsou dostupné v <a href="historika.html#rocni" style="color:var(--gold)">Historické analýze</a> po roční uzávěrce.';
+    }
+  }
 
   // ── Helpers ──────────────────────────────────────────────────────────
   const headHtml = () =>
@@ -208,11 +228,12 @@ loadData(d => {
     RC("Míra zadluženosti",
        p => fVK(p) ? fCZ(p)/fVK(p)*100 : null, null, sP, false,
        "Cizí zdroje / Vlastní kapitál × 100"),
-    RC("Úrokové krytí",
+    // V LIVE: bez úrokového krytí a doby splácení (tokové, sezónnost CF)
+    isLive ? "" : RC("Úrokové krytí",
        p => parseFloat(p.nak_uroky||0)>100 ? fEbit(p)/parseFloat(p.nak_uroky) : null, null,
        v => v==null ? "n/a" : sN2(v)+"×", true,
        "EBIT / Nákladové úroky"),
-    RC("Doba splácení dluhů",
+    isLive ? "" : RC("Doba splácení dluhů",
        p => Math.abs(fCfOp(p))>10000 ? Math.round((fCZ(p)-fRez(p))/fCfOp(p)*10)/10 : null, null,
        v => v==null ? "n/a" : v+" let", false,
        "(Cizí zdroje − Rezervy) / Provozní peněžní toky"),
@@ -293,32 +314,4 @@ loadData(d => {
      y:allP.map(p => fZavKr(p) ? Math.round((fPohl(p)+fPP(p))/fZavKr(p)*100)/100 : 0),
      marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
     {name:"Okamžitá",   x:labels, type:"bar",
-     y:allP.map(p => fZavKr(p) ? Math.round(fPP(p)/fZavKr(p)*100)/100 : 0),
-     marker:{color:allP.map((_,i) => _c("52,211,153",i))}},
-  ], _PL, _CFG);
-
-  // Doby obratu
-  Plotly.newPlot("ch-dob", [
-    {name:"Pohledávky", x:labels, type:"bar",
-     y:allP.map(p => fDob(p,fPohl) ?? 0),
-     marker:{color:allP.map((_,i) => _c("45,74,158",i))}},
-    {name:"Závazky",    x:labels, type:"bar",
-     y:allP.map(p => fDob(p,fZavKr) ?? 0),
-     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
-    {name:"Zásoby",     x:labels, type:"bar",
-     y:allP.map(p => fDob(p,fZas) ?? 0),
-     marker:{color:allP.map((_,i) => _c("52,211,153",i))}},
-  ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" dní"}}, _CFG);
-
-    // Zadluženost
-    Plotly.newPlot("ch-zad", [
-    {name:"Celková zadluženost %", x:labels, type:"bar",
-     y:allP.map(p => Math.round(parseFloat(p.celkova_zadluzenost||0)*10)/10),
-     marker:{color:allP.map((_,i) => _c("220,38,38",i))}},
-    {name:"Míra zadluženosti %", x:labels, type:"bar",
-     y:allP.map(p => fVK(p) ? Math.round(fCZ(p)/fVK(p)*100*10)/10 : 0),
-     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
-  ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
-});
-</script></body></html>
-      
+   
