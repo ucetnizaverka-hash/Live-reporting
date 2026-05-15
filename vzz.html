@@ -162,4 +162,16 @@ loadData(d => {
     R("J.2.",  "  Ostatní nákladové úroky a podobné náklady",    "",                  "45", "nak_uroky",      {sub:true}),
     R("VII.",  "Ostatní finanční výnosy",                        "",                  "46", "ost_fin_vyn"),
     R("K.",    "Ostatní finanční náklady",                       "",                  "47", "ost_fin_nak"),
-    R("*",     "Finanční výsl
+    R("*",     "Finanční výsledek hospodaření (+/-)",            "",                  "48", "financni_vh",    {bold:true,negOk:true}),
+    R("**",    "Výsledek hospodaření před zdaněním (+/-)",       "(součet * + *)",    "49", "vh_pred_zdanenim",{bold:true,negOk:true}),
+    R("L.",    "Daň z příjmů",                                   "(L.1 + L.2)",       "50", "dan",            {bold:true}),
+    R("L.1.",  "  Daň z příjmů splatná",                         "",                  "51", "dan",            {sub:true}),
+    R("L.2.",  "  Daň z příjmů odložená",                         "",                  "52", "dan_odlozena",   {sub:true,note:true}),
+    R("**",    "Výsledek hospodaření po zdanění (+/-)",           "",                  "53", "vh_za_obdobi",   {bold:true,negOk:true}),
+    R("M.",    "Převod podílu na výsledku hospodaření společníkům (+/-)", "",         "54", "prevod_vh",      {note:true}),
+    R("**",    "Výsledek hospodaření za účetní období (+/-)",     "(** − M.)",         "55", "vh_za_obdobi",   {bold:true,negOk:true}),
+    R("*",     "Čistý obrat za účetní období",                    "= I.+II.+III.+IV.+V.+VI.+VII.", "56", "cisty_obrat", {bold:true}),
+  ].join("");
+});
+</script>
+</body></html>
