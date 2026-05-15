@@ -148,8 +148,8 @@ loadData(d => {
        p => fVK(p) ? parseFloat(p.vh_za_obdobi||0)/fVK(p)*100 : null, s.roe, sP, true,
        "Čistý zisk / Vlastní kapitál × 100"),
     RC("Rentabilita tržeb (ROS)",
-       p => fT(p) ? parseFloat(p.vh_za_obdobi||0)/fT(p)*100 : null, s.ros, sP, true,
-       "Čistý zisk / Čistý obrat (60x) × 100"),
+       p => p.ros, s.ros, sP, true,
+       "Provozní VH (EBIT) / Čistý obrat × 100 — scale-invariant"),
   ].join("");
 
   // ── LIKVIDITA ─────────────────────────────────────────────────────────
@@ -313,3 +313,4 @@ loadData(d => {
   ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
 });
 </script></body></html>
+                            
