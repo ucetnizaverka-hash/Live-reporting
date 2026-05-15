@@ -381,19 +381,40 @@ loadData(d => {
     ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" dní"}}, _CFG);
   }
 
-  // Zadluženost (vždy)
+  // Zadluženost — v LIVE doplníme Rok 2023 pro srovnání
+  let zadP = allP;
+  let zadLabels = labels;
+  if (isLive) {
+    const _hist = (d.periody||[]).filter(p => (p.je_plny_rok===true || p.mesice===12 || p.mesice_obdobi===12));
+    if (_hist.length > 0) {
+      zadP = [..._hist, ...allP];
+      zadLabels = zadP.map(p => p.label || p.period_label || (p.rok ? "Rok "+p.rok : ""));
+    }
+  }
+  // % krytí DM VK
+  const _krDMVK = p => fDM(p) ? Math.round(fVK(p)/fDM(p)*1000)/10 : null;
+  // % krytí DM dlouhodobým kapitálem (VK + Dlouhodobé závazky + Rezervy)
+  const _krDMDK = p => fDM(p) ? Math.round((fVK(p)+parseFloat(p.zav_dl||0)+parseFloat(p.rezervy||0))/fDM(p)*1000)/10 : null;
+
   Plotly.newPlot("ch-zad", [
-    {name:"Celková zadluženost", x:labels, type:"bar",
-     y:allP.map(p => parseFloat(p.celkova_zadluzenost || 0)),
-     text:allP.map(p => p.celkova_zadluzenost!=null ? parseFloat(p.celkova_zadluzenost).toFixed(1).replace(".",",")+" %" : ""),
+    {name:"Celková zadluženost (%)", x:zadLabels, type:"bar",
+     y:zadP.map(p => parseFloat(p.celkova_zadluzenost || 0)),
+     text:zadP.map(p => p.celkova_zadluzenost!=null ? parseFloat(p.celkova_zadluzenost).toFixed(1).replace(".",",")+" %" : ""),
      textposition:"outside",
      marker:{color:"#dc2626"}},
-    {name:"Krytí DM VK ×100", x:labels, type:"bar",
-     y:allP.map(p => fDM(p) ? Math.round(fVK(p)/fDM(p)*1000)/10 : 0),
-     text:allP.map(p => fDM(p) ? (Math.round(fVK(p)/fDM(p)*1000)/10).toFixed(1).replace(".",",")+" %" : ""),
+    {name:"Krytí DM vlastním kapitálem (%)", x:zadLabels, type:"bar",
+     y:zadP.map(p => _krDMVK(p) || 0),
+     text:zadP.map(p => { const v=_krDMVK(p); return v!=null ? v.toFixed(1).replace(".",",")+" %" : ""; }),
      textposition:"outside",
      marker:{color:"#7c3aed"}},
-  ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
+    {name:"Krytí DM dlouhodobým kapitálem (%)", x:zadLabels, type:"bar",
+     y:zadP.map(p => _krDMDK(p) || 0),
+     text:zadP.map(p => { const v=_krDMDK(p); return v!=null ? v.toFixed(1).replace(".",",")+" %" : ""; }),
+     textposition:"outside",
+     marker:{color:"#0ea5e9"}},
+  ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %", title:{text:"% z DM / aktiv",font:{size:9}}},
+       legend:{..._PL.legend, font:{size:9,color:"#374151"}}
+  }, _CFG);
 
   // ── LIVE-only: trendové porovnání + struktura cizích zdrojů/OA ──────
   if (isLive) {
