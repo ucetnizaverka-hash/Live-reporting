@@ -420,8 +420,6 @@ loadData(d=>{
      marker:{color:"#f59e0b",line:{width:0}},
      text:allP.map(p=>Math.round((p.vh_za_obdobi||0)/1000)+" tis."),textposition:"outside",textfont:{size:8,color:"#374151"}}
   ],{...PLY,yaxis:{...PLY.yaxis,ticksuffix:" tis.",title:{text:"tis. Kč",font:{size:8}}}},{responsive:true,displayModeBar:false});
-
-  // V LIVE: graf Aktiva (bez ROA), v ROCNI: Aktiva + ROA na druhé ose
-  if (_isLive) {
-    Plotly.newPlot("ch2",[
-      {name:"Aktiva",x:labels,y:allP.map(p=>Math.round((p.aktiva_netto||0)/1000)),type:"bar",
+});
+</script>
+</body></html>

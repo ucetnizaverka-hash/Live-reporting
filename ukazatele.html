@@ -304,14 +304,5 @@ loadData(d => {
      textposition:"outside",
      marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
   ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
-
-  // Likvidita
-  Plotly.newPlot("ch-lik", [
-    {name:"Běžná (L3)", x:labels, type:"bar",
-     y:allP.map(p => fZavKr(p) ? Math.round(fOA(p)/fZavKr(p)*100)/100 : 0),
-     marker:{color:allP.map((_,i) => _c("45,74,158",i))}},
-    {name:"Pohotová",   x:labels, type:"bar",
-     y:allP.map(p => fZavKr(p) ? Math.round((fPohl(p)+fPP(p))/fZavKr(p)*100)/100 : 0),
-     marker:{color:allP.map((_,i) => _c("212,149,42",i))}},
-    {name:"Okamžitá",   x:labels, type:"bar",
-   
+});
+</script></body></html>
