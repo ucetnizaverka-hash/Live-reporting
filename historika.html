@@ -203,8 +203,9 @@ const deltaCell=(abs,pct)=>{
 function buildYearCards(periody) {
   const wrap = document.getElementById("year-cards-wrap");
   const n = periody.length;
-  // grid: 1 stlp pro 1 rok, 2-3 stlpce pro více
-  wrap.style.cssText = `display:grid;gap:16px;margin-bottom:4px;grid-template-columns:repeat(${Math.min(n,3)},1fr)`;
+  // grid: vycentrovany, sloupce dle poctu period (max 3), maxsirka aby se nerozjelo do okraju
+  const maxW = n === 1 ? "560px" : n === 2 ? "920px" : "100%";
+  wrap.style.cssText = `display:grid;gap:16px;margin:0 auto 4px;grid-template-columns:repeat(${Math.min(n,3)},1fr);max-width:${maxW};justify-content:center`;
 
   const kpis = [
     {lbl:"Tržby celkem",      key:"trzby_celkem",        fmt:kMil,  higherBetter:true},
@@ -528,10 +529,4 @@ async function main(){
        line:{color:"#f87171",width:1,dash:"dot"},showlegend:true}
     ],{..._PH,yaxis:{..._PH.yaxis,range:[0,Math.max(2.5,...periody.map(p=>p.in05||0))+0.3]}},_HC);
 
-    document.getElementById("loading").style.display="none";
-    document.getElementById("app").style.display="block";
-  });
-}
-main();
-</script>
-</body></html>
+    documen
