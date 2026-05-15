@@ -446,15 +446,18 @@ async function main(){
     buildHoriz(periody,[
       {group:true,label:"AKTIVA"},
       {label:"Aktiva celkem",       key:"aktiva_netto"},
-      {label:"Stálá aktiva",        key:"stala_netto"},
-      {label:"Oběžná aktiva",       key:"obezna_netto"},
+      {label:"B. Stálá aktiva",     key:"stala_netto"},
+      {label:"C. Oběžná aktiva",    key:"obezna_netto"},
       {label:"  Zásoby",            key:"zasoby"},
       {label:"  Pohledávky kr.",    key:"pohledavky_kr"},
       {label:"  Peněžní prostředky",key:"pp"},
+      {label:"D. Časové rozlišení aktiv", key:"cr_aktiv"},
       {group:true,label:"PASIVA"},
-      {label:"Vlastní kapitál",     key:"vk"},
-      {label:"Cizí zdroje",         key:"cizi_zdroje"},
-      {label:"Závazky krátkodobé",  key:"zav_kr"},
+      {label:"Pasiva celkem",       key:"pasiva_celkem"},
+      {label:"A. Vlastní kapitál",  key:"vk"},
+      {label:"B+C. Cizí zdroje",    key:"cizi_zdroje"},
+      {label:"  Závazky krátkodobé",key:"zav_kr"},
+      {label:"D. Časové rozlišení pasiv", key:"cr_pasiv"},
     ],document.getElementById("horiz-rozvaha"));
 
     // Vertikální analýza
@@ -471,14 +474,16 @@ async function main(){
 
     buildVert(periody,[
       {label:"Aktiva celkem",       key:"aktiva_netto",  vertK:"aktiva_netto"},
-      {label:"Stálá aktiva",        key:"stala_netto",   vertK:"stala_netto"},
-      {label:"Oběžná aktiva",       key:"obezna_netto",  vertK:"obezna_netto"},
+      {label:"B. Stálá aktiva",     key:"stala_netto",   vertK:"stala_netto"},
+      {label:"C. Oběžná aktiva",    key:"obezna_netto",  vertK:"obezna_netto"},
       {label:"  Zásoby",            key:"zasoby",        vertK:"zasoby"},
       {label:"  Pohledávky kr.",    key:"pohledavky_kr", vertK:"pohledavky_kr"},
       {label:"  Peněžní prostředky",key:"pp",            vertK:"pp"},
-      {label:"Vlastní kapitál",     key:"vk",            vertK:"vk"},
-      {label:"Cizí zdroje",         key:"cizi_zdroje",   vertK:"cizi_zdroje"},
-      {label:"Závazky krátkodobé",  key:"zav_kr",        vertK:"zav_kr"},
+      {label:"D. Časové rozlišení aktiv", key:"cr_aktiv", vertK:"cr_aktiv"},
+      {label:"A. Vlastní kapitál",  key:"vk",            vertK:"vk"},
+      {label:"B+C. Cizí zdroje",    key:"cizi_zdroje",   vertK:"cizi_zdroje"},
+      {label:"  Závazky krátkodobé",key:"zav_kr",        vertK:"zav_kr"},
+      {label:"D. Časové rozlišení pasiv", key:"cr_pasiv", vertK:"cr_pasiv"},
     ],"vert_rozvaha",document.getElementById("vert-rozvaha"));
 
     buildUkazatele(periody,document.getElementById("ukazatele-table"));
@@ -525,14 +530,4 @@ async function main(){
        text:periody.map(p=>(p.in05||0).toFixed(2)),textposition:"top center",textfont:{size:10,color:"#fbbf24"}},
       {name:"Tvorba hodnoty (1.6)",x:labels,y:labels.map(()=>1.6),type:"scatter",mode:"lines",
        line:{color:"#34d399",width:1,dash:"dot"},showlegend:true},
-      {name:"Finanční tíseň (0.9)",x:labels,y:labels.map(()=>0.9),type:"scatter",mode:"lines",
-       line:{color:"#f87171",width:1,dash:"dot"},showlegend:true}
-    ],{..._PH,yaxis:{..._PH.yaxis,range:[0,Math.max(2.5,...periody.map(p=>p.in05||0))+0.3]}},_HC);
-
-    document.getElementById("loading").style.display="none";
-    document.getElementById("app").style.display="block";
-  });
-}
-main();
-</script>
-</body></html>
+      {name:"Finanční tíseň (0.9)",x:labels,y:labels.map(()=>0.9),type:"sca
