@@ -149,7 +149,7 @@ loadData(d => {
        "Čistý zisk / Vlastní kapitál × 100"),
     RC("Rentabilita tržeb (ROS)",
        p => p.ros, s.ros, sP, true,
-       "Provozní VH (EBIT) / Čistý obrat × 100 — scale-invariant"),
+       "Čistý zisk / (I. + II. + III.) × 100  — Tržby + Ostatní provozní výnosy"),
   ].join("");
 
   // ── LIKVIDITA ─────────────────────────────────────────────────────────
@@ -313,4 +313,4 @@ loadData(d => {
   ], {..._PL, yaxis:{..._PL.yaxis, ticksuffix:" %"}}, _CFG);
 });
 </script></body></html>
-                            
+          
