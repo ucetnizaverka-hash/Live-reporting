@@ -3,12 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-15T01:25:52",
-    "roky": [
-      2023,
-      2024
-    ],
-    "pocet_roku": 2
+    "updated": "2026-05-15T09:25:40"
   },
   "periody": [
     {
@@ -48,11 +43,23 @@
       "ebitda": 352000,
       "ebitda_marze": 7.82,
       "bezna_likvidita": 0.96,
+      "pohotova_likvidita": 0.5,
       "okamzita_likvidita": 0.37,
       "celkova_zadluzenost": 89.81,
-      "altman_z": 1.915,
+      "obratovost_aktiv": 1.49,
+      "obrat_dm": 11.06,
+      "doba_obratu_pohl": 27.4,
+      "doba_obratu_zav": 216.5,
+      "doba_obratu_zas": 100.0,
+      "in05": 1.167,
+      "in05_pasmo": "sede",
+      "in05_x1": 1.1134,
+      "in05_x2": 9.0,
+      "in05_x3": 0.066,
+      "in05_x4": 1.4937,
+      "in05_x5": 0.9627,
+      "altman_z": 1.167,
       "altman_pasmo": "sede",
-      "horiz": null,
       "vert_rozvaha": {
         "stala_netto": 13.5,
         "obezna_netto": 86.46,
@@ -112,84 +119,23 @@
       "ebitda": 235000,
       "ebitda_marze": 6.93,
       "bezna_likvidita": 1.03,
+      "pohotova_likvidita": 0.63,
       "okamzita_likvidita": 0.54,
       "celkova_zadluzenost": 89.39,
-      "altman_z": 1.398,
+      "obratovost_aktiv": 1.11,
+      "obrat_dm": 13.35,
+      "doba_obratu_pohl": 28.0,
+      "doba_obratu_zav": 290.7,
+      "doba_obratu_zas": 114.1,
+      "in05": 0.935,
+      "in05_pasmo": "sede",
+      "in05_x1": 1.1187,
+      "in05_x2": 9.0,
+      "in05_x3": 0.0264,
+      "in05_x4": 1.1071,
+      "in05_x5": 1.0252,
+      "altman_z": 0.935,
       "altman_pasmo": "sede",
-      "horiz": {
-        "aktiva_netto": {
-          "abs": 49000,
-          "pct": 1.6
-        },
-        "stala_netto": {
-          "abs": -153000,
-          "pct": -37.6
-        },
-        "obezna_netto": {
-          "abs": 201000,
-          "pct": 7.7
-        },
-        "zasoby": {
-          "abs": -175000,
-          "pct": -14.0
-        },
-        "pohledavky_kr": {
-          "abs": -79000,
-          "pct": -23.0
-        },
-        "pp": {
-          "abs": 455000,
-          "pct": 44.9
-        },
-        "vk": {
-          "abs": 3000,
-          "pct": 1.2
-        },
-        "cizi_zdroje": {
-          "abs": 31000,
-          "pct": 1.1
-        },
-        "zav_kr": {
-          "abs": 31000,
-          "pct": 1.1
-        },
-        "trzby_celkem": {
-          "abs": -1111000,
-          "pct": -24.7
-        },
-        "vyk_spotreba": {
-          "abs": -630000,
-          "pct": -17.4
-        },
-        "osobni_naklady": {
-          "abs": -363000,
-          "pct": -80.7
-        },
-        "odpisy": {
-          "abs": 1000,
-          "pct": 0.7
-        },
-        "provozni_vh": {
-          "abs": -118000,
-          "pct": -59.3
-        },
-        "financni_vh": {
-          "abs": 4000,
-          "pct": 13.8
-        },
-        "vh_pred_zdanenim": {
-          "abs": -114000,
-          "pct": -67.1
-        },
-        "vh_za_obdobi": {
-          "abs": -167000,
-          "pct": -98.2
-        },
-        "cisty_obrat": {
-          "abs": -1122000,
-          "pct": -24.9
-        }
-      },
       "vert_rozvaha": {
         "stala_netto": 8.29,
         "obezna_netto": 91.64,
