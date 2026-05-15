@@ -526,4 +526,22 @@ async function main(){
     Plotly.newPlot("ch-aktiva",[
       {name:"Stálá aktiva",x:labels,y:periody.map(p=>tis(p.stala_netto<0?0:p.stala_netto)),type:"bar",marker:{color:"rgba(212,149,42,.85)"}},
       {name:"Oběžná aktiva",x:labels,y:periody.map(p=>tis(p.obezna_netto)),type:"bar",marker:{color:"rgba(45,74,158,.85)"}}
-    ],{..._PH
+    ],{..._PH,barmode:"stack",yaxis:{..._PH.yaxis,ticksuffix:" tis."}},_HC);
+
+    Plotly.newPlot("ch-altman",[
+      {name:"IN05",x:labels,y:periody.map(p=>p.in05||0),type:"scatter",mode:"lines+markers+text",
+       line:{color:"#fbbf24",width:2.5},marker:{size:10,color:"#fbbf24"},
+       text:periody.map(p=>(p.in05||0).toFixed(2)),textposition:"top center",textfont:{size:10,color:"#fbbf24"}},
+      {name:"Tvorba hodnoty (1.6)",x:labels,y:labels.map(()=>1.6),type:"scatter",mode:"lines",
+       line:{color:"#34d399",width:1,dash:"dot"},showlegend:true},
+      {name:"Finanční tíseň (0.9)",x:labels,y:labels.map(()=>0.9),type:"scatter",mode:"lines",
+       line:{color:"#f87171",width:1,dash:"dot"},showlegend:true}
+    ],{..._PH,yaxis:{..._PH.yaxis,range:[0,Math.max(2.5,...periody.map(p=>p.in05||0))+0.3]}},_HC);
+
+    document.getElementById("loading").style.display="none";
+    document.getElementById("app").style.display="block";
+  });
+}
+main();
+</script>
+</body></html>
