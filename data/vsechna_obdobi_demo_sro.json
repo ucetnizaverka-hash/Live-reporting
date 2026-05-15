@@ -4,7 +4,7 @@
   "ico": "123456789",
   "nace": "33.20",
   "nace_nazev": "Instalace prumyslovych stroju a zarizeni",
-  "updated": "2026-05-15T00:45:31",
+  "updated": "2026-05-15T00:46:04",
   "aktualni": {
     "label": "1.1.2024–9.5.2024",
     "rok": 2024,
@@ -150,7 +150,7 @@
       "period_label": "Rok 2023",
       "aktiva_netto": 3014000,
       "stala_netto": 407000,
-      "dnm_netto": 0.0,
+      "dnm_netto": 0,
       "dhm_netto": 407000,
       "dfm": 0,
       "obezna_netto": 2606000,
