@@ -3,7 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-15T10:05:03"
+    "updated": "2026-05-15T10:05:25"
   },
   "periody": [
     {
@@ -96,10 +96,10 @@
       "pohledavky_kr": 264000,
       "pp": 1468000,
       "cr_aktiv": 2000,
-      "vk": 245000,
+      "vk": 297000,
       "rezervy": 0,
-      "cizi_zdroje": 2738000,
-      "zav_kr": 2738000,
+      "cizi_zdroje": 2686000,
+      "zav_kr": 2686000,
       "zav_dl": 0,
       "cr_pasiv": 80000,
       "trzby_sluzby": 1394000,
@@ -111,30 +111,30 @@
       "provozni_vh": 81000,
       "financni_vh": -25000,
       "vh_pred_zdanenim": 56000,
-      "vh_za_obdobi": 3000,
+      "vh_za_obdobi": 55000,
       "cisty_obrat": 3391000,
       "roa": 1.83,
-      "roe": 1.31,
+      "roe": 18.63,
       "ros": 1.65,
       "ebitda": 235000,
       "ebitda_marze": 6.93,
-      "bezna_likvidita": 1.03,
-      "pohotova_likvidita": 0.63,
-      "okamzita_likvidita": 0.54,
-      "celkova_zadluzenost": 89.39,
+      "bezna_likvidita": 1.05,
+      "pohotova_likvidita": 0.64,
+      "okamzita_likvidita": 0.55,
+      "celkova_zadluzenost": 87.69,
       "obratovost_aktiv": 1.11,
       "obrat_dm": 13.35,
       "doba_obratu_pohl": 28.0,
-      "doba_obratu_zav": 290.7,
+      "doba_obratu_zav": 285.2,
       "doba_obratu_zas": 114.1,
-      "in05": 0.935,
+      "in05": 0.94,
       "in05_pasmo": "sede",
-      "in05_x1": 1.1187,
+      "in05_x1": 1.1404,
       "in05_x2": 9.0,
       "in05_x3": 0.0264,
       "in05_x4": 1.1071,
-      "in05_x5": 1.0252,
-      "altman_z": 0.935,
+      "in05_x5": 1.045,
+      "altman_z": 0.94,
       "altman_pasmo": "sede",
       "vert_rozvaha": {
         "stala_netto": 8.29,
@@ -142,9 +142,9 @@
         "zasoby": 35.1,
         "pohledavky_kr": 8.62,
         "pp": 47.93,
-        "vk": 8.0,
-        "cizi_zdroje": 89.39,
-        "zav_kr": 89.39
+        "vk": 9.7,
+        "cizi_zdroje": 87.69,
+        "zav_kr": 87.69
       },
       "vert_vzz": {
         "trzby_sluzby": 41.11,
@@ -155,7 +155,7 @@
         "provozni_vh": 2.39,
         "financni_vh": -0.74,
         "vh_pred_zdanenim": 1.65,
-        "vh_za_obdobi": 0.09
+        "vh_za_obdobi": 1.62
       }
     }
   ],
