@@ -37,8 +37,8 @@
   <div id="app" style="display:none">
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
     <div class="section">
-      <h2>Rozvaha — AKTIVA (netto pohled, dle vyhlášky 500/2002 Sb.)</h2>
-      <p class="tis-note">Hodnoty v Kč · zjednodušený náhled (jen sloupec Netto). Plný rozsah dle § 4 vyhlášky 500/2002 Sb. vyžaduje sloupce Brutto, Korekce, Netto — k dispozici v účetnictví, zde zobrazujeme pouze Netto pro přehlednost živého výkaznictví.</p>
+      <h2 id="aktiva-h2">Rozvaha — AKTIVA</h2>
+      <p class="tis-note" id="aktiva-note">Hodnoty v Kč</p>
       <div style="overflow-x:auto"><table><thead id="akt-head"></thead><tbody id="akt-body"></tbody></table></div>
     </div>
     <div class="section" style="margin-top:20px">
@@ -74,16 +74,44 @@ loadData(d => {
 
   const v0 = (p, key) => (p[key] !== undefined && p[key] !== null) ? p[key] : 0;
 
-  // Aktiva: sloupce Netto per period + Delta
-  const aktHead = `<tr>
-    <th class="oz" rowspan="2">Ozn.</th>
-    <th style="text-align:left" rowspan="2">AKTIVA</th>
-    <th class="cr" rowspan="2">Č.ř.</th>
-    <th colspan="${n}" style="text-align:center">Netto</th>
-    ${showDelta?'<th rowspan="2">Δ %</th>':''}
-  </tr>
-  <tr>${labels.map(l=>`<th style="font-size:11px;text-align:center">${l}</th>`).join('')}</tr>
-  <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td class="cr">c</td>${labels.map((_,i)=>`<th>${i+1}</th>`).join('')}${showDelta?'<th></th>':''}</tr>`;
+  // V LIVE režimu = 1 období → Brutto/Korekce/Netto sloupce dle vyhlášky 500/2002 Sb.
+  // V ROCNI režimu = N období → jen Netto (pro srovnání mezi obdobími)
+  const isLive = getMode() !== "rocni";
+  const bknMode = isLive && n === 1;
+
+  let aktHead;
+  if (bknMode) {
+    aktHead = `<tr>
+      <th class="oz" rowspan="2">Ozn.</th>
+      <th style="text-align:left" rowspan="2">AKTIVA</th>
+      <th class="cr" rowspan="2">Č.ř.</th>
+      <th colspan="3" style="text-align:center">${labels[0]||""}</th>
+    </tr>
+    <tr>
+      <th style="font-size:11px;text-align:center">Brutto</th>
+      <th style="font-size:11px;text-align:center">Korekce</th>
+      <th style="font-size:11px;text-align:center">Netto</th>
+    </tr>
+    <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td class="cr">c</td><th>1</th><th>2</th><th>3</th></tr>`;
+  } else {
+    aktHead = `<tr>
+      <th class="oz" rowspan="2">Ozn.</th>
+      <th style="text-align:left" rowspan="2">AKTIVA</th>
+      <th class="cr" rowspan="2">Č.ř.</th>
+      <th colspan="${n}" style="text-align:center">Netto</th>
+      ${showDelta?'<th rowspan="2">Δ %</th>':''}
+    </tr>
+    <tr>${labels.map(l=>`<th style="font-size:11px;text-align:center">${l}</th>`).join('')}</tr>
+    <tr style="background:#f8f9fa"><td class="oz">a</td><td>b</td><td class="cr">c</td>${labels.map((_,i)=>`<th>${i+1}</th>`).join('')}${showDelta?'<th></th>':''}</tr>`;
+  }
+  // Dynamicky nastavit nadpis + note podle režimu
+  const _h2 = document.getElementById("aktiva-h2");
+  const _note = document.getElementById("aktiva-note");
+  if (bknMode && _h2) _h2.textContent = "Rozvaha — AKTIVA (plný rozsah dle § 4 vyhlášky 500/2002 Sb.)";
+  else if (_h2) _h2.textContent = "Rozvaha — AKTIVA (netto pohled, srovnání období)";
+  if (bknMode && _note) _note.innerHTML = "Hodnoty v Kč · <strong>Brutto / Korekce / Netto</strong> dle § 4 vyhlášky 500/2002 Sb.";
+  else if (_note) _note.innerHTML = "Hodnoty v Kč · Netto pohled (pro srovnání mezi obdobími)";
+
   document.getElementById("akt-head").innerHTML = aktHead;
 
   const RA = (oz, txt, cr, key, {bold=false,sec=false,sub=false,sub2=false,note=false}={}) => {
@@ -91,6 +119,39 @@ loadData(d => {
     const last = vals[vals.length-1], prev = vals.length>=2?vals[vals.length-2]:null;
     const allZero = vals.every(v=>!v||v==0);
     const cls = sec?'section-head':bold?'bold':sub2?'sub2':sub?'sub':'';
+
+    if (bknMode) {
+      // LIVE: Brutto/Korekce/Netto z aktualni periody
+      const p = allP[0];
+      // Mapování netto klíče na brutto/korekce klíče
+      const _bkmap = {
+        "aktiva_netto": ["aktiva_brutto","aktiva_korekce"],
+        "stala_netto":  ["stala_brutto","stala_korekce"],
+        "dnm_netto":    ["dnm_brutto","dnm_korekce"],
+        "dhm_netto":    ["dhm_brutto","dhm_korekce"],
+        "dfm":          ["dfm_brutto","dfm_korekce"],
+        "obezna_netto": ["obezna_brutto","obezna_korekce"],
+        "zasoby":       ["zasoby_brutto","zasoby_korekce"],
+        "pohledavky_kr":["pohledavky_brutto","pohledavky_korekce"],
+        "kfm":          ["kfm_brutto","kfm_korekce"],
+        "pp":           ["pp_brutto","pp_korekce"],
+        "cr_aktiv":     ["cr_aktiv_brutto","cr_aktiv_korekce"],
+      };
+      const bk = _bkmap[key];
+      const netto = v0(p, key);
+      const brutto = bk && p[bk[0]] !== undefined && p[bk[0]] !== null ? p[bk[0]] : netto;
+      const korekce = bk && p[bk[1]] !== undefined && p[bk[1]] !== null ? p[bk[1]] : 0;
+      const allZeroBkn = !brutto && !korekce && !netto;
+      const cls2 = sec?'section-head':bold?'bold':sub2?'sub2':sub?'sub':'';
+      let row = `<tr class="${cls2}${(!sec&&!bold&&allZeroBkn)?' zero':''}">
+        <td class="oz">${oz}</td><td class="tx">${note?`<em style="color:var(--text-dim)">${txt}</em>`:txt}</td>
+        <td class="cr">${cr}</td>`;
+      row += `<td class="num">${kc(brutto,'0 Kč')}</td>`;
+      row += `<td class="num">${kc(korekce,'0 Kč')}</td>`;
+      row += `<td class="num">${kc(netto,'0 Kč')}</td>`;
+      return row+`</tr>`;
+    }
+
     let row = `<tr class="${cls}${(!sec&&!bold&&allZero)?' zero':''}">
       <td class="oz">${oz}</td><td class="tx">${note?`<em style="color:var(--text-dim)">${txt}</em>`:txt}</td>
       <td class="cr">${cr}</td>`;
@@ -164,26 +225,4 @@ loadData(d => {
     RA("A.VI.", "Rozhodnuto o zálohách na výplatu podílu na zisku (-)","12","zalohy_podil",{sub:true,note:true}),
     RA("B+C.",  "Cizí zdroje",                             "13","cizi_zdroje",   {bold:true}),
     RA("B.",    "Rezervy",                                 "14","rezervy",       {sub:true}),
-    RA("B.1.",  "  Rezerva na důchody a podobné závazky",  "15","rez_duchody",   {sub:true,sub2:true,note:true}),
-    RA("B.2.",  "  Rezerva na daň z příjmů",               "16","rez_danove",    {sub:true,sub2:true,note:true}),
-    RA("B.3.",  "  Rezervy podle zvláštních právních předpisů","17","rez_zakon", {sub:true,sub2:true,note:true}),
-    RA("B.4.",  "  Ostatní rezervy",                       "18","rez_ostatni",   {sub:true,sub2:true,note:true}),
-    RA("C.",    "Závazky",                                 "19","cizi_zdroje_zav", {sub:true,note:true}),
-    RA("C.I.",  "Dlouhodobé závazky",                      "20","zav_dl",        {sub:true}),
-    RA("C.I.1.","  Vydané dluhopisy",                      "21","dluhopisy_dl",  {sub:true,sub2:true,note:true}),
-    RA("C.I.2.","  Závazky k úvěrovým institucím",         "22","zav_uvery_dl",  {sub:true,sub2:true,note:true}),
-    RA("C.I.3.","  Dlouhodobé přijaté zálohy",             "23","zal_prij_dl",   {sub:true,sub2:true,note:true}),
-    RA("C.I.4.","  Závazky z obchodních vztahů",           "24","zav_dl_obch",   {sub:true,sub2:true,note:true}),
-    RA("C.I.9.","  Závazky – ostatní",                     "25","zav_dl_ost",    {sub:true,sub2:true,note:true}),
-    RA("C.II.", "Krátkodobé závazky",                      "26","zav_kr",        {sub:true}),
-    RA("C.II.1.","  Vydané dluhopisy",                     "27","dluhopisy_kr",  {sub:true,sub2:true,note:true}),
-    RA("C.II.2.","  Závazky k úvěrovým institucím",        "28","zav_uvery_kr",  {sub:true,sub2:true,note:true}),
-    RA("C.II.3.","  Krátkodobé přijaté zálohy",            "29","zal_prij_kr",   {sub:true,sub2:true,note:true}),
-    RA("C.II.4.","  Závazky z obchodních vztahů",          "30","zav_dodavatele",{sub:true,sub2:true}),
-    RA("C.II.5.","  Závazky – ostatní",                    "31","zav_ostatni",   {sub:true,sub2:true,note:true}),
-    RA("C.II.5.1.","    Závazky ke společníkům",           "32","zav_spolecnici",{sub:true,sub2:true,note:true}),
-    RA("C.II.5.2.","    Krátkodobé finanční výpomoci",     "33","kr_fin_vypomoc",{sub:true,sub2:true,note:true}),
-    RA("C.II.5.3.","    Závazky k zaměstnancům",           "34","zav_mzdy",      {sub:true,sub2:true}),
-    RA("C.II.5.4.","    Závazky ze SZ a ZP",               "35","zav_sp_zp",     {sub:true,sub2:true,note:true}),
-    RA("C.II.5.5.","    Stát – daňové závazky a dotace",   "36","zav_stat_dan",  {sub:true,sub2:true}),
-    RA("C.II.5.6.","    Dohadné účty pasivní",          
+    RA("B.1.",  "  Rezerva na důchody a podobné závazky",  "15","rez_duchody",   
