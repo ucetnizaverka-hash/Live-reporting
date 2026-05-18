@@ -37,13 +37,13 @@
   <div id="app" style="display:none">
     <div class="disclaimer" id="disclaimer" style="display:none"></div>
     <div class="section">
-      <h2>Rozvaha — plný rozsah, AKTIVA</h2>
-      <p class="tis-note">Hodnoty v Kč · Netto = Brutto − Korekce</p>
+      <h2>Rozvaha — AKTIVA (netto pohled, dle vyhlášky 500/2002 Sb.)</h2>
+      <p class="tis-note">Hodnoty v Kč · zjednodušený náhled (jen sloupec Netto). Plný rozsah dle § 4 vyhlášky 500/2002 Sb. vyžaduje sloupce Brutto, Korekce, Netto — k dispozici v účetnictví, zde zobrazujeme pouze Netto pro přehlednost živého výkaznictví.</p>
       <div style="overflow-x:auto"><table><thead id="akt-head"></thead><tbody id="akt-body"></tbody></table></div>
     </div>
     <div class="section" style="margin-top:20px">
-      <h2>Rozvaha — plný rozsah, PASIVA</h2>
-      <p class="tis-note">Hodnoty v Kč</p>
+      <h2>Rozvaha — PASIVA (dle vyhlášky 500/2002 Sb.)</h2>
+      <p class="tis-note">Hodnoty v Kč · skutečnost běžného a minulého období</p>
       <div style="overflow-x:auto"><table><thead id="pas-head"></thead><tbody id="pas-body"></tbody></table></div>
     </div>
   </div>
@@ -186,10 +186,4 @@ loadData(d => {
     RA("C.II.5.3.","    Závazky k zaměstnancům",           "34","zav_mzdy",      {sub:true,sub2:true}),
     RA("C.II.5.4.","    Závazky ze SZ a ZP",               "35","zav_sp_zp",     {sub:true,sub2:true,note:true}),
     RA("C.II.5.5.","    Stát – daňové závazky a dotace",   "36","zav_stat_dan",  {sub:true,sub2:true}),
-    RA("C.II.5.6.","    Dohadné účty pasivní",             "37","zav_dohad_pas", {sub:true,sub2:true,note:true}),
-    RA("C.II.5.7.","    Jiné závazky",                     "38","zav_jine",      {sub:true,sub2:true,note:true}),
-    RA("D.",    "Časové rozlišení pasiv",                  "39","cr_pasiv"),
-  ].join("");
-});
-</script>
-</body></html>
+    RA("C.II.5.6.","    Dohadné účty pasivní",          
