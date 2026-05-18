@@ -45,8 +45,6 @@
       "bezna_likvidita": 0.96,
       "okamzita_likvidita": 0.0,
       "celkova_zadluzenost": 89.84,
-      "altman_z": 1.915,
-      "altman_pasmo": "sede",
       "horiz": null,
       "vert_rozvaha": {
         "stala_netto": 13.51,
@@ -104,8 +102,6 @@
       "bezna_likvidita": 1.03,
       "okamzita_likvidita": 0.54,
       "celkova_zadluzenost": 89.39,
-      "altman_z": 1.398,
-      "altman_pasmo": "sede",
       "horiz": {
         "aktiva_netto": {
           "abs": 48499,
