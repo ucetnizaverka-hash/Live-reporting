@@ -339,9 +339,8 @@ td.gray{color:var(--text-dim);font-size:11px}td.note{color:var(--text-dim);font-
       </div>
     </div>
 
-    <!-- PDF + datum -->
+    <!-- Datum aktualizace -->
     <div class="section" style="padding:11px 16px;display:flex;align-items:center;gap:14px">
-      <a class="btn-gold" id="pdf-btn" href="#" target="_blank">Stáhnout PDF výkaz</a>
       <span style="font-size:10.5px;color:var(--text-dim)" id="updated2"></span>
     </div>
 
@@ -367,7 +366,6 @@ td.gray{color:var(--text-dim);font-size:11px}td.note{color:var(--text-dim);font-
 })();
 </script>
 <script>
-document.getElementById("pdf-btn").href=PDF_URL;
 
 const PLY={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
   font:{color:"#374151",size:9,family:"DM Sans,system-ui"},

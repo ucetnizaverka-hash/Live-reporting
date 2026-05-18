@@ -202,9 +202,8 @@ async function loadData(renderFn) {
   }
 }
 
-// --- Altman / IN05 pasmo badge ---
-function altmanBadge(pasmo) {
-  const m = {zelene:["green","ZDRAVÁ FIRMA"],sede:["yellow","ŠEDÁ ZÓNA"],cervene:["red","RIZIKO"]};
+// --- IN05 / IN05 pasmo badge ---
+;
   const [cls,lbl] = m[pasmo]||["yellow",pasmo||"?"];
   return `<span class="badge ${cls}">${lbl}</span>`;
 }

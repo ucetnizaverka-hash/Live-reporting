@@ -107,7 +107,7 @@
       <div class="ch-box"><h3>Rentabilita (%)</h3><div id="ch-rent" style="height:220px"></div></div>
       <div class="ch-box"><h3>Likvidita &amp; zadluženost</h3><div id="ch-lik" style="height:220px"></div></div>
       <div class="ch-box"><h3>Aktiva — struktura (tis. Kč)</h3><div id="ch-aktiva" style="height:220px"></div></div>
-      <div class="ch-box"><h3>Index IN05</h3><div id="ch-altman" style="height:220px"></div></div>
+      <div class="ch-box"><h3>Index IN05</h3><div id="ch-in05" style="height:220px"></div></div>
     </div>
 
     <!-- DETAILNÍ TABULKY (kolapsovatelné) -->
@@ -522,7 +522,7 @@ async function main(){
       {name:"Oběžná aktiva",x:labels,y:periody.map(p=>tis(p.obezna_netto)),type:"bar",marker:{color:"rgba(45,74,158,.85)"}}
     ],{..._PH,barmode:"stack",yaxis:{..._PH.yaxis,ticksuffix:" tis."}},_HC);
 
-    Plotly.newPlot("ch-altman",[
+    Plotly.newPlot("ch-in05",[
       {name:"IN05",x:labels,y:periody.map(p=>p.in05||0),type:"scatter",mode:"lines+markers+text",
        line:{color:"#fbbf24",width:2.5},marker:{size:10,color:"#fbbf24"},
        text:periody.map(p=>(p.in05||0).toFixed(2)),textposition:"top center",textfont:{size:10,color:"#fbbf24"}},
