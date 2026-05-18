@@ -110,7 +110,7 @@ loadData(d => {
   if (bknMode && _h2) _h2.textContent = "Rozvaha — AKTIVA (plný rozsah dle § 4 vyhlášky 500/2002 Sb.)";
   else if (_h2) _h2.textContent = "Rozvaha — AKTIVA (netto pohled, srovnání období)";
   if (bknMode && _note) _note.innerHTML = "Hodnoty v Kč · <strong>Brutto / Korekce / Netto</strong> dle § 4 vyhlášky 500/2002 Sb.";
-  else if (_note) _note.innerHTML = "Hodnoty v Kč · Netto pohled (pro srovnání mezi obdobími)";
+  else if (_note) _note.innerHTML = "Hodnoty v Kč · Zobrazujeme pouze sloupec <strong>Netto</strong> pro přehlednost meziročního srovnání. Plný rozsah (Brutto / Korekce / Netto) dle § 4 vyhlášky 500/2002 Sb. je k dispozici v <a href=\"index.html\" style=\"color:var(--gold)\">průběžném výkaznictví</a> nebo přímo v účetních knihách.";
 
   document.getElementById("akt-head").innerHTML = aktHead;
 
