@@ -58,8 +58,6 @@
       "in05_x3": 0.066,
       "in05_x4": 1.4942,
       "in05_x5": 0.9627,
-      "altman_z": 1.167,
-      "altman_pasmo": "sede",
       "vert_rozvaha": {
         "stala_netto": 13.51,
         "obezna_netto": 86.46,
@@ -134,8 +132,6 @@
       "in05_x3": 0.0265,
       "in05_x4": 1.1074,
       "in05_x5": 1.0451,
-      "altman_z": 0.94,
-      "altman_pasmo": "sede",
       "vert_rozvaha": {
         "stala_netto": 8.3,
         "obezna_netto": 91.64,

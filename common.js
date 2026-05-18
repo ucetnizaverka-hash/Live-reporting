@@ -1,7 +1,7 @@
 // ============================================================
 // common.js – sdilene funkce pro vsechny HTML stranky v20260513-2137
 // ============================================================
-const KLIENT_ID   = "demo_sro";
+const KLIENT_ID   = "klient";
 const PAGES_BASE  = "https://ucetnizaverka-hash.github.io/Live-reporting";
 const BASE_DATA   = `${PAGES_BASE}/data/vsechna_obdobi_${KLIENT_ID}.json`;
 const PDF_URL     = `${PAGES_BASE}/data/vykazy_${KLIENT_ID}.pdf`;
