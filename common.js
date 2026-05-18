@@ -202,11 +202,7 @@ async function loadData(renderFn) {
   }
 }
 
-// --- IN05 / IN05 pasmo badge ---
-;
-  const [cls,lbl] = m[pasmo]||["yellow",pasmo||"?"];
-  return `<span class="badge ${cls}">${lbl}</span>`;
-}
+// --- IN05 pásmo badge ---
 function in05Badge(pasmo) {
   const m = {zelene:["green","TVORBA HODNOTY"],sede:["yellow","ŠEDÁ ZÓNA"],cervene:["red","FINANČNÍ TÍSEŇ"]};
   const [cls,lbl] = m[pasmo]||["yellow",pasmo||"?"];
