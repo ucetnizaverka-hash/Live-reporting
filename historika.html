@@ -157,8 +157,25 @@
 </main>
 <footer><span>22HLAV</span> · Historická analýza · Zpracováno z ověřených ročních dat</footer>
 
-<script src="data/vsechna_obdobi_demo_sro.js"></script>
-<script src="data/historika_demo_sro.js"></script>
+<script>
+// Dynamic load with cache-bust — historika.html data se vždy načte čerstvá
+(function() {
+  const ts = Date.now();
+  function loadScript(url) {
+    return new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = url + '?v=' + ts;
+      s.onload = res;
+      s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+  window._dataLoaded = Promise.all([
+    loadScript('data/vsechna_obdobi_demo_sro.js'),
+    loadScript('data/historika_demo_sro.js'),
+  ]);
+})();
+</script>
 <script src="common.js"></script>
 <script>
 (function(){
@@ -406,6 +423,7 @@ const _HC={responsive:true,displayModeBar:false};
 
 // ── Main ─────────────────────────────────────────────────────────────
 async function main(){
+  if (window._dataLoaded) await window._dataLoaded;
   loadData(async d=>{
     document.title=(d.nazev||"")+" | Historická analýza";
     let h;
