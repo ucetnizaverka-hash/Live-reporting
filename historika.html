@@ -486,7 +486,7 @@ async function main(){
       {label:"Odpisy",            key:"odpisy",         vertK:"odpisy"},
       {label:"Provozní VH",       key:"provozni_vh",    vertK:"provozni_vh"},
       {label:"VH za období",      key:"vh_za_obdobi",   vertK:"vh_za_obdobi"},
-    ],"vert_vzz",document.getElementById("vert-vzz"));
+    ],"vertikalni_vzz",document.getElementById("vert-vzz"));
 
     buildVert(periody,[
       {label:"Aktiva celkem",       key:"aktiva_netto",  vertK:"aktiva_netto"},
@@ -500,7 +500,7 @@ async function main(){
       {label:"B+C. Cizí zdroje",    key:"cizi_zdroje",   vertK:"cizi_zdroje"},
       {label:"  Závazky krátkodobé",key:"zav_kr",        vertK:"zav_kr"},
       {label:"D. Časové rozlišení pasiv", key:"cr_pasiv", vertK:"cr_pasiv"},
-    ],"vert_rozvaha",document.getElementById("vert-rozvaha"));
+    ],"vertikalni_rozvaha",document.getElementById("vert-rozvaha"));
 
     buildUkazatele(periody,document.getElementById("ukazatele-table"));
 
@@ -556,4 +556,4 @@ async function main(){
 }
 main();
 </script>
-</body></html>
+</b
