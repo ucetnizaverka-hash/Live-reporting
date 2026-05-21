@@ -3,7 +3,7 @@
     "klient_id": "demo_sro",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-21T05:43:13"
+    "updated": "2026-05-21T05:47:22"
   },
   "periody": [
     {
@@ -169,10 +169,7 @@
       "okamzita_likvidita": 0.54,
       "celkova_zadluzenost": 89.39,
       "obratovost_aktiv": 1.11,
-      "obrat_dm": 13.35,
       "doba_obratu_pohl": 28.4,
-      "doba_obratu_zav": 294.6,
-      "doba_obratu_zas": 115.7,
       "in05": 0.903,
       "in05_pasmo": "sede",
       "in05_x1": 1.1187,
@@ -279,6 +276,9 @@
       "mira_zadluzenosti": 1117.14,
       "kryti_dm_vk": 0.96,
       "obrat_aktiv": 1.11,
+      "obrat_dm": 13.35,
+      "doba_obratu_zas": 115.7,
+      "doba_obratu_zav": 294.6,
       "doba_splaceni_dluhu": 6.5,
       "in05_x": {
         "X1": 1.1187,

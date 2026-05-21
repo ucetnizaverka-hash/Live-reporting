@@ -224,22 +224,10 @@ loadData(d => {
        p => fA(p) ? fT(p)/fA(p) : null, s.obratovost_aktiv,
        v => v==null ? "—" : sN2(v)+"×", true,
        "Čistý obrat / Aktiva"),
-    RC("Obrat dlouhodobého majetku",
-       p => fDM(p) ? fT(p)/fDM(p) : null, null,
-       v => v==null ? "—" : sN2(v)+"×", true,
-       "Čistý obrat / Dlouhodobý majetek"),
-    RC("Doba obratu zásob",
-       p => fDob(p, fZas), null,
-       v => v==null ? "—" : v+" dní", false,
-       "Průměrný stav zásob × dny období / Tržby"),
     RC("Doba obratu pohledávek",
        p => fDob(p, fPohl), s.doba_obratu_pohl,
-       v => v==null ? "—" : v+" dní", false,
-       "Průměrný stav pohledávek × dny období / Tržby"),
-    RC("Doba obratu závazků",
-       p => fDob(p, fZavKr), s.doba_obratu_zav,
        v => v==null ? "—" : v+" dní", true,
-       "Krátkodobé závazky × dny období / Tržby"),
+       "Průměrný stav pohledávek × dny období / Tržby"),
   ].join("");
 
   // ── ZADLUŽENOST ───────────────────────────────────────────────────────
@@ -508,3 +496,4 @@ loadData(d => {
   }
 });
 </script></body></html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        

@@ -8,7 +8,7 @@
     "period_label": "1.1.2024–9.5.2024",
     "datum_od": "2024-01-01",
     "datum_do": "2024-05-09",
-    "updated": "2026-05-21T03:42:34",
+    "updated": "2026-05-21T05:47:21",
     "format": "plny",
     "pocet_zamestnancu": 0,
     "zdroj": "prubezne_vstup.xlsx",
@@ -164,10 +164,7 @@
     "doba_splaceni_dluhu": 7.4,
     "kryti_dm_vk": 0.7,
     "obrat_aktiv": 0.72,
-    "obrat_dm": 6.1,
-    "doba_obratu_zas": 179.5,
     "doba_obratu_pohl": 30.6,
-    "doba_obratu_zav": 397.5,
     "in05": 0.807,
     "in05_pasmo": "cervene",
     "in05_x": {
@@ -199,9 +196,9 @@
     "zasoby": 1250000,
     "pohledavky_kr": 213000,
     "pp": 1169000,
-    "vk": 252000,
-    "zav_kr": 2766000,
-    "cizi_zdroje": 2766000,
+    "vk": 251000,
+    "zav_kr": 2767000,
+    "cizi_zdroje": 2767000,
     "trzby_vyrobky_sluzby": 510000,
     "trzby_zbozi": 395000,
     "trzby_celkem": 905000,
@@ -211,9 +208,9 @@
     "provozni_vh": 22000,
     "financni_vh": -8000,
     "vh_pred_zdanenim": 14000,
-    "dan_z_prijmu": 4000,
-    "vh_za_obdobi": 10000,
+    "dan_z_prijmu": 5000,
+    "vh_za_obdobi": 9000,
     "cisty_obrat": 905000,
-    "archivovano": "2026-05-21T03:42:33"
+    "archivovano": "2026-05-21T05:47:21"
   }
 }
