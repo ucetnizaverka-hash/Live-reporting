@@ -3,20 +3,8 @@
     "klient_id": "klient",
     "nazev": "Zkusebni s.r.o.",
     "ico": "123456789",
-    "updated": "2026-05-18T23:47:59"
+    "updated": "2026-05-18T23:50:43"
   },
   "periody": [],
-  "projekce": {
-    "trzby_celkem": 2172000.0,
-    "vyk_spotreba": 1809600.0,
-    "osobni_naklady": 79200.0,
-    "odpisy": 122400.0,
-    "provozni_vh": 120000.0,
-    "vh_pred_zdanenim": 100800.0,
-    "vh_za_obdobi": 81600.0,
-    "cisty_obrat": 2172000.0,
-    "_koef": 2.4,
-    "_mesice": 5,
-    "_poznamka": "Extrapolace z 5 měsíců na 12 (×2.40)"
-  }
+  "projekce": {}
 }
